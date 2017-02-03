@@ -8,6 +8,7 @@ public class InGame : MonoBehaviour {
 	public GameObject finishedSign;
 	public UnityEngine.UI.Text clock;
 	public UnityEngine.UI.Text record;
+	public int secondsAvailable = 65;
 	// Use this for initialization
 	void Start () {
 		dice = GameObject.FindGameObjectWithTag ("Dice").GetComponent<Dice> ();
@@ -48,6 +49,9 @@ public class InGame : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		clock.text = (int)(Time.timeSinceLevelLoad / 60) + ":" + (int)(Time.timeSinceLevelLoad % 60);
+		int minutes = (int)((secondsAvailable - Time.timeSinceLevelLoad) / 60);
+		int seconds = (int)((secondsAvailable - Time.timeSinceLevelLoad) % 60);
+		int dec = (int)(((secondsAvailable - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((secondsAvailable - Time.timeSinceLevelLoad) % 60) * 10));
+		clock.text = (minutes < 10?"0":"") + minutes + ":" + (seconds < 10?"0":"") + seconds + "." + dec;
 	}
 }
