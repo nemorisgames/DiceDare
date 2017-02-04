@@ -66,6 +66,7 @@ public class Dice : MonoBehaviour {
 				break;
 			}
 		}
+
 		//ordena las caras y las almacena
 		switch(d){
 		case Direction.Up:
@@ -95,6 +96,62 @@ public class Dice : MonoBehaviour {
 			currentNumbers [0] = currentNumbers [2];
 			currentNumbers [2] = currentNumbers [1];
 			currentNumbers [1] = t;
+			break;
+		}
+		//gira las caras
+		Transform pos;
+		switch(d){
+		case Direction.Up:
+			pos = ((TextMesh)currentNumbers [1]).transform;
+			((TextMesh)currentNumbers [1]).transform.RotateAround (pos.position, pos.forward, -90);
+			pos = ((TextMesh)currentNumbers [2]).transform;
+			((TextMesh)currentNumbers [2]).transform.RotateAround (pos.position, pos.forward, -90);
+			pos = ((TextMesh)currentNumbers [3]).transform;
+			((TextMesh)currentNumbers [3]).transform.RotateAround (pos.position, pos.forward, 90);
+			pos = ((TextMesh)currentNumbers [4]).transform;
+			((TextMesh)currentNumbers [4]).transform.RotateAround (pos.position, pos.forward, 90);
+			break;
+		case Direction.Down:
+			pos = ((TextMesh)currentNumbers [1]).transform;
+			((TextMesh)currentNumbers [1]).transform.RotateAround (pos.position, pos.forward, -90);
+			pos = ((TextMesh)currentNumbers [2]).transform;
+			((TextMesh)currentNumbers [2]).transform.RotateAround (pos.position, pos.forward, 90);
+			pos = ((TextMesh)currentNumbers [3]).transform;
+			((TextMesh)currentNumbers [3]).transform.RotateAround (pos.position, pos.forward, -90);
+			pos = ((TextMesh)currentNumbers [5]).transform;
+			((TextMesh)currentNumbers [5]).transform.RotateAround (pos.position, pos.forward, 90);
+			break;
+		case Direction.Left:
+			for (int i = 0; i < currentNumbers.Count; i++) {
+				if (i != 3 && i != 5 && i != 1) {
+					pos = ((TextMesh)currentNumbers [i]).transform;
+					((TextMesh)currentNumbers [i]).transform.RotateAround (pos.position, pos.forward, -90);
+				}
+				if (i == 1) {
+					pos = ((TextMesh)currentNumbers [i]).transform;
+					((TextMesh)currentNumbers [i]).transform.RotateAround (pos.position, pos.forward, 180);
+				}
+				if (i == 5) {
+					pos = ((TextMesh)currentNumbers [i]).transform;
+					((TextMesh)currentNumbers [i]).transform.RotateAround (pos.position, pos.forward, 90);
+				}
+			}
+			break;
+		case Direction.Right:
+			for (int i = 0; i < currentNumbers.Count; i++) {
+				if (i != 1 && i != 5 && i != 2) {
+					pos = ((TextMesh)currentNumbers [i]).transform;
+					((TextMesh)currentNumbers [i]).transform.RotateAround (pos.position, pos.forward, 90);
+				}
+				if (i == 2) {
+					pos = ((TextMesh)currentNumbers [i]).transform;
+					((TextMesh)currentNumbers [i]).transform.RotateAround (pos.position, pos.forward, 180);
+				}
+				if (i == 5) {
+					pos = ((TextMesh)currentNumbers [i]).transform;
+					((TextMesh)currentNumbers [i]).transform.RotateAround (pos.position, pos.forward, -90);
+				}
+			}
 			break;
 		}
 		lastDirection = d;
