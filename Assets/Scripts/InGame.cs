@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class InGame : MonoBehaviour {
 	Dice dice;
+	Transform cells;
+	bool rotating = false;
 	public GameObject finishedSign;
 	public UnityEngine.UI.Text clock;
 	public UnityEngine.UI.Text record;
@@ -12,7 +14,7 @@ public class InGame : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		dice = GameObject.FindGameObjectWithTag ("Dice").GetComponent<Dice> ();
-
+		cells = GameObject.Find ("Cells").transform;
 	}
 
 	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
@@ -47,7 +49,15 @@ public class InGame : MonoBehaviour {
 		return res;
 	}
 
-
+	IEnumerator rotateCells(bool CW){
+		rotating = true;
+		int nSteps = 30;
+		for (int i = 1; i <= nSteps; i++) {
+			yield return new WaitForSeconds (0.01f);
+			cells.RotateAround (dice.transform.position, Vector3.up, (CW ? 90f : -90f) / nSteps);
+		}
+		rotating = false;
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -57,10 +67,12 @@ public class InGame : MonoBehaviour {
 		clock.text = (minutes < 10?"0":"") + minutes + ":" + (seconds < 10?"0":"") + seconds + "." + dec;
 
 		if (Input.GetKeyDown (KeyCode.Q)) {
-			Camera.main.transform.SendMessage("rotateCamera", false);
+			StartCoroutine (rotateCells (false));
+			//Camera.main.transform.SendMessage("rotateCamera", false);
 		}
 		if (Input.GetKeyDown (KeyCode.E)) {
-			Camera.main.transform.SendMessage("rotateCamera", true);
+			StartCoroutine (rotateCells (true));
+			//Camera.main.transform.SendMessage("rotateCamera", true);
 		}
 	}
 }
