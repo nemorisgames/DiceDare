@@ -46,6 +46,8 @@ public class InGame : MonoBehaviour {
 		}
 		return res;
 	}
+
+
 	
 	// Update is called once per frame
 	void Update () {
@@ -53,5 +55,12 @@ public class InGame : MonoBehaviour {
 		int seconds = (int)((secondsAvailable - Time.timeSinceLevelLoad) % 60);
 		int dec = (int)(((secondsAvailable - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((secondsAvailable - Time.timeSinceLevelLoad) % 60) * 10));
 		clock.text = (minutes < 10?"0":"") + minutes + ":" + (seconds < 10?"0":"") + seconds + "." + dec;
+
+		if (Input.GetKeyDown (KeyCode.Q)) {
+			Camera.main.transform.SendMessage("rotateCamera", false);
+		}
+		if (Input.GetKeyDown (KeyCode.E)) {
+			Camera.main.transform.SendMessage("rotateCamera", true);
+		}
 	}
 }
