@@ -3,23 +3,39 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+using UnityEngine.Analytics;
+
 public class InGame : MonoBehaviour {
 	Dice dice;
 	Transform cells;
-	bool rotating = false;
+	public bool rotating = false;
 	public GameObject finishedSign;
+	public GameObject TimesUpSign;
 	public UnityEngine.UI.Text clock;
 	public UnityEngine.UI.Text record;
+	float recordSeconds;
 	public int secondsAvailable = 65;
 	// Use this for initialization
 	void Start () {
 		dice = GameObject.FindGameObjectWithTag ("Dice").GetComponent<Dice> ();
 		cells = GameObject.Find ("Cells").transform;
+		recordSeconds = PlayerPrefs.GetFloat ("record", -1f);
+		if (recordSeconds > 0) {
+			int minutes = (int)((secondsAvailable - recordSeconds) / 60);
+			int seconds = (int)((secondsAvailable - recordSeconds) % 60);
+			int dec = (int)(((secondsAvailable - recordSeconds) % 60 * 10f) - ((int)((secondsAvailable - recordSeconds) % 60) * 10));
+			record.text = "Your Best " + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
+		}
 	}
 
 	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
 		print ("calculating");
 		if (checkOperationResult(diceValueA, diceValueB) != cellValue) {
+			Analytics.CustomEvent (SceneManager.GetActiveScene ().name + "_badMove", new Dictionary<string, object> {
+				{ "steps", dice.steps },
+				{ "place", dice.gameObject.transform.position},
+				{ "time", secondsAvailable - Time.timeSinceLevelLoad }
+			});
 			SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 		}
 	}
@@ -28,10 +44,17 @@ public class InGame : MonoBehaviour {
 		print("Finished");
 		dice.enabled = false;
 		finishedSign.SetActive (true);
+		if(secondsAvailable - Time.timeSinceLevelLoad > PlayerPrefs.GetFloat ("record", 0f))
+			PlayerPrefs.SetFloat ("record", secondsAvailable - Time.timeSinceLevelLoad);
+		Analytics.CustomEvent (SceneManager.GetActiveScene ().name + "_finish", new Dictionary<string, object> {
+			{ "steps", dice.steps },
+			{ "time", secondsAvailable - Time.timeSinceLevelLoad }
+		});
 	}
 
 	public int checkOperationResult(int diceValueA, int diceValueB){
 		int res = 0;
+		print(dice.currentOperation);
 		switch (dice.currentOperation) {
 		case Dice.Operation.Sum:
 			res = ((diceValueA + diceValueB));
@@ -49,8 +72,9 @@ public class InGame : MonoBehaviour {
 		return res;
 	}
 
-	IEnumerator rotateCells(bool CW){
+	public IEnumerator rotateCells(bool CW){
 		rotating = true;
+		yield return new WaitForSeconds (0.5f);
 		int nSteps = 30;
 		for (int i = 1; i <= nSteps; i++) {
 			yield return new WaitForSeconds (0.01f);
@@ -58,21 +82,31 @@ public class InGame : MonoBehaviour {
 		}
 		rotating = false;
 	}
+
+	void timesUp(){
+		clock.text = "00:00.0";
+		TimesUpSign.SetActive (true);
+		Analytics.CustomEvent (SceneManager.GetActiveScene ().name + "_timesUp", new Dictionary<string, object> {
+			{ "steps", dice.steps },
+			{ "time", secondsAvailable - Time.timeSinceLevelLoad }
+		});
+	}
 	
 	// Update is called once per frame
 	void Update () {
-		int minutes = (int)((secondsAvailable - Time.timeSinceLevelLoad) / 60);
-		int seconds = (int)((secondsAvailable - Time.timeSinceLevelLoad) % 60);
-		int dec = (int)(((secondsAvailable - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((secondsAvailable - Time.timeSinceLevelLoad) % 60) * 10));
-		clock.text = (minutes < 10?"0":"") + minutes + ":" + (seconds < 10?"0":"") + seconds + "." + dec;
-
-		if (Input.GetKeyDown (KeyCode.Q)) {
-			StartCoroutine (rotateCells (false));
-			//Camera.main.transform.SendMessage("rotateCamera", false);
+		if (finishedSign.activeSelf || TimesUpSign.activeSelf) {
+			if(Input.GetKeyDown(KeyCode.Escape))
+				SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
+			return;
 		}
-		if (Input.GetKeyDown (KeyCode.E)) {
-			StartCoroutine (rotateCells (true));
-			//Camera.main.transform.SendMessage("rotateCamera", true);
+		if (secondsAvailable - Time.timeSinceLevelLoad <= 0) {
+			timesUp ();
+		}
+		else {
+			int minutes = (int)((secondsAvailable - Time.timeSinceLevelLoad) / 60);
+			int seconds = (int)((secondsAvailable - Time.timeSinceLevelLoad) % 60);
+			int dec = (int)(((secondsAvailable - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((secondsAvailable - Time.timeSinceLevelLoad) % 60) * 10));
+			clock.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
 		}
 	}
 }

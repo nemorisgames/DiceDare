@@ -12,8 +12,9 @@ public class Dice : MonoBehaviour {
 	Vector3 currentPos;
 	ArrayList numbers = new ArrayList();
 	ArrayList currentNumbers = new ArrayList();
-
+	Operation nextOperation;
 	InGame inGame;
+	public int steps = 0;
 	// Use this for initialization
 	void Start () {
 		currentPos = transform.position;
@@ -27,6 +28,8 @@ public class Dice : MonoBehaviour {
 		currentNumbers = numbers;
 
 		inGame = Camera.main.GetComponent<InGame> ();
+
+		nextOperation = currentOperation;
 	}
 
 	IEnumerator turn(Direction d){
@@ -39,10 +42,21 @@ public class Dice : MonoBehaviour {
 			
 			break;
 		case Direction.Down:
-			((TextMesh)currentNumbers [5]).text = "" + inGame.checkOperationResult (int.Parse (((TextMesh)currentNumbers [4]).text), int.Parse (((TextMesh)currentNumbers [0]).text));
+			RaycastHit r;
+			if(Physics.Raycast(transform.position - Vector3.forward + Vector3.up, new Vector3(0f, -1f, 0f), out r, 5f,LayerMask.GetMask(new string[1]{"Cell"}))){
+				if (r.collider.GetComponent<Cell> ().stateCell == Cell.StateCell.Normal) {
+					print (r.collider.name);
+					((TextMesh)currentNumbers [5]).text = "" + inGame.checkOperationResult (int.Parse (((TextMesh)currentNumbers [4]).text), int.Parse (((TextMesh)currentNumbers [0]).text));
+				}
+			}
 			break;
 		case Direction.Left:
-			((TextMesh)currentNumbers [3]).text = "" + inGame.checkOperationResult (int.Parse (((TextMesh)currentNumbers [2]).text), int.Parse (((TextMesh)currentNumbers [0]).text));
+			if (Physics.Raycast (transform.position - Vector3.right + Vector3.up, new Vector3 (0f, -1f, 0f), out r, 5f,LayerMask.GetMask(new string[1]{"Cell"}))) {
+				if (r.collider.GetComponent<Cell> ().stateCell == Cell.StateCell.Normal) {
+					print (r.collider.name);
+					((TextMesh)currentNumbers [3]).text = "" + inGame.checkOperationResult (int.Parse (((TextMesh)currentNumbers [2]).text), int.Parse (((TextMesh)currentNumbers [0]).text));
+				}
+			}
 			break;
 		case Direction.Right:
 			
@@ -157,54 +171,105 @@ public class Dice : MonoBehaviour {
 		lastDirection = d;
 		onMovement = false;
 		currentPos = transform.position;
+		steps++;
 	}
 
 	void OnTriggerStay(Collider c){
-		if (onMovement || calculated)
-			return;
-		print (c.GetComponent<Cell> ().stateCell);
-		//comprueba que el calculo este bien
-		//acepto para up y right, en ese caso comprueba que la celda haya sido pisada
-		if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.Normal) {
-			int cellValue = c.GetComponent<Cell> ().number;
-			int diceValueA = -1;
-			int diceValueB = -1;
-			switch (lastDirection) {
-			case Direction.Up:
+		if (c.CompareTag ("Untagged")) {
+			if (onMovement || calculated)
+				return;
+			print (c.GetComponent<Cell> ().stateCell);
+			//comprueba que el calculo este bien
+			//acepto para up y right, en ese caso comprueba que la celda haya sido pisada
+			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.Normal) {
+				int cellValue = c.GetComponent<Cell> ().number;
+				int diceValueA = -100;
+				int diceValueB = -1;
+				switch (lastDirection) {
+				case Direction.Up:
 				//diceValueA = int.Parse (((TextMesh)currentNumbers [1]).text);
 				//diceValueB = int.Parse (((TextMesh)currentNumbers [5]).text);
-				cellValue = 0;
-				break;
-			case Direction.Down:
-				diceValueA = int.Parse (((TextMesh)currentNumbers [1]).text);
-				diceValueB = int.Parse (((TextMesh)currentNumbers [4]).text);
-				break;
-			case Direction.Left:
-				diceValueA = int.Parse (((TextMesh)currentNumbers [1]).text);
-				diceValueB = int.Parse (((TextMesh)currentNumbers [2]).text);
-				break;
-			case Direction.Right:
-				cellValue = 0;
+					cellValue = 0;
+					break;
+				case Direction.Down:
+					diceValueA = int.Parse (((TextMesh)currentNumbers [1]).text);
+					diceValueB = int.Parse (((TextMesh)currentNumbers [4]).text);
+					break;
+				case Direction.Left:
+					diceValueA = int.Parse (((TextMesh)currentNumbers [1]).text);
+					diceValueB = int.Parse (((TextMesh)currentNumbers [2]).text);
+					break;
+				case Direction.Right:
+					cellValue = 0;
 				//diceValueA = int.Parse (((TextMesh)currentNumbers [1]).text);
 				//diceValueB = int.Parse (((TextMesh)currentNumbers [3]).text);
+					break;
+				}
+
+ 				print (diceValueA + " + " + diceValueB + " = " + cellValue);
+
+				inGame.calculateResult (diceValueA, diceValueB, cellValue);
+
+				c.GetComponent<Cell> ().changeState (Cell.StateCell.Passed);
+				//Cambia el color del dado si toca una operacion
+				if (nextOperation != currentOperation) {
+					currentOperation = nextOperation;
+					switch (currentOperation) {
+					case Operation.Sum:
+						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (255, 116, 116, 255));
+						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 (255, 116, 116, 1));
+						break;
+					case Operation.Rest:
+						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (88, 179, 255, 255));
+						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 (88, 179, 255, 1));
+						break;
+					case Operation.Mult:
+						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (255, 88, 250, 255));
+						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 (255, 88, 250, 1));
+						break;
+					case Operation.Div:
+						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (138, 255, 116, 255));
+						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 (138, 255, 116, 1));
+						break;
+					}
+				}
+			}
+			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.EndCell) {
+				inGame.finishGame ();
+			}
+			calculated = true;
+		} else {
+			switch (c.tag) {
+			case "Sum":
+				changeOperation(Operation.Sum);
+				break;
+			case "Substraction":
+				changeOperation(Operation.Rest);
+				break;
+			case "Multiplication":
+				changeOperation(Operation.Mult);
+				break;
+			case "Division":
+				changeOperation(Operation.Div);
+				break;
+			case "Rotate90CW":
+				StartCoroutine (inGame.rotateCells (true));
+				break;
+			case "Rotate90CCW":
+				StartCoroutine (inGame.rotateCells (false));
 				break;
 			}
-
-			print (diceValueA + " + " + diceValueB + " = " + cellValue);
-
-			inGame.calculateResult (diceValueA, diceValueB, cellValue);
-
-			c.GetComponent<Cell> ().changeState(Cell.StateCell.Passed);
+			Destroy (c.gameObject);
 		}
-		if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.EndCell) {
-			inGame.finishGame ();
-		}
-		calculated = true;
+	}
+
+	void changeOperation(Operation op){
+		nextOperation = op;
 	}
 
 	// Update is called once per frame
 	void Update () {
-		if (onMovement)
+		if (onMovement || inGame.rotating)
 			return;
 		if (Input.GetKeyDown (KeyCode.W)) { StartCoroutine(turn (Direction.Up)); }
 		if (Input.GetKeyDown (KeyCode.S)) { StartCoroutine(turn (Direction.Down)); }
