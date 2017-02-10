@@ -43,15 +43,21 @@ public class LevelSelection : MonoBehaviour {
 	}
 
 	public void level1(){
+		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("enteringLevel1");
+		#endif
 		SceneManager.LoadScene ("InGame1");
 	}
 	public void level2(){
+		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("enteringLevel2");
+		#endif
 		SceneManager.LoadScene ("InGame2");
 	}
 	public void level3(){
+		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("enteringLevel3");
+		#endif
 		SceneManager.LoadScene ("InGame3");
 	}
 	

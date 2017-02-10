@@ -31,12 +31,14 @@ public class InGame : MonoBehaviour {
 	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
 		print ("calculating");
 		if (checkOperationResult(diceValueA, diceValueB) != cellValue) {
+			#if !UNITY_EDITOR
 			Analytics.CustomEvent ("badMove", new Dictionary<string, object> {
 				{ "scene", SceneManager.GetActiveScene ().name },
 				{ "steps", dice.steps },
 				{ "place", dice.gameObject.transform.position},
 				{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 			});
+			#endif
 			SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 		}
 	}
@@ -45,13 +47,15 @@ public class InGame : MonoBehaviour {
 		print("Finished");
 		dice.enabled = false;
 		finishedSign.SetActive (true);
-		if(secondsAvailable - Time.timeSinceLevelLoad > PlayerPrefs.GetFloat ("record", 0f))
+		#if !UNITY_EDITOR
+			if(secondsAvailable - Time.timeSinceLevelLoad > PlayerPrefs.GetFloat ("record", 0f))
 			PlayerPrefs.SetFloat ("record"+SceneManager.GetActiveScene ().name, secondsAvailable - Time.timeSinceLevelLoad);
 		Analytics.CustomEvent ("finish", new Dictionary<string, object> {
 			{ "scene", SceneManager.GetActiveScene ().name },
 			{ "steps", dice.steps },
 			{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});
+			#endif
 	}
 
 	public int checkOperationResult(int diceValueA, int diceValueB){
@@ -88,11 +92,13 @@ public class InGame : MonoBehaviour {
 	void timesUp(){
 		clock.text = "00:00.0";
 		TimesUpSign.SetActive (true);
+		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("timesUp", new Dictionary<string, object> {
 			{ "scene", SceneManager.GetActiveScene ().name },
 			{ "steps", dice.steps },
 			{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});
+		#endif
 	}
 
 	public void playAgain(){
