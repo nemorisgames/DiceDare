@@ -9,7 +9,7 @@ public class Dice : MonoBehaviour {
 	public Operation currentOperation = Operation.Sum;
 	public enum Direction {Up, Down, Left, Right};
 	Direction lastDirection;
-	Vector3 currentPos;
+	public Vector3 currentPos;
 	ArrayList numbers = new ArrayList();
 	ArrayList currentNumbers = new ArrayList();
 	Operation nextOperation;

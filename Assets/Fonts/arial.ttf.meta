@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 34136572262ac450a98bf6b227d3ddc8
-timeCreated: 1485744557
+guid: 9c8efafbd14db99489bcc4fc2b107323
+timeCreated: 1486432682
 licenseType: Pro
 TrueTypeFontImporter:
   serializedVersion: 4
@@ -8,13 +8,14 @@ TrueTypeFontImporter:
   forceTextureCase: -2
   characterSpacing: 0
   characterPadding: 1
-  includeFontData: 0
-  fontName: FontAwesome
+  includeFontData: 1
+  fontName: Arial
   fontNames:
-  - FontAwesome
-  fallbackFontReferences: []
+  - Arial
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 7ae9dbfe2a8f1684d8e7b23c5d43e95c, type: 3}
   customCharacters: 
-  fontRenderingMode: 3
+  fontRenderingMode: 0
   ascentCalculationMode: 1
   userData: 
   assetBundleName: 

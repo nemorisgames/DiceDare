@@ -11,27 +11,28 @@ public class InGame : MonoBehaviour {
 	public bool rotating = false;
 	public GameObject finishedSign;
 	public GameObject TimesUpSign;
-	public UnityEngine.UI.Text clock;
-	public UnityEngine.UI.Text record;
+	public UILabel clock;
+	public UILabel record;
 	float recordSeconds;
 	public int secondsAvailable = 65;
 	// Use this for initialization
 	void Start () {
 		dice = GameObject.FindGameObjectWithTag ("Dice").GetComponent<Dice> ();
 		cells = GameObject.Find ("Cells").transform;
-		recordSeconds = PlayerPrefs.GetFloat ("record", -1f);
+		recordSeconds = PlayerPrefs.GetFloat ("record"+SceneManager.GetActiveScene ().name, -1f);
 		if (recordSeconds > 0) {
 			int minutes = (int)((secondsAvailable - recordSeconds) / 60);
 			int seconds = (int)((secondsAvailable - recordSeconds) % 60);
 			int dec = (int)(((secondsAvailable - recordSeconds) % 60 * 10f) - ((int)((secondsAvailable - recordSeconds) % 60) * 10));
-			record.text = "Your Best " + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
+			record.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 	}
 
 	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
 		print ("calculating");
 		if (checkOperationResult(diceValueA, diceValueB) != cellValue) {
-			Analytics.CustomEvent (SceneManager.GetActiveScene ().name + "_badMove", new Dictionary<string, object> {
+			Analytics.CustomEvent ("badMove", new Dictionary<string, object> {
+				{ "scene", SceneManager.GetActiveScene ().name },
 				{ "steps", dice.steps },
 				{ "place", dice.gameObject.transform.position},
 				{ "time", secondsAvailable - Time.timeSinceLevelLoad }
@@ -45,8 +46,9 @@ public class InGame : MonoBehaviour {
 		dice.enabled = false;
 		finishedSign.SetActive (true);
 		if(secondsAvailable - Time.timeSinceLevelLoad > PlayerPrefs.GetFloat ("record", 0f))
-			PlayerPrefs.SetFloat ("record", secondsAvailable - Time.timeSinceLevelLoad);
-		Analytics.CustomEvent (SceneManager.GetActiveScene ().name + "_finish", new Dictionary<string, object> {
+			PlayerPrefs.SetFloat ("record"+SceneManager.GetActiveScene ().name, secondsAvailable - Time.timeSinceLevelLoad);
+		Analytics.CustomEvent ("finish", new Dictionary<string, object> {
+			{ "scene", SceneManager.GetActiveScene ().name },
 			{ "steps", dice.steps },
 			{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});
@@ -86,17 +88,26 @@ public class InGame : MonoBehaviour {
 	void timesUp(){
 		clock.text = "00:00.0";
 		TimesUpSign.SetActive (true);
-		Analytics.CustomEvent (SceneManager.GetActiveScene ().name + "_timesUp", new Dictionary<string, object> {
+		Analytics.CustomEvent ("timesUp", new Dictionary<string, object> {
+			{ "scene", SceneManager.GetActiveScene ().name },
 			{ "steps", dice.steps },
 			{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});
 	}
+
+	public void playAgain(){
+		SceneManager.LoadScene (SceneManager.GetActiveScene().name);
+	}
+
+	public void exit(){
+		SceneManager.LoadScene ("LevelSelection");
+	}
 	
 	// Update is called once per frame
 	void Update () {
+		if(Input.GetKeyDown(KeyCode.Escape))
+			SceneManager.LoadScene ("LevelSelection");
 		if (finishedSign.activeSelf || TimesUpSign.activeSelf) {
-			if(Input.GetKeyDown(KeyCode.Escape))
-				SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 			return;
 		}
 		if (secondsAvailable - Time.timeSinceLevelLoad <= 0) {
