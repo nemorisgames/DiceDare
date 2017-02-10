@@ -8,6 +8,8 @@ using UnityEngine.Analytics;
 public class InGame : MonoBehaviour {
 	Dice dice;
 	Transform cells;
+	public TextMesh [] cellsText;
+	ArrayList texts = new ArrayList();
 	public bool rotating = false;
 	public GameObject finishedSign;
 	public GameObject TimesUpSign;
@@ -19,6 +21,10 @@ public class InGame : MonoBehaviour {
 	void Start () {
 		dice = GameObject.FindGameObjectWithTag ("Dice").GetComponent<Dice> ();
 		cells = GameObject.Find ("Cells").transform;
+		cellsText = cells.GetComponentsInChildren<TextMesh> ();
+		foreach (TextMesh t in cellsText) {
+			texts.Add(t.GetComponent<Transform>());
+		}
 		recordSeconds = PlayerPrefs.GetFloat ("record"+SceneManager.GetActiveScene ().name, -1f);
 		if (recordSeconds > 0) {
 			int minutes = (int)((secondsAvailable - recordSeconds) / 60);
@@ -85,6 +91,9 @@ public class InGame : MonoBehaviour {
 		for (int i = 1; i <= nSteps; i++) {
 			yield return new WaitForSeconds (0.01f);
 			cells.RotateAround (dice.transform.position, Vector3.up, (CW ? 90f : -90f) / nSteps);
+			foreach (Transform t in texts) {
+				t.RotateAround(t.position, Vector3.up, (CW ? -90f : 90f)/ nSteps);
+			}
 		}
 		rotating = false;
 	}
