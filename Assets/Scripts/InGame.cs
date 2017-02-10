@@ -15,6 +15,10 @@ public class InGame : MonoBehaviour {
 	public UILabel record;
 	float recordSeconds;
 	public int secondsAvailable = 65;
+	AudioSource audio;
+	public AudioClip audioBadMove;
+	public AudioClip audioGoodMove;
+	public AudioClip audioFinish;
 	// Use this for initialization
 	void Start () {
 		dice = GameObject.FindGameObjectWithTag ("Dice").GetComponent<Dice> ();
@@ -26,11 +30,12 @@ public class InGame : MonoBehaviour {
 			int dec = (int)(((secondsAvailable - recordSeconds) % 60 * 10f) - ((int)((secondsAvailable - recordSeconds) % 60) * 10));
 			record.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
+		audio = GetComponent<AudioSource> ();
 	}
 
 	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
 		print ("calculating");
-		if (checkOperationResult(diceValueA, diceValueB) != cellValue) {
+		if (checkOperationResult (diceValueA, diceValueB) != cellValue) {
 			#if !UNITY_EDITOR
 			Analytics.CustomEvent ("badMove", new Dictionary<string, object> {
 				{ "scene", SceneManager.GetActiveScene ().name },
@@ -39,14 +44,27 @@ public class InGame : MonoBehaviour {
 				{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 			});
 			#endif
-			SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
+			StartCoroutine (reloadScene ());
+			audio.pitch = 1f;
+			audio.PlayOneShot(audioBadMove);
+		} else {
+			audio.pitch = Random.Range (0.95f, 1.05f);
+			audio.PlayOneShot(audioGoodMove);
 		}
+	}
+
+	IEnumerator reloadScene(){
+		yield return new WaitForSeconds (2f);
+		SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 	}
 
 	public void finishGame(){
 		print("Finished");
 		dice.enabled = false;
 		finishedSign.SetActive (true);
+
+		audio.pitch = 1f;
+		audio.PlayOneShot(audioFinish);
 		#if !UNITY_EDITOR
 			if(secondsAvailable - Time.timeSinceLevelLoad > PlayerPrefs.GetFloat ("record", 0f))
 			PlayerPrefs.SetFloat ("record"+SceneManager.GetActiveScene ().name, secondsAvailable - Time.timeSinceLevelLoad);

@@ -14,7 +14,15 @@ public class Dice : MonoBehaviour {
 	ArrayList currentNumbers = new ArrayList();
 	Operation nextOperation;
 	InGame inGame;
+	AudioSource audio;
+	public AudioClip audioRotation;
+	public AudioClip audioCubeChange;
 	public int steps = 0;
+	public Material backgroundMaterial;
+	public Texture backgroundSum;
+	public Texture backgroundSubstraction;
+	public Texture backgroundMultiplication;
+	public Texture backgroundDivision;
 	// Use this for initialization
 	void Start () {
 		currentPos = transform.position;
@@ -28,8 +36,12 @@ public class Dice : MonoBehaviour {
 		currentNumbers = numbers;
 
 		inGame = Camera.main.GetComponent<InGame> ();
+		audio = GetComponent<AudioSource> ();
 
 		nextOperation = currentOperation;
+
+		Camera.main.backgroundColor = new Color32 (253, 130, 138, 0);
+		backgroundMaterial.mainTexture = backgroundSum;
 	}
 
 	IEnumerator turn(Direction d){
@@ -171,11 +183,13 @@ public class Dice : MonoBehaviour {
 		lastDirection = d;
 		onMovement = false;
 		currentPos = transform.position;
+		audio.pitch = Random.Range (0.95f, 1.05f);
+		audio.PlayOneShot(audioRotation);
 		steps++;
 	}
 
 	void OnTriggerStay(Collider c){
-		if (c.CompareTag ("Untagged")) {
+		if (c.CompareTag ("Untagged") || c.CompareTag ("Sum") || c.CompareTag ("Substraction") || c.CompareTag ("Multiplication") || c.CompareTag ("Division")) {
 			if (onMovement || calculated)
 				return;
 			print (c.GetComponent<Cell> ().stateCell);
@@ -211,27 +225,56 @@ public class Dice : MonoBehaviour {
 				inGame.calculateResult (diceValueA, diceValueB, cellValue);
 
 				c.GetComponent<Cell> ().changeState (Cell.StateCell.Passed);
+
 				//Cambia el color del dado si toca una operacion
+				print(c.tag);
+				switch (c.tag) {
+				case "Sum":
+					changeOperation (Operation.Sum);
+					Camera.main.backgroundColor = new Color32 (253, 130, 138, 0);
+					backgroundMaterial.mainTexture = backgroundSum;
+					break;
+				case "Substraction":
+					changeOperation (Operation.Rest);
+					Camera.main.backgroundColor = new Color32 (101, 193, 255, 0);
+					backgroundMaterial.mainTexture = backgroundSubstraction;
+					break;
+				case "Multiplication":
+					changeOperation (Operation.Mult);
+					Camera.main.backgroundColor = new Color32(255, 168, 255, 0);
+					backgroundMaterial.mainTexture = backgroundMultiplication;
+					break;
+				case "Division":
+					changeOperation (Operation.Div);
+					Camera.main.backgroundColor = new Color32(144, 255, 139, 0);
+					backgroundMaterial.mainTexture = backgroundDivision;
+					break;
+				}
 				if (nextOperation != currentOperation) {
 					currentOperation = nextOperation;
 					switch (currentOperation) {
 					case Operation.Sum:
+						audio.pitch = 1f;
 						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (255, 116, 116, 255));
 						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 (255, 116, 116, 1));
 						break;
 					case Operation.Rest:
+						audio.pitch = 1.1f;
 						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (88, 179, 255, 255));
 						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 (88, 179, 255, 1));
 						break;
 					case Operation.Mult:
+						audio.pitch = 1.2f;
 						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (255, 88, 250, 255));
 						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 (255, 88, 250, 1));
 						break;
 					case Operation.Div:
+						audio.pitch = 1.3f;
 						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (138, 255, 116, 255));
 						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 (138, 255, 116, 1));
 						break;
 					}
+					audio.PlayOneShot(audioCubeChange);
 				}
 			}
 			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.EndCell) {
@@ -240,26 +283,15 @@ public class Dice : MonoBehaviour {
 			calculated = true;
 		} else {
 			switch (c.tag) {
-			case "Sum":
-				changeOperation(Operation.Sum);
-				break;
-			case "Substraction":
-				changeOperation(Operation.Rest);
-				break;
-			case "Multiplication":
-				changeOperation(Operation.Mult);
-				break;
-			case "Division":
-				changeOperation(Operation.Div);
-				break;
 			case "Rotate90CW":
+				Destroy (c.gameObject);
 				StartCoroutine (inGame.rotateCells (true));
 				break;
 			case "Rotate90CCW":
+				Destroy (c.gameObject);
 				StartCoroutine (inGame.rotateCells (false));
 				break;
 			}
-			Destroy (c.gameObject);
 		}
 	}
 
