@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Dice : MonoBehaviour {
-	bool onMovement = false;
+	[HideInInspector]
+	public bool onMovement = false;
 	bool calculated = false;
 	public enum Operation {Sum, Rest, Mult, Div};
 	public Operation currentOperation = Operation.Sum;
@@ -14,9 +15,13 @@ public class Dice : MonoBehaviour {
 	ArrayList currentNumbers = new ArrayList();
 	Operation nextOperation;
 	InGame inGame;
+<<<<<<< HEAD
 	AudioSource audio;
 	public AudioClip audioRotation;
 	public AudioClip audioCubeChange;
+=======
+	Transform plane;
+>>>>>>> 3b5fd4df94ab311f722c99d355db101ecbb2493f
 	public int steps = 0;
 	public Material backgroundMaterial;
 	public Texture backgroundSum;
@@ -25,6 +30,7 @@ public class Dice : MonoBehaviour {
 	public Texture backgroundDivision;
 	// Use this for initialization
 	void Start () {
+		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
 		currentPos = transform.position;
 		numbers.Add(transform.FindChild("TextUp").GetComponent<TextMesh>());
 		numbers.Add(transform.FindChild("TextDown").GetComponent<TextMesh>());
@@ -44,7 +50,7 @@ public class Dice : MonoBehaviour {
 		backgroundMaterial.mainTexture = backgroundSum;
 	}
 
-	IEnumerator turn(Direction d){
+	public IEnumerator turn(Direction d){
 		onMovement = true;
 		calculated = false;
 		int nStemps = 10;
@@ -80,15 +86,23 @@ public class Dice : MonoBehaviour {
 			switch(d){
 			case Direction.Up:
 				transform.RotateAround (currentPos + new Vector3 (0f, -0.5f, 0.5f), Vector3.right, 90f / nStemps);
+				if(plane != null)
+					plane.position = new Vector3 (plane.position.x, plane.position.y, plane.position.z + 0.1f);
 				break;
 			case Direction.Down:
 				transform.RotateAround (currentPos + new Vector3 (0f, -0.5f, -0.5f), Vector3.right, -90f / nStemps);
+				if(plane != null)
+				plane.position = new Vector3 (plane.position.x, plane.position.y, plane.position.z - 0.1f);
 				break;
 			case Direction.Left:
 				transform.RotateAround (currentPos + new Vector3 (-0.5f, -0.5f, 0f), Vector3.forward, 90f / nStemps);
+				if(plane != null)
+				plane.position = new Vector3 (plane.position.x - 0.1f, plane.position.y, plane.position.z);
 				break;
 			case Direction.Right:
 				transform.RotateAround (currentPos + new Vector3 (0.5f, -0.5f, 0f), Vector3.forward, -90f / nStemps);
+				if(plane != null)
+				plane.position = new Vector3 (plane.position.x + 0.1f, plane.position.y, plane.position.z);
 				break;
 			}
 		}
