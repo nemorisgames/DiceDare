@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour {
 	Transform obj;
+	Dice dice;
 	Vector3 initialPosition;
 	//bool rotating = false;
 	// Use this for initialization
 	void Start () {
 		obj = GameObject.FindGameObjectWithTag ("Dice").transform;
+		dice = obj.GetComponent<Dice> ();
 		initialPosition = transform.position + obj.position;
 	}
 
@@ -32,8 +34,9 @@ public class CameraControl : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		//if(!rotating)
+		if (dice.enabled && Time.timeSinceLevelLoad > 2f) {
 			transform.position = Vector3.Lerp (transform.position, initialPosition + obj.position, Time.deltaTime * 10f);
-		transform.LookAt (obj);
+			transform.LookAt (obj);
+		}
 	}
 }

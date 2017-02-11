@@ -50,9 +50,11 @@ public class InGame : MonoBehaviour {
 				{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 			});
 			#endif
+			dice.enabled = false;
 			StartCoroutine (reloadScene ());
 			audio.pitch = 1f;
 			audio.PlayOneShot(audioBadMove);
+			dice.GetComponent<Animator> ().SetTrigger ("BadMove");
 		} else {
 			audio.pitch = Random.Range (0.95f, 1.05f);
 			audio.PlayOneShot(audioGoodMove);
@@ -60,7 +62,7 @@ public class InGame : MonoBehaviour {
 	}
 
 	IEnumerator reloadScene(){
-		yield return new WaitForSeconds (2f);
+		yield return new WaitForSeconds (1f);
 		SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 	}
 
@@ -68,7 +70,9 @@ public class InGame : MonoBehaviour {
 		print("Finished");
 		dice.enabled = false;
 		finishedSign.SetActive (true);
-
+		dice.enabled = false;
+		dice.transform.rotation = Quaternion.identity;
+		dice.GetComponent<Animator> ().SetTrigger ("Finished");
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioFinish);
 		#if !UNITY_EDITOR
@@ -119,6 +123,11 @@ public class InGame : MonoBehaviour {
 	void timesUp(){
 		clock.text = "00:00.0";
 		TimesUpSign.SetActive (true);
+		dice.enabled = false;
+		StartCoroutine (reloadScene ());
+		audio.pitch = 1f;
+		audio.PlayOneShot(audioBadMove);
+		dice.GetComponent<Animator> ().SetTrigger ("BadMove");
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("timesUp", new Dictionary<string, object> {
 			{ "scene", SceneManager.GetActiveScene ().name },

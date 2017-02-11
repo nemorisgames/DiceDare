@@ -15,13 +15,10 @@ public class Dice : MonoBehaviour {
 	ArrayList currentNumbers = new ArrayList();
 	Operation nextOperation;
 	InGame inGame;
-<<<<<<< HEAD
 	AudioSource audio;
 	public AudioClip audioRotation;
 	public AudioClip audioCubeChange;
-=======
 	Transform plane;
->>>>>>> 3b5fd4df94ab311f722c99d355db101ecbb2493f
 	public int steps = 0;
 	public Material backgroundMaterial;
 	public Texture backgroundSum;
@@ -48,6 +45,14 @@ public class Dice : MonoBehaviour {
 
 		Camera.main.backgroundColor = new Color32 (253, 130, 138, 0);
 		backgroundMaterial.mainTexture = backgroundSum;
+
+		StartCoroutine(applyRootMotion ());
+	}
+
+	IEnumerator applyRootMotion(){
+		yield return new WaitForSeconds (1.6f);
+		transform.rotation = Quaternion.identity;
+		GetComponent<Animator> ().applyRootMotion = true;
 	}
 
 	public IEnumerator turn(Direction d){
@@ -315,7 +320,7 @@ public class Dice : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (onMovement || inGame.rotating)
+		if (onMovement || inGame.rotating || Time.timeSinceLevelLoad < 2f)
 			return;
 		if (Input.GetKeyDown (KeyCode.W)) { StartCoroutine(turn (Direction.Up)); }
 		if (Input.GetKeyDown (KeyCode.S)) { StartCoroutine(turn (Direction.Down)); }
