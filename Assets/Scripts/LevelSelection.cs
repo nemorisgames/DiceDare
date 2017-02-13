@@ -17,7 +17,8 @@ public class LevelSelection : MonoBehaviour {
 	public UILabel record5;
 	// Use this for initialization
 	void Start () {
-		float recordSeconds = PlayerPrefs.GetFloat ("recordInGame1", -1f);
+		//PlayerPrefs.DeleteAll ();
+		float recordSeconds = PlayerPrefs.GetFloat ("recordScene1", -1f);
 		record2Button.isEnabled = false;
 		record3Button.isEnabled = false;
 		record4Button.isEnabled = false;
@@ -30,7 +31,7 @@ public class LevelSelection : MonoBehaviour {
 			record1.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 
-		recordSeconds = PlayerPrefs.GetFloat ("recordInGame2", -1f);
+		recordSeconds = PlayerPrefs.GetFloat ("recordScene2", -1f);
 		if (recordSeconds > 0) {
 			record3Button.isEnabled = true;
 			int minutes = (int)((60 - recordSeconds) / 60);
@@ -39,7 +40,7 @@ public class LevelSelection : MonoBehaviour {
 			record2.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 
-		recordSeconds = PlayerPrefs.GetFloat ("recordInGame3", -1f);
+		recordSeconds = PlayerPrefs.GetFloat ("recordScene3", -1f);
 		if (recordSeconds > 0) {
 			record4Button.isEnabled = true;
 			int minutes = (int)((60 - recordSeconds) / 60);
@@ -48,7 +49,7 @@ public class LevelSelection : MonoBehaviour {
 			record3.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 
-		recordSeconds = PlayerPrefs.GetFloat ("recordInGame4", -1f);
+		recordSeconds = PlayerPrefs.GetFloat ("recordScene4", -1f);
 		if (recordSeconds > 0) {
 			record5Button.isEnabled = true;
 			int minutes = (int)((90 - recordSeconds) / 60);
@@ -57,7 +58,7 @@ public class LevelSelection : MonoBehaviour {
 			record4.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 
-		recordSeconds = PlayerPrefs.GetFloat ("recordInGame5", -1f);
+		recordSeconds = PlayerPrefs.GetFloat ("recordScene5", -1f);
 		if (recordSeconds > 0) {
 			int minutes = (int)((120 - recordSeconds) / 60);
 			int seconds = (int)((120 - recordSeconds) % 60);

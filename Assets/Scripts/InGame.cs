@@ -46,7 +46,7 @@ public class InGame : MonoBehaviour {
 		foreach (TextMesh t in cellsText) {
 			texts.Add(t.GetComponent<Transform>());
 		}
-		recordSeconds = PlayerPrefs.GetFloat ("record"+SceneManager.GetActiveScene ().name, -1f);
+		recordSeconds = PlayerPrefs.GetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), -1f);
 		if (recordSeconds > 0) {
 			int minutes = (int)((secondsAvailable - recordSeconds) / 60);
 			int seconds = (int)((secondsAvailable - recordSeconds) % 60);
@@ -167,8 +167,8 @@ public class InGame : MonoBehaviour {
 		dice.GetComponent<Animator> ().SetTrigger ("Finished");
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioFinish);
-		if(secondsAvailable - Time.timeSinceLevelLoad > PlayerPrefs.GetFloat ("record", 0f))
-			PlayerPrefs.SetFloat ("record"+SceneManager.GetActiveScene ().name, secondsAvailable - Time.timeSinceLevelLoad);
+		if(secondsAvailable - Time.timeSinceLevelLoad > PlayerPrefs.GetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), 0f))
+			PlayerPrefs.SetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), secondsAvailable - Time.timeSinceLevelLoad);
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("finish", new Dictionary<string, object> {
 		{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
