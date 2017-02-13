@@ -17,13 +17,30 @@ public class InGame : MonoBehaviour {
 	public UILabel record;
 	float recordSeconds;
 	public int secondsAvailable = 65;
+	public UITexture tutorial;
+	public Texture2D[] imgTutorial;
 	AudioSource audio;
 	public AudioClip audioBadMove;
 	public AudioClip audioGoodMove;
 	public AudioClip audioFinish;
+
+	public GameObject cellNormal;
+	public GameObject cellBegin;
+	public GameObject cellEnd;
+
+	public GameObject cellSum;
+	public GameObject cellSubstraction;
+	public GameObject cellMultiplication;
+	public GameObject cellDivision;
+	public GameObject cellCW;
+	public GameObject cellCCW;
+
+
 	// Use this for initialization
 	void Start () {
 		dice = GameObject.FindGameObjectWithTag ("Dice").GetComponent<Dice> ();
+		componerEscena ();
+
 		cells = GameObject.Find ("Cells").transform;
 		cellsText = cells.GetComponentsInChildren<TextMesh> ();
 		foreach (TextMesh t in cellsText) {
@@ -39,12 +56,87 @@ public class InGame : MonoBehaviour {
 		audio = GetComponent<AudioSource> ();
 	}
 
+	public void componerEscena(){
+		string completo = "";
+		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
+		case "Scene1":completo = GlobalVariables.Scene1;break;
+		case "Scene2":completo = GlobalVariables.Scene2;break;
+		case "Scene3":completo = GlobalVariables.Scene3;break;
+		case "Scene4":completo = GlobalVariables.Scene4;break;
+		case "Scene5":completo = GlobalVariables.Scene5;break;
+		}
+		string[] aux = completo.Split(new char[1]{'$'});
+		string[] info = aux[0].Split(new char[1]{'|'});
+		string[] arreglo = aux[1].Split(new char[1]{'|'});
+		Vector3 posIni = new Vector3 (int.Parse (info [2]), 0f, -int.Parse (info [3]));
+		if(int.Parse (info[4]) > 0) tutorial.mainTexture = imgTutorial[int.Parse (info[4]) - 1];
+
+		string completoNumbers = "";
+		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
+		case "Scene1":completoNumbers = GlobalVariables.Scene1Numbers;break;
+		case "Scene2":completoNumbers = GlobalVariables.Scene2Numbers;break;
+		case "Scene3":completoNumbers = GlobalVariables.Scene3Numbers;break;
+		case "Scene4":completoNumbers = GlobalVariables.Scene4Numbers;break;
+		case "Scene5":completoNumbers = GlobalVariables.Scene5Numbers;break;
+		}
+		string[] auxNumbers = completoNumbers.Split(new char[1]{'$'});
+		string[] infoNumbers = auxNumbers[0].Split(new char[1]{'|'});
+		string[] arregloNumbers = auxNumbers[1].Split(new char[1]{'|'});
+		dice.transform.FindChild ("TextUp").GetComponent<TextMesh> ().text = "" + int.Parse (infoNumbers[0]);
+		dice.transform.FindChild ("TextLeft").GetComponent<TextMesh> ().text = "" + int.Parse (infoNumbers[1]);
+		dice.transform.FindChild ("TextForward").GetComponent<TextMesh> ().text = "" + int.Parse (infoNumbers[2]);
+		int indice = 0;
+		Transform rootCells = GameObject.Find ("Cells").transform;
+		for(int i = 0; i < int.Parse(info[0]); i++){
+			for (int j = 0; j < int.Parse (info [1]); j++) {
+				GameObject g = null;
+				switch (int.Parse (arreglo [indice])) {
+				case -2:
+					g = (GameObject)Instantiate (cellEnd, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					break;
+				case -1:
+					g = (GameObject)Instantiate (cellBegin, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					break;
+				case 1:
+				case 2:
+					g = (GameObject)Instantiate (cellNormal, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					break;
+				case 3:
+					g = (GameObject)Instantiate (cellSum, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					break;
+				case 4:
+					g = (GameObject)Instantiate (cellSubstraction, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					break;
+				case 5:
+					g = (GameObject)Instantiate (cellMultiplication, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					break;
+				case 6:
+					g = (GameObject)Instantiate (cellDivision, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					break;
+				case 7:
+					g = (GameObject)Instantiate (cellCW, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					break;
+				case 8:
+					g = (GameObject)Instantiate (cellCCW, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					break;
+				}
+				if (g != null) {
+					g.GetComponent<Cell> ().number = int.Parse (arregloNumbers [indice]);
+					g.transform.parent = rootCells;
+				}
+				indice++;
+			}
+		}
+
+
+	}
+
 	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
 		print ("calculating");
 		if (checkOperationResult (diceValueA, diceValueB) != cellValue) {
 			#if !UNITY_EDITOR
 			Analytics.CustomEvent ("badMove", new Dictionary<string, object> {
-				{ "scene", SceneManager.GetActiveScene ().name },
+			{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
 				{ "steps", dice.steps },
 				{ "place", dice.gameObject.transform.position},
 				{ "time", secondsAvailable - Time.timeSinceLevelLoad }
@@ -75,11 +167,11 @@ public class InGame : MonoBehaviour {
 		dice.GetComponent<Animator> ().SetTrigger ("Finished");
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioFinish);
-		#if !UNITY_EDITOR
-			if(secondsAvailable - Time.timeSinceLevelLoad > PlayerPrefs.GetFloat ("record", 0f))
+		if(secondsAvailable - Time.timeSinceLevelLoad > PlayerPrefs.GetFloat ("record", 0f))
 			PlayerPrefs.SetFloat ("record"+SceneManager.GetActiveScene ().name, secondsAvailable - Time.timeSinceLevelLoad);
+		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("finish", new Dictionary<string, object> {
-			{ "scene", SceneManager.GetActiveScene ().name },
+		{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
 			{ "steps", dice.steps },
 			{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});
@@ -130,7 +222,7 @@ public class InGame : MonoBehaviour {
 		dice.GetComponent<Animator> ().SetTrigger ("BadMove");
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("timesUp", new Dictionary<string, object> {
-			{ "scene", SceneManager.GetActiveScene ().name },
+		{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
 			{ "steps", dice.steps },
 			{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});

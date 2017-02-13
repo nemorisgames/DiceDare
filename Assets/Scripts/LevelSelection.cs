@@ -8,14 +8,20 @@ public class LevelSelection : MonoBehaviour {
 	public UIButton record1Button;
 	public UIButton record2Button;
 	public UIButton record3Button;
+	public UIButton record4Button;
+	public UIButton record5Button;
 	public UILabel record1;
 	public UILabel record2;
 	public UILabel record3;
+	public UILabel record4;
+	public UILabel record5;
 	// Use this for initialization
 	void Start () {
 		float recordSeconds = PlayerPrefs.GetFloat ("recordInGame1", -1f);
 		record2Button.isEnabled = false;
 		record3Button.isEnabled = false;
+		record4Button.isEnabled = false;
+		record5Button.isEnabled = false;
 		if (recordSeconds > 0) {
 			record2Button.isEnabled = true;
 			int minutes = (int)((60 - recordSeconds) / 60);
@@ -27,38 +33,46 @@ public class LevelSelection : MonoBehaviour {
 		recordSeconds = PlayerPrefs.GetFloat ("recordInGame2", -1f);
 		if (recordSeconds > 0) {
 			record3Button.isEnabled = true;
-			int minutes = (int)((90 - recordSeconds) / 60);
-			int seconds = (int)((90 - recordSeconds) % 60);
-			int dec = (int)(((90 - recordSeconds) % 60 * 10f) - ((int)((90 - recordSeconds) % 60) * 10));
+			int minutes = (int)((60 - recordSeconds) / 60);
+			int seconds = (int)((60 - recordSeconds) % 60);
+			int dec = (int)(((60 - recordSeconds) % 60 * 10f) - ((int)((60 - recordSeconds) % 60) * 10));
 			record2.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 
-		recordSeconds = PlayerPrefs.GetFloat ("recordInGame2", -1f);
+		recordSeconds = PlayerPrefs.GetFloat ("recordInGame3", -1f);
+		if (recordSeconds > 0) {
+			record4Button.isEnabled = true;
+			int minutes = (int)((60 - recordSeconds) / 60);
+			int seconds = (int)((60 - recordSeconds) % 60);
+			int dec = (int)(((60 - recordSeconds) % 60 * 10f) - ((int)((60 - recordSeconds) % 60) * 10));
+			record3.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
+		}
+
+		recordSeconds = PlayerPrefs.GetFloat ("recordInGame4", -1f);
+		if (recordSeconds > 0) {
+			record5Button.isEnabled = true;
+			int minutes = (int)((90 - recordSeconds) / 60);
+			int seconds = (int)((90 - recordSeconds) % 60);
+			int dec = (int)(((90 - recordSeconds) % 60 * 10f) - ((int)((90 - recordSeconds) % 60) * 10));
+			record4.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
+		}
+
+		recordSeconds = PlayerPrefs.GetFloat ("recordInGame5", -1f);
 		if (recordSeconds > 0) {
 			int minutes = (int)((120 - recordSeconds) / 60);
 			int seconds = (int)((120 - recordSeconds) % 60);
 			int dec = (int)(((120 - recordSeconds) % 60 * 10f) - ((int)((120 - recordSeconds) % 60) * 10));
-			record3.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
+			record5.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 	}
 
-	public void level1(){
+	public void launchLevel(string texto){
+		string num = texto.Split (new char[1]{ ' ' }) [1];
 		#if !UNITY_EDITOR
-		Analytics.CustomEvent ("enteringLevel1");
+		Analytics.CustomEvent ("enteringLevel" + num);
 		#endif
-		SceneManager.LoadScene ("InGame1");
-	}
-	public void level2(){
-		#if !UNITY_EDITOR
-		Analytics.CustomEvent ("enteringLevel2");
-		#endif
-		SceneManager.LoadScene ("InGame2");
-	}
-	public void level3(){
-		#if !UNITY_EDITOR
-		Analytics.CustomEvent ("enteringLevel3");
-		#endif
-		SceneManager.LoadScene ("InGame3");
+		PlayerPrefs.SetString ("scene", "Scene" + num);
+		SceneManager.LoadScene ("InGame");
 	}
 	
 	// Update is called once per frame
