@@ -25,44 +25,44 @@ public class LevelSelection : MonoBehaviour {
 		record5Button.isEnabled = false;
 		if (recordSeconds > 0) {
 			record2Button.isEnabled = true;
-			int minutes = (int)((60 - recordSeconds) / 60);
-			int seconds = (int)((60 - recordSeconds) % 60);
-			int dec = (int)(((60 - recordSeconds) % 60 * 10f) - ((int)((60 - recordSeconds) % 60) * 10));
+			int minutes = (int)((recordSeconds) / 60);
+			int seconds = (int)((recordSeconds) % 60);
+			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
 			record1.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 
 		recordSeconds = PlayerPrefs.GetFloat ("recordScene2", -1f);
 		if (recordSeconds > 0) {
 			record3Button.isEnabled = true;
-			int minutes = (int)((60 - recordSeconds) / 60);
-			int seconds = (int)((60 - recordSeconds) % 60);
-			int dec = (int)(((60 - recordSeconds) % 60 * 10f) - ((int)((60 - recordSeconds) % 60) * 10));
+			int minutes = (int)((recordSeconds) / 60);
+			int seconds = (int)((recordSeconds) % 60);
+			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
 			record2.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 
 		recordSeconds = PlayerPrefs.GetFloat ("recordScene3", -1f);
 		if (recordSeconds > 0) {
 			record4Button.isEnabled = true;
-			int minutes = (int)((60 - recordSeconds) / 60);
-			int seconds = (int)((60 - recordSeconds) % 60);
-			int dec = (int)(((60 - recordSeconds) % 60 * 10f) - ((int)((60 - recordSeconds) % 60) * 10));
+			int minutes = (int)((recordSeconds) / 60);
+			int seconds = (int)((recordSeconds) % 60);
+			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
 			record3.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 
 		recordSeconds = PlayerPrefs.GetFloat ("recordScene4", -1f);
 		if (recordSeconds > 0) {
 			record5Button.isEnabled = true;
-			int minutes = (int)((90 - recordSeconds) / 60);
-			int seconds = (int)((90 - recordSeconds) % 60);
-			int dec = (int)(((90 - recordSeconds) % 60 * 10f) - ((int)((90 - recordSeconds) % 60) * 10));
+			int minutes = (int)((recordSeconds) / 60);
+			int seconds = (int)((recordSeconds) % 60);
+			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
 			record4.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 
 		recordSeconds = PlayerPrefs.GetFloat ("recordScene5", -1f);
 		if (recordSeconds > 0) {
-			int minutes = (int)((120 - recordSeconds) / 60);
-			int seconds = (int)((120 - recordSeconds) % 60);
-			int dec = (int)(((120 - recordSeconds) % 60 * 10f) - ((int)((120 - recordSeconds) % 60) * 10));
+			int minutes = (int)((recordSeconds) / 60);
+			int seconds = (int)((recordSeconds) % 60);
+			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
 			record5.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 	}

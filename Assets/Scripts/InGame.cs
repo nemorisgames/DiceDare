@@ -18,6 +18,8 @@ public class InGame : MonoBehaviour {
 	public UILabel clock;
 	public UILabel record;
 	float recordSeconds;
+	float pauseTime = 0;
+	float pauseAux = 0;
 	public int secondsAvailable = 65;
 	public UITexture tutorial;
 	public Texture2D[] imgTutorial;
@@ -38,7 +40,7 @@ public class InGame : MonoBehaviour {
 	public GameObject cellCCW;
 
 	[HideInInspector]
-	public bool light = false;
+	public bool pause = false;
 
 	// Use this for initialization
 	void Start () {
@@ -81,6 +83,7 @@ public class InGame : MonoBehaviour {
 			tutorial.transform.FindChild ("Sprite").GetComponent<UISprite> ().alpha = 1f;
 			tutorial.transform.SendMessage ("PlayForward");
 			tutorial.transform.FindChild("Sprite").SendMessage ("PlayForward");
+			Pause ();
 		}
 		string completoNumbers = "";
 		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
@@ -156,8 +159,17 @@ public class InGame : MonoBehaviour {
 				indice++;
 			}
 		}
+	}
 
+	public void Pause(){
+		pauseAux = Time.timeSinceLevelLoad;
+		pause = true;
+	}
 
+	public void UnPause(){
+		pause = false;
+		pauseTime += Time.timeSinceLevelLoad - pauseAux;
+		pauseAux = 0;
 	}
 
 	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
@@ -190,13 +202,14 @@ public class InGame : MonoBehaviour {
 
 	//0: adyacente, 1: tres adyacentes, 2: todos
 	IEnumerator lightPath(int mode){
-		if (!light) {
-			light = true;
+		if (!pause) {
+			Pause ();
 			mode = Mathf.Clamp (mode, 0, 2);
 			switch (mode) {
 			case 0:
 				if (path.Count > 0)
 					StartCoroutine (cellArray [(int)((Vector2)path [0]).x, (int)((Vector2)path [0]).y].GetComponent<Cell> ().shine (2));
+				yield return new WaitForSeconds (1f);
 				break;
 			case 1:
 				int aux = Mathf.Min (3, path.Count);
@@ -212,7 +225,7 @@ public class InGame : MonoBehaviour {
 				}
 				break;
 			}
-			light = false;
+			UnPause ();
 		}
 	}
 
@@ -225,8 +238,9 @@ public class InGame : MonoBehaviour {
 		dice.GetComponent<Animator> ().SetTrigger ("Finished");
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioFinish);
-		if(secondsAvailable - Time.timeSinceLevelLoad > PlayerPrefs.GetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), 0f))
-			PlayerPrefs.SetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), secondsAvailable - Time.timeSinceLevelLoad);
+		if(Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), float.MaxValue))
+			PlayerPrefs.SetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
+		
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("finish", new Dictionary<string, object> {
 		{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
@@ -302,7 +316,7 @@ public class InGame : MonoBehaviour {
 		if (finishedSign.activeSelf || TimesUpSign.activeSelf) {
 			return;
 		}
-		if (secondsAvailable - Time.timeSinceLevelLoad <= 0) {
+		/*if (secondsAvailable - Time.timeSinceLevelLoad <= 0) {
 			timesUp ();
 		}
 		else {
@@ -310,7 +324,14 @@ public class InGame : MonoBehaviour {
 			int seconds = (int)((secondsAvailable - Time.timeSinceLevelLoad) % 60);
 			int dec = (int)(((secondsAvailable - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((secondsAvailable - Time.timeSinceLevelLoad) % 60) * 10));
 			clock.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
+		}*/
+		if (!pause) {
+			int minutes = (int)((Time.timeSinceLevelLoad - pauseTime) / 60);
+			int seconds = (int)((Time.timeSinceLevelLoad - pauseTime) % 60);
+			int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 10f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 10));
+			clock.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
 		}
+
 		//test
 		if(Input.GetKeyDown(KeyCode.Q)){
 			StartCoroutine (lightPath (1));
@@ -322,6 +343,10 @@ public class InGame : MonoBehaviour {
 
 		if(Input.GetKeyDown(KeyCode.R)){
 			StartCoroutine (lightPath (2));
+		}
+
+		if(Input.GetKeyDown(KeyCode.P)){
+			PlayerPrefs.DeleteAll ();
 		}
 	}
 }
