@@ -18,7 +18,8 @@ public class InGame : MonoBehaviour {
 	public UILabel clock;
 	public UILabel record;
 	float recordSeconds;
-	float pauseTime = 0;
+	[HideInInspector]
+	public float pauseTime = 0;
 	float pauseAux = 0;
 	public int secondsAvailable = 65;
 	public UITexture tutorial;
@@ -111,10 +112,11 @@ public class InGame : MonoBehaviour {
 		string completoPath = "";
 		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
 		case "Scene1":completoPath = GlobalVariables.Scene1Path;break;
-		/*case "Scene2":completoPath = GlobalVariables.Scene2Path;break;
+		case "Scene2":completoPath = GlobalVariables.Scene2Path;break;
 		case "Scene3":completoPath = GlobalVariables.Scene3Path;break;
-		case "Scene4":completoPath = GlobalVariables.Scene4Path;break;
-		case "Scene5":completoPath = GlobalVariables.Scene5Path;break;*/
+		//case "Scene4":completoPath = GlobalVariables.Scene4Path;break;
+		//case "Scene5":completoPath = GlobalVariables.Scene5Path;break;*/
+		default:completoPath = GlobalVariables.Scene1Path;break;
 		}
 		string [] auxPath = completoPath.Split (new char[1]{ '|' });
 		string[] auxCoord = new string[2];

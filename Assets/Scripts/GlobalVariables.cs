@@ -50,6 +50,8 @@ public static class GlobalVariables {
 												"  30|   0| -27|  13| -14|   5|   0|   0|   0|   0|" +
 												"  14|   6|  14|   2|   9|   6|   0|   0|   0|   0|";
 
+	public static string Scene2Path = "1,7|1,6|1,5|1,4|2,4|3,4|4,4|4,3|4,2";
+
 	//filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4    5    6    7    8   
 	public static string Scene3 = "7|9|7|1|0$   0|   0|   0|   0|   0|   1|   1|   1|   1|" +
 											"   0|   0|   1|   1|   1|   1|   1|  -1|   1|" +
@@ -67,6 +69,8 @@ public static class GlobalVariables {
 												"  -4|   3|  -4|  -7|   5|   0|   0|   0|   0|" +
 												"   0|  30|  18|  12|   3|   0|   0|   0|   0|" +
 												"   6|  14|   9|  15|   0|   0|   0|   0|   0|";
+
+	public static string Scene3Path = "1,6|1,5|2,5|2,4|2,3|3,3|4,3|5,3|5,2|5,1";
 
 	//filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4    5    6    7    8 
 	public static string Scene4 = "8|9|5|1|0$   0|   0|   0|   0|   1|   1|   1|   0|   0|" +
