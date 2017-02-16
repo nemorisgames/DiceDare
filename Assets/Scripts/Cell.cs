@@ -23,6 +23,36 @@ public class Cell : MonoBehaviour {
 		}
 		stateCell = s;
 	}
+
+	public IEnumerator shine(){
+		Material m = GetComponent<Renderer> ().material;
+		for (int i = 0; i < 30; i++) {
+			yield return new WaitForSeconds (0.01f);
+			m.SetColor ("_EmissionColor", Color.yellow * i * 0.01f);
+		}
+		for (int i = 30; i > 0; i--) {
+			yield return new WaitForSeconds (0.01f);
+			m.SetColor ("_EmissionColor", Color.yellow * i * 0.01f);
+		}
+
+		for (int i = 0; i < 30; i++) {
+			yield return new WaitForSeconds (0.01f);
+			m.SetColor ("_EmissionColor", Color.yellow * i * 0.01f);
+		}
+		for (int i = 30; i > 0; i--) {
+			yield return new WaitForSeconds (0.01f);
+			m.SetColor ("_EmissionColor", Color.yellow * i * 0.01f);
+		}
+
+		for (int i = 0; i < 30; i++) {
+			yield return new WaitForSeconds (0.01f);
+			m.SetColor ("_EmissionColor", Color.yellow * i * 0.01f);
+		}
+		for (int i = 30; i > 0; i--) {
+			yield return new WaitForSeconds (0.01f);
+			m.SetColor ("_EmissionColor", Color.yellow * i * 0.01f);
+		}
+	}
 	
 	// Update is called once per frame
 	void Update () {

@@ -54,6 +54,8 @@ public class InGame : MonoBehaviour {
 			record.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 		audio = GetComponent<AudioSource> ();
+
+		//StartCoroutine (cellsText[0].transform.parent.GetComponent<Cell>().shine ());
 	}
 
 	public void componerEscena(){
