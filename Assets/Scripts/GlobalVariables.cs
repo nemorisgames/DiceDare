@@ -96,6 +96,7 @@ public static class GlobalVariables {
 											"   1|   1|   1|   1|   1|   3|   1|" +
 											"   1|   7|   4|   7|   1|   1|   1|" +
 											"   1|   1|   1|   1|   1|  -2|   1|";
+	public static string Scene4Path = "2,5|3,5|3,6|3,7|4,7|5,7|5,6|5,5|6,5|6,4|6,3|6,2|5,2|5,1";
 
 	//filas|columnas|posxini|posyini|imgtut	 	  //0    1    2    3    4    5    6
 	public static string Scene5Numbers = "1|1|1$   23|  10|   1|   5|   5|   4|   4|" +
@@ -105,4 +106,5 @@ public static class GlobalVariables {
 												"  27|   2|  -9| -10|   1|   4|  22|" +
 												" 209| -14| -12|  -2|  -6|  -9|  25|" +
 												"  29|  29| 210|  31|  25|   0|  25|";
+	public static string Scene5Path = "1,4|2,4|2,3|2,2|1,2|1,1|2,1|3,2|4,2|4,1|5,1|5,2|5,3|4,3|4,4|3,4|3,5|4,5|5,4|5,5";
 }
