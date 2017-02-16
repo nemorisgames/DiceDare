@@ -8,8 +8,10 @@ using UnityEngine.Analytics;
 public class InGame : MonoBehaviour {
 	Dice dice;
 	Transform cells;
+	GameObject [,] cellArray;
 	public TextMesh [] cellsText;
 	ArrayList texts = new ArrayList();
+	ArrayList path = new ArrayList();
 	public bool rotating = false;
 	public GameObject finishedSign;
 	public GameObject TimesUpSign;
@@ -55,7 +57,8 @@ public class InGame : MonoBehaviour {
 		}
 		audio = GetComponent<AudioSource> ();
 
-		//StartCoroutine (cellsText[0].transform.parent.GetComponent<Cell>().shine ());
+		//StartCoroutine (cellArray[1,4].GetComponent<Cell>().shine ());
+		//StartCoroutine (lightPath (2));
 	}
 
 	public void componerEscena(){
@@ -81,6 +84,22 @@ public class InGame : MonoBehaviour {
 		case "Scene4":completoNumbers = GlobalVariables.Scene4Numbers;break;
 		case "Scene5":completoNumbers = GlobalVariables.Scene5Numbers;break;
 		}
+		string completoPath = "";
+		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
+		case "Scene1":completoPath = GlobalVariables.Scene1Path;break;
+		/*case "Scene2":completoPath = GlobalVariables.Scene2Path;break;
+		case "Scene3":completoPath = GlobalVariables.Scene3Path;break;
+		case "Scene4":completoPath = GlobalVariables.Scene4Path;break;
+		case "Scene5":completoPath = GlobalVariables.Scene5Path;break;*/
+		}
+		string [] auxPath = completoPath.Split (new char[1]{ '|' });
+		string[] auxCoord = new string[2];
+		for (int i = 0; i < auxPath.Length; i++) {
+			auxCoord = auxPath [i].Split (new char[1]{ ',' });
+			Vector2 coord = new Vector2 (float.Parse (auxCoord [0]), float.Parse (auxCoord [1]));
+			path.Add (coord);
+		};
+
 		string[] auxNumbers = completoNumbers.Split(new char[1]{'$'});
 		string[] infoNumbers = auxNumbers[0].Split(new char[1]{'|'});
 		string[] arregloNumbers = auxNumbers[1].Split(new char[1]{'|'});
@@ -89,6 +108,7 @@ public class InGame : MonoBehaviour {
 		dice.transform.FindChild ("TextForward").GetComponent<TextMesh> ().text = "" + int.Parse (infoNumbers[2]);
 		int indice = 0;
 		Transform rootCells = GameObject.Find ("Cells").transform;
+		cellArray = new GameObject[int.Parse(info[0]),int.Parse(info[1])];
 		for(int i = 0; i < int.Parse(info[0]); i++){
 			for (int j = 0; j < int.Parse (info [1]); j++) {
 				GameObject g = null;
@@ -125,6 +145,7 @@ public class InGame : MonoBehaviour {
 				if (g != null) {
 					g.GetComponent<Cell> ().number = int.Parse (arregloNumbers [indice]);
 					g.transform.parent = rootCells;
+					cellArray [i,j] = g;
 				}
 				indice++;
 			}
@@ -152,12 +173,35 @@ public class InGame : MonoBehaviour {
 		} else {
 			audio.pitch = Random.Range (0.95f, 1.05f);
 			audio.PlayOneShot(audioGoodMove);
+			path.RemoveAt (0);
 		}
 	}
 
 	IEnumerator reloadScene(){
 		yield return new WaitForSeconds (1f);
 		SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
+	}
+
+	//0: adyacente, 1: tres adyacentes, 2: todos
+	IEnumerator lightPath(int mode){
+		mode = Mathf.Clamp (mode, 0, 2);
+		switch (mode) {
+		case 0:
+			StartCoroutine (cellArray[(int)((Vector2)path[0]).x,(int)((Vector2)path[0]).y].GetComponent<Cell>().shine ());
+			break;
+		case 1:
+			for (int i = 0; i < 3; i++) {
+				StartCoroutine (cellArray[(int)((Vector2)path[i]).x,(int)((Vector2)path[i]).y].GetComponent<Cell>().shine ());
+				yield return new WaitForSeconds (1f);
+			}
+			break;
+		case 2:
+			foreach (Vector2 v in path) {
+				StartCoroutine (cellArray[(int)v.x,(int)v.y].GetComponent<Cell>().shine ());
+				yield return new WaitForSeconds (3f);
+			}
+			break;
+		}
 	}
 
 	public void finishGame(){
@@ -254,6 +298,15 @@ public class InGame : MonoBehaviour {
 			int seconds = (int)((secondsAvailable - Time.timeSinceLevelLoad) % 60);
 			int dec = (int)(((secondsAvailable - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((secondsAvailable - Time.timeSinceLevelLoad) % 60) * 10));
 			clock.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
+		}
+
+		//test
+		if(Input.GetKeyDown(KeyCode.Q)){
+			StartCoroutine (lightPath (0));
+		}
+
+		if(Input.GetKeyDown(KeyCode.R)){
+			StartCoroutine (lightPath (1));
 		}
 	}
 }
