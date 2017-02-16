@@ -114,9 +114,8 @@ public class InGame : MonoBehaviour {
 		case "Scene1":completoPath = GlobalVariables.Scene1Path;break;
 		case "Scene2":completoPath = GlobalVariables.Scene2Path;break;
 		case "Scene3":completoPath = GlobalVariables.Scene3Path;break;
-		//case "Scene4":completoPath = GlobalVariables.Scene4Path;break;
-		//case "Scene5":completoPath = GlobalVariables.Scene5Path;break;*/
-		default:completoPath = GlobalVariables.Scene1Path;break;
+		case "Scene4":completoPath = GlobalVariables.Scene4Path;break;
+		case "Scene5":completoPath = GlobalVariables.Scene5Path;break;
 		}
 		string [] auxPath = completoPath.Split (new char[1]{ '|' });
 		string[] auxCoord = new string[2];
