@@ -40,8 +40,13 @@ public class InGame : MonoBehaviour {
 	[HideInInspector]
 	public bool light = false;
 
+	int timesDied = 0;
+	public GameObject hintButton;
+	int hintsAvailable = 3;
+
 	// Use this for initialization
 	void Start () {
+		timesDied = PlayerPrefs.GetInt ("timesDied", 0);
 		dice = GameObject.FindGameObjectWithTag ("Dice").GetComponent<Dice> ();
 		componerEscena ();
 
@@ -58,9 +63,19 @@ public class InGame : MonoBehaviour {
 			record.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 		audio = GetComponent<AudioSource> ();
-
+		print ("timesDied " + timesDied);
+		if (timesDied >= 5)
+			StartCoroutine(lightPath (2));
 		//StartCoroutine (cellArray[1,2].GetComponent<Cell>().shine ());
 		//StartCoroutine (lightPath (2));
+	}
+
+	public void hint(){
+		StartCoroutine (lightPath (1));
+		hintsAvailable--;
+		if (hintsAvailable <= 0) {
+			hintButton.SetActive (false);
+		}
 	}
 
 	public void componerEscena(){
@@ -185,11 +200,13 @@ public class InGame : MonoBehaviour {
 
 	IEnumerator reloadScene(){
 		yield return new WaitForSeconds (1f);
+		timesDied++;
+		PlayerPrefs.SetInt ("timesDied", timesDied);
 		SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 	}
 
 	//0: adyacente, 1: tres adyacentes, 2: todos
-	IEnumerator lightPath(int mode){
+	public IEnumerator lightPath(int mode){
 		if (!light) {
 			light = true;
 			mode = Mathf.Clamp (mode, 0, 2);
