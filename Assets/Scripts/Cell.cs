@@ -26,6 +26,7 @@ public class Cell : MonoBehaviour {
 
 	public IEnumerator shine(){
 		Material m = GetComponent<Renderer> ().material;
+		Color32 colorDefault = m.GetColor ("_EmissionColor");
 		for (int i = 0; i < 30; i++) {
 			yield return new WaitForSeconds (0.01f);
 			m.SetColor ("_EmissionColor", Color.yellow * i * 0.01f);
@@ -52,6 +53,7 @@ public class Cell : MonoBehaviour {
 			yield return new WaitForSeconds (0.01f);
 			m.SetColor ("_EmissionColor", Color.yellow * i * 0.01f);
 		}
+		m.SetColor ("_EmissionColor", colorDefault);
 	}
 	
 	// Update is called once per frame

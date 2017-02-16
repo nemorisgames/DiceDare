@@ -57,7 +57,7 @@ public class InGame : MonoBehaviour {
 		}
 		audio = GetComponent<AudioSource> ();
 
-		//StartCoroutine (cellArray[1,4].GetComponent<Cell>().shine ());
+		//StartCoroutine (cellArray[1,2].GetComponent<Cell>().shine ());
 		//StartCoroutine (lightPath (2));
 	}
 
@@ -74,8 +74,12 @@ public class InGame : MonoBehaviour {
 		string[] info = aux[0].Split(new char[1]{'|'});
 		string[] arreglo = aux[1].Split(new char[1]{'|'});
 		Vector3 posIni = new Vector3 (int.Parse (info [2]), 0f, -int.Parse (info [3]));
-		if(int.Parse (info[4]) > 0) tutorial.mainTexture = imgTutorial[int.Parse (info[4]) - 1];
-
+		if (int.Parse (info [4]) > 0) { 
+			tutorial.mainTexture = imgTutorial [int.Parse (info [4]) - 1];
+			tutorial.transform.FindChild ("Sprite").GetComponent<UISprite> ().alpha = 1f;
+			tutorial.transform.SendMessage ("PlayForward");
+			tutorial.transform.FindChild("Sprite").SendMessage ("PlayForward");
+		}
 		string completoNumbers = "";
 		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
 		case "Scene1":completoNumbers = GlobalVariables.Scene1Numbers;break;
