@@ -18,6 +18,7 @@ public class LevelSelection : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		//PlayerPrefs.DeleteAll ();
+		PlayerPrefs.SetInt ("timesDied", 0);
 		float recordSeconds = PlayerPrefs.GetFloat ("recordScene1", -1f);
 		record2Button.isEnabled = false;
 		record3Button.isEnabled = false;

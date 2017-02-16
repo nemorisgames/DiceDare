@@ -25,6 +25,7 @@ public class Dice : MonoBehaviour {
 	public Texture backgroundSubstraction;
 	public Texture backgroundMultiplication;
 	public Texture backgroundDivision;
+	float timeLastMove;
 	// Use this for initialization
 	void Start () {
 		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
@@ -47,6 +48,8 @@ public class Dice : MonoBehaviour {
 		backgroundMaterial.mainTexture = backgroundSum;
 
 		StartCoroutine(applyRootMotion ());
+
+		timeLastMove = Time.timeSinceLevelLoad;
 	}
 
 	IEnumerator applyRootMotion(){
@@ -205,6 +208,7 @@ public class Dice : MonoBehaviour {
 		audio.pitch = Random.Range (0.95f, 1.05f);
 		audio.PlayOneShot(audioRotation);
 		steps++;
+		timeLastMove = Time.timeSinceLevelLoad;
 	}
 
 	void OnTriggerStay(Collider c){
@@ -322,6 +326,9 @@ public class Dice : MonoBehaviour {
 	void Update () {
 		if (onMovement || inGame.rotating || Time.timeSinceLevelLoad < 2f || inGame.pause)
 			return;
+		if(timeLastMove <= Time.timeSinceLevelLoad - 10f){
+			StartCoroutine (inGame.lightPath (0));
+		}
 		if (Input.GetKeyDown (KeyCode.W)) { StartCoroutine(turn (Direction.Up)); }
 		if (Input.GetKeyDown (KeyCode.S)) { StartCoroutine(turn (Direction.Down)); }
 		if (Input.GetKeyDown (KeyCode.A)) { StartCoroutine(turn (Direction.Left)); }
