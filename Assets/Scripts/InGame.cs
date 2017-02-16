@@ -59,9 +59,9 @@ public class InGame : MonoBehaviour {
 		}
 		recordSeconds = PlayerPrefs.GetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), -1f);
 		if (recordSeconds > 0) {
-			int minutes = (int)((secondsAvailable - recordSeconds) / 60);
-			int seconds = (int)((secondsAvailable - recordSeconds) % 60);
-			int dec = (int)(((secondsAvailable - recordSeconds) % 60 * 10f) - ((int)((secondsAvailable - recordSeconds) % 60) * 10));
+			int minutes = (int)((recordSeconds) / 60);
+			int seconds = (int)((recordSeconds) % 60);
+			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
 			record.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 		}
 		audio = GetComponent<AudioSource> ();
