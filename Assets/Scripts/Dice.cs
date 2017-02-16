@@ -320,7 +320,7 @@ public class Dice : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (onMovement || inGame.rotating || Time.timeSinceLevelLoad < 2f)
+		if (onMovement || inGame.rotating || Time.timeSinceLevelLoad < 2f || inGame.light)
 			return;
 		if (Input.GetKeyDown (KeyCode.W)) { StartCoroutine(turn (Direction.Up)); }
 		if (Input.GetKeyDown (KeyCode.S)) { StartCoroutine(turn (Direction.Down)); }

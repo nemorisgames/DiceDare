@@ -37,6 +37,8 @@ public class InGame : MonoBehaviour {
 	public GameObject cellCW;
 	public GameObject cellCCW;
 
+	[HideInInspector]
+	public bool light = false;
 
 	// Use this for initialization
 	void Start () {
@@ -184,23 +186,29 @@ public class InGame : MonoBehaviour {
 
 	//0: adyacente, 1: tres adyacentes, 2: todos
 	IEnumerator lightPath(int mode){
-		mode = Mathf.Clamp (mode, 0, 2);
-		switch (mode) {
-		case 0:
-			StartCoroutine (cellArray[(int)((Vector2)path[0]).x,(int)((Vector2)path[0]).y].GetComponent<Cell>().shine ());
-			break;
-		case 1:
-			for (int i = 0; i < 3; i++) {
-				StartCoroutine (cellArray[(int)((Vector2)path[i]).x,(int)((Vector2)path[i]).y].GetComponent<Cell>().shine ());
-				yield return new WaitForSeconds (1f);
+		if (!light) {
+			light = true;
+			mode = Mathf.Clamp (mode, 0, 2);
+			switch (mode) {
+			case 0:
+				if (path.Count > 0)
+					StartCoroutine (cellArray [(int)((Vector2)path [0]).x, (int)((Vector2)path [0]).y].GetComponent<Cell> ().shine (2));
+				break;
+			case 1:
+				int aux = Mathf.Min (3, path.Count);
+				for (int i = 0; i < aux; i++) {
+					StartCoroutine (cellArray [(int)((Vector2)path [i]).x, (int)((Vector2)path [i]).y].GetComponent<Cell> ().shine (1));
+					yield return new WaitForSeconds (1f/2);
+				}
+				break;
+			case 2:
+				foreach (Vector2 v in path) {
+					StartCoroutine (cellArray [(int)v.x, (int)v.y].GetComponent<Cell> ().shine (1));
+					yield return new WaitForSeconds (1f/2);
+				}
+				break;
 			}
-			break;
-		case 2:
-			foreach (Vector2 v in path) {
-				StartCoroutine (cellArray[(int)v.x,(int)v.y].GetComponent<Cell>().shine ());
-				yield return new WaitForSeconds (3f);
-			}
-			break;
+			light = false;
 		}
 	}
 
@@ -299,14 +307,17 @@ public class InGame : MonoBehaviour {
 			int dec = (int)(((secondsAvailable - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((secondsAvailable - Time.timeSinceLevelLoad) % 60) * 10));
 			clock.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
 		}
-
 		//test
 		if(Input.GetKeyDown(KeyCode.Q)){
+			StartCoroutine (lightPath (1));
+		}
+
+		if(Input.GetKeyDown(KeyCode.E)){
 			StartCoroutine (lightPath (0));
 		}
 
 		if(Input.GetKeyDown(KeyCode.R)){
-			StartCoroutine (lightPath (1));
+			StartCoroutine (lightPath (2));
 		}
 	}
 }
