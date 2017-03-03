@@ -268,7 +268,7 @@ public class InGame : MonoBehaviour {
 			#endif
 	}
 
-	public int checkOperationResult(int diceValueA, int diceValueB){
+	public int checkOperationResult(int diceValueB, int diceValueA){
 		int res = 0;
 		print(dice.currentOperation);
 		switch (dice.currentOperation) {

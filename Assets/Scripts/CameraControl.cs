@@ -11,7 +11,7 @@ public class CameraControl : MonoBehaviour {
 	void Start () {
 		obj = GameObject.FindGameObjectWithTag ("Dice").transform;
 		dice = obj.GetComponent<Dice> ();
-		initialPosition = transform.position + obj.position;
+		initialPosition = transform.position + obj.position - 2f * Vector3.up;
 	}
 
 	/*void rotateCamera(bool CW){
