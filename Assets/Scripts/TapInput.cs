@@ -15,7 +15,7 @@ public class TapInput : MonoBehaviour {
 
 
 	void OnMouseDown(){
-		if (!dice.onMovement && !inGame.rotating && dice.enabled && Time.timeSinceLevelLoad > 2f) {
+		if (!dice.onMovement && !inGame.rotating && dice.enabled && Time.timeSinceLevelLoad > 2f && !inGame.pause) {
 			if (transform.name == "U") {
 				StartCoroutine (dice.turn (Dice.Direction.Up));
 			} else if (transform.name == "D") {

@@ -98,7 +98,7 @@ public class InGame : MonoBehaviour {
 			tutorial.mainTexture = imgTutorial [int.Parse (info [4]) - 1];
 			tutorial.transform.FindChild ("Sprite").GetComponent<UISprite> ().alpha = 1f;
 			tutorial.transform.SendMessage ("PlayForward");
-			tutorial.transform.FindChild("Sprite").SendMessage ("PlayForward");
+			tutorial.transform.FindChild ("Sprite").SendMessage ("PlayForward");
 			Pause ();
 		}
 		string completoNumbers = "";
