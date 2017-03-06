@@ -15,7 +15,9 @@ public class InGame : MonoBehaviour {
 	public bool rotating = false;
 	public GameObject finishedSign;
 	public GameObject TimesUpSign;
-	public UILabel clock;
+	public UILabel clockMinutes;
+	public UILabel clockSeconds;
+	public UILabel clockDecimals;
 	public UILabel record;
 	float recordSeconds;
 	[HideInInspector]
@@ -139,32 +141,32 @@ public class InGame : MonoBehaviour {
 				GameObject g = null;
 				switch (int.Parse (arreglo [indice])) {
 				case -2:
-					g = (GameObject)Instantiate (cellEnd, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					g = (GameObject)Instantiate (cellEnd, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
 					break;
 				case -1:
-					g = (GameObject)Instantiate (cellBegin, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					g = (GameObject)Instantiate (cellBegin, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
 					break;
 				case 1:
 				case 2:
-					g = (GameObject)Instantiate (cellNormal, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					g = (GameObject)Instantiate (cellNormal, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
 					break;
 				case 3:
-					g = (GameObject)Instantiate (cellSum, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					g = (GameObject)Instantiate (cellSum, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
 					break;
 				case 4:
-					g = (GameObject)Instantiate (cellSubstraction, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					g = (GameObject)Instantiate (cellSubstraction, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
 					break;
 				case 5:
-					g = (GameObject)Instantiate (cellMultiplication, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					g = (GameObject)Instantiate (cellMultiplication, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
 					break;
 				case 6:
-					g = (GameObject)Instantiate (cellDivision, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					g = (GameObject)Instantiate (cellDivision, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
 					break;
 				case 7:
-					g = (GameObject)Instantiate (cellCW, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					g = (GameObject)Instantiate (cellCW, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
 					break;
 				case 8:
-					g = (GameObject)Instantiate (cellCCW, new Vector3 (j, 0.05f, -i) - posIni, Quaternion.identity);
+					g = (GameObject)Instantiate (cellCCW, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
 					break;
 				}
 				if (g != null) {
@@ -303,7 +305,9 @@ public class InGame : MonoBehaviour {
 	}
 
 	void timesUp(){
-		clock.text = "00:00.0";
+		clockMinutes.text = "00";
+		clockSeconds.text = "00";
+		clockDecimals.text = "00";
 		TimesUpSign.SetActive (true);
 		dice.enabled = false;
 		StartCoroutine (reloadScene ());
@@ -346,8 +350,10 @@ public class InGame : MonoBehaviour {
 		if (!pause) {
 			int minutes = (int)((Time.timeSinceLevelLoad - pauseTime) / 60);
 			int seconds = (int)((Time.timeSinceLevelLoad - pauseTime) % 60);
-			int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 10f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 10));
-			clock.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
+			int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 100f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 100));
+			clockMinutes.text = (minutes < 10 ? "0" : "") + minutes;
+			clockSeconds.text = (seconds < 10 ? "0" : "") + seconds;
+			clockDecimals.text = (dec < 10 ? "0" : "") + dec;
 		}
 
 		//test

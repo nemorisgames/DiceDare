@@ -30,11 +30,11 @@ public class Cell : MonoBehaviour {
 		for (int j = 0; j < num; j++) {
 			for (int i = 0; i < 15; i++) {
 				yield return new WaitForSeconds (0.01f);
-				m.SetColor ("_EmissionColor", Color.yellow * i * 0.02f);
+				m.SetColor ("_EmissionColor", Color.yellow * i * 0.1f);
 			}
 			for (int i = 15; i > 0; i--) {
 				yield return new WaitForSeconds (0.01f);
-				m.SetColor ("_EmissionColor", Color.yellow * i * 0.02f);
+				m.SetColor ("_EmissionColor", Color.yellow * i * 0.1f);
 			}
 		}
 		m.SetColor ("_EmissionColor", colorDefault);
