@@ -29,6 +29,7 @@ public class Dice : MonoBehaviour {
 	float hintTime = 10f;
 	LineRenderer line;
 	public Material[] materialsLine;
+	public UITexture backgroundTexture;
 	// Use this for initialization
 	void Start () {
 		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
@@ -259,22 +260,22 @@ public class Dice : MonoBehaviour {
 				switch (c.tag) {
 				case "Sum":
 					changeOperation (Operation.Sum);
-					Camera.main.backgroundColor = new Color32 (253, 130, 138, 0);
+					backgroundTexture.color = new Color (226f/255f, 54f/255f, 78f/255f, 255f/255f);
 					backgroundMaterial.mainTexture = backgroundSum;
 					break;
 				case "Substraction":
 					changeOperation (Operation.Rest);
-					Camera.main.backgroundColor = new Color32 (101, 193, 255, 0);
+					backgroundTexture.color = new Color (27f/255f, 88f/255f, 149f/255f, 255f/255f);
 					backgroundMaterial.mainTexture = backgroundSubstraction;
 					break;
 				case "Multiplication":
 					changeOperation (Operation.Mult);
-					Camera.main.backgroundColor = new Color32(255, 168, 255, 0);
+					backgroundTexture.color = new Color (116f/255f, 20f/255f, 106f/255f, 255f/255f);
 					backgroundMaterial.mainTexture = backgroundMultiplication;
 					break;
 				case "Division":
 					changeOperation (Operation.Div);
-					Camera.main.backgroundColor = new Color32(144, 255, 139, 0);
+					backgroundTexture.color = new Color (20f/255f, 116f/255f, 104f/255f, 255f/255f);
 					backgroundMaterial.mainTexture = backgroundDivision;
 					break;
 				}

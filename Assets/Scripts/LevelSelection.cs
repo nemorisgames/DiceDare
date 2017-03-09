@@ -69,7 +69,7 @@ public class LevelSelection : MonoBehaviour {
 	}
 
 	public void launchLevel(string texto){
-		string num = texto.Split (new char[1]{ ' ' }) [1];
+		string num = texto.Split (new char[1]{ 'L' }) [2];
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("enteringLevel" + num);
 		#endif
