@@ -27,7 +27,7 @@ public static class GlobalVariables {
 	2*
 	3*
 	//rotacion
-	4
+	4*
 	5
 	6*
 	7*
@@ -390,7 +390,7 @@ public static class GlobalVariables {
 												"   0| 361| 318|   0|   0|  43|  26|  17|  34|" +
 												" 123| 315| 196| 122|  74|  48|  41|   0|   0|" +
 												" 130| 234| 236|   0|   0|   0|   0|   0|   0|";
-
+	
 	public static string Scene4Path = "2,5|3,5|3,6|3,7|4,7|5,7|5,6|5,5|6,5|6,4|6,3|6,2|5,2|5,1";
 
 	//11

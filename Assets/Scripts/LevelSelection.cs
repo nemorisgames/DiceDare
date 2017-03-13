@@ -5,66 +5,25 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
 
 public class LevelSelection : MonoBehaviour {
-	public UIButton record1Button;
-	public UIButton record2Button;
-	public UIButton record3Button;
-	public UIButton record4Button;
-	public UIButton record5Button;
-	public UILabel record1;
-	public UILabel record2;
-	public UILabel record3;
-	public UILabel record4;
-	public UILabel record5;
+	
+	public UIButton[] recordButtons;
 	// Use this for initialization
 	void Start () {
 		//PlayerPrefs.DeleteAll ();
 		PlayerPrefs.SetInt ("timesDied", 0);
-		float recordSeconds = PlayerPrefs.GetFloat ("recordScene1", -1f);
-		record2Button.isEnabled = false;
-		record3Button.isEnabled = false;
-		record4Button.isEnabled = false;
-		record5Button.isEnabled = false;
-		if (recordSeconds > 0) {
-			record2Button.isEnabled = true;
-			int minutes = (int)((recordSeconds) / 60);
-			int seconds = (int)((recordSeconds) % 60);
-			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
-			record1.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
-		}
 
-		recordSeconds = PlayerPrefs.GetFloat ("recordScene2", -1f);
-		if (recordSeconds > 0) {
-			record3Button.isEnabled = true;
-			int minutes = (int)((recordSeconds) / 60);
-			int seconds = (int)((recordSeconds) % 60);
-			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
-			record2.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
-		}
+		//for(int i = 1; i < recordButtons.Length; i++)
+		//	recordButtons[i].isEnabled = false;
 
-		recordSeconds = PlayerPrefs.GetFloat ("recordScene3", -1f);
-		if (recordSeconds > 0) {
-			record4Button.isEnabled = true;
-			int minutes = (int)((recordSeconds) / 60);
-			int seconds = (int)((recordSeconds) % 60);
-			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
-			record3.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
-		}
-
-		recordSeconds = PlayerPrefs.GetFloat ("recordScene4", -1f);
-		if (recordSeconds > 0) {
-			record5Button.isEnabled = true;
-			int minutes = (int)((recordSeconds) / 60);
-			int seconds = (int)((recordSeconds) % 60);
-			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
-			record4.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
-		}
-
-		recordSeconds = PlayerPrefs.GetFloat ("recordScene5", -1f);
-		if (recordSeconds > 0) {
-			int minutes = (int)((recordSeconds) / 60);
-			int seconds = (int)((recordSeconds) % 60);
-			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
-			record5.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
+		for (int i = 0; i < recordButtons.Length; i++) {
+			float recordSeconds = PlayerPrefs.GetFloat ("recordScene" + (i + 1), -1f);
+			recordButtons[i].transform.FindChild("record").gameObject.SetActive(recordSeconds > 0);
+			if (recordSeconds > 0) {
+				int minutes = (int)((recordSeconds) / 60);
+				int seconds = (int)((recordSeconds) % 60);
+				int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
+				recordButtons[i].transform.FindChild("record").GetComponent<UILabel>().text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
+			}
 		}
 	}
 
