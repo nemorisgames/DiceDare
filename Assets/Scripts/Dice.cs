@@ -221,7 +221,7 @@ public class Dice : MonoBehaviour {
 		if (c.CompareTag ("Untagged") || c.CompareTag ("Sum") || c.CompareTag ("Substraction") || c.CompareTag ("Multiplication") || c.CompareTag ("Division")) {
 			if (onMovement || calculated)
 				return;
-			print (c.GetComponent<Cell> ().stateCell);
+			//print (c.GetComponent<Cell> ().stateCell);
 			//comprueba que el calculo este bien
 			//acepto para up y right, en ese caso comprueba que la celda haya sido pisada
 			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.Normal) {
@@ -277,6 +277,10 @@ public class Dice : MonoBehaviour {
 					changeOperation (Operation.Div);
 					backgroundTexture.color = new Color (20f/255f, 116f/255f, 104f/255f, 255f/255f);
 					backgroundMaterial.mainTexture = backgroundDivision;
+					break;
+
+				case "Death":
+					inGame.badMove ();
 					break;
 				}
 				if (nextOperation != currentOperation) {

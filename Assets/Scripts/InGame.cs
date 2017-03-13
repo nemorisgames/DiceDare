@@ -41,6 +41,7 @@ public class InGame : MonoBehaviour {
 	public GameObject cellDivision;
 	public GameObject cellCW;
 	public GameObject cellCCW;
+	public GameObject cellDeath;
 
 	[HideInInspector]
 	public bool pause = false;
@@ -168,6 +169,9 @@ public class InGame : MonoBehaviour {
 				case 8:
 					g = (GameObject)Instantiate (cellCCW, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
 					break;
+				case 9:
+					g = (GameObject)Instantiate (cellDeath, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
+					break;
 				}
 				if (g != null) {
 					g.GetComponent<Cell> ().number = int.Parse (arregloNumbers [indice]);
@@ -193,24 +197,28 @@ public class InGame : MonoBehaviour {
 	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
 		print ("calculating");
 		if (checkOperationResult (diceValueA, diceValueB) != cellValue) {
-			#if !UNITY_EDITOR
-			Analytics.CustomEvent ("badMove", new Dictionary<string, object> {
-			{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
-				{ "steps", dice.steps },
-				{ "place", dice.gameObject.transform.position},
-				{ "time", secondsAvailable - Time.timeSinceLevelLoad }
-			});
-			#endif
-			dice.enabled = false;
-			StartCoroutine (reloadScene ());
-			audio.pitch = 1f;
-			audio.PlayOneShot(audioBadMove);
-			dice.GetComponent<Animator> ().SetTrigger ("BadMove");
+			badMove ();
 		} else {
 			audio.pitch = Random.Range (0.95f, 1.05f);
 			audio.PlayOneShot(audioGoodMove);
 			path.RemoveAt (0);
 		}
+	}
+
+	public void badMove(){
+		#if !UNITY_EDITOR
+		Analytics.CustomEvent ("badMove", new Dictionary<string, object> {
+		{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
+		{ "steps", dice.steps },
+		{ "place", dice.gameObject.transform.position},
+		{ "time", secondsAvailable - Time.timeSinceLevelLoad }
+		});
+		#endif
+		dice.enabled = false;
+		StartCoroutine (reloadScene ());
+		audio.pitch = 1f;
+		audio.PlayOneShot(audioBadMove);
+		dice.GetComponent<Animator> ().SetTrigger ("BadMove");
 	}
 
 	IEnumerator reloadScene(){
@@ -252,7 +260,7 @@ public class InGame : MonoBehaviour {
 	public void finishGame(){
 		print("Finished");
 		dice.enabled = false;
-		finishedSign.SetActive (true);
+		finishedSign.SendMessage ("PlayForward");
 		dice.enabled = false;
 		dice.transform.rotation = Quaternion.identity;
 		dice.GetComponent<Animator> ().SetTrigger ("Finished");
@@ -329,6 +337,22 @@ public class InGame : MonoBehaviour {
 
 	public void exit(){
 		SceneManager.LoadScene ("LevelSelection");
+	}
+
+
+	public void next(){
+		string texto = PlayerPrefs.GetString ("scene", "Scene1");
+		string num = texto.Split (new char[1]{ 'e' }) [2];
+		#if !UNITY_EDITOR
+		Analytics.CustomEvent ("enteringLevel" + num);
+		#endif
+		int level = (int.Parse (num) + 1);
+		if (level > GlobalVariables.nLevels)
+			exit ();
+		else {
+			PlayerPrefs.SetString ("scene", "Scene" + level);
+			SceneManager.LoadScene ("InGame");
+		}
 	}
 	
 	// Update is called once per frame
