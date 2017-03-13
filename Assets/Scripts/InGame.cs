@@ -50,6 +50,8 @@ public class InGame : MonoBehaviour {
 	public GameObject hintButton;
 	int hintsAvailable = 3;
 
+	public bool testing = false;
+
 	// Use this for initialization
 	void Start () {
 		timesDied = PlayerPrefs.GetInt ("timesDied", 0);
@@ -428,20 +430,22 @@ public class InGame : MonoBehaviour {
 		}
 
 		//test
-		if(Input.GetKeyDown(KeyCode.Q)){
-			StartCoroutine (lightPath (1));
-		}
+		if (testing) {
+			if (Input.GetKeyDown (KeyCode.Q)) {
+				StartCoroutine (lightPath (1));
+			}
 
-		if(Input.GetKeyDown(KeyCode.E)){
-			StartCoroutine (lightPath (0));
-		}
+			if (Input.GetKeyDown (KeyCode.E)) {
+				StartCoroutine (lightPath (0));
+			}
 
-		if(Input.GetKeyDown(KeyCode.R)){
-			StartCoroutine (lightPath (2));
-		}
+			if (Input.GetKeyDown (KeyCode.R)) {
+				StartCoroutine (lightPath (2));
+			}
 
-		if(Input.GetKeyDown(KeyCode.P)){
-			PlayerPrefs.DeleteAll ();
+			if (Input.GetKeyDown (KeyCode.P)) {
+				PlayerPrefs.DeleteAll ();
+			}
 		}
 	}
 }
