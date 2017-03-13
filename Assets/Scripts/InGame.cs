@@ -43,7 +43,7 @@ public class InGame : MonoBehaviour {
 	public GameObject cellCCW;
 	public GameObject cellDeath;
 
-	[HideInInspector]
+	//[HideInInspector]
 	public bool pause = false;
 
 	int timesDied = 0;
@@ -111,6 +111,21 @@ public class InGame : MonoBehaviour {
 		case "Scene3":completoNumbers = GlobalVariables.Scene3Numbers;break;
 		case "Scene4":completoNumbers = GlobalVariables.Scene4Numbers;break;
 		case "Scene5":completoNumbers = GlobalVariables.Scene5Numbers;break;
+		case "Scene6":completoNumbers = GlobalVariables.Scene6Numbers;break;
+		case "Scene7":completoNumbers = GlobalVariables.Scene7Numbers;break;
+		case "Scene8":completoNumbers = GlobalVariables.Scene8Numbers;break;
+		case "Scene9":completoNumbers = GlobalVariables.Scene9Numbers;break;
+		case "Scene10":completoNumbers = GlobalVariables.Scene10Numbers;break;
+		case "Scene11":completoNumbers = GlobalVariables.Scene11Numbers;break;
+		case "Scene12":completoNumbers = GlobalVariables.Scene12Numbers;break;
+		case "Scene13":completoNumbers = GlobalVariables.Scene13Numbers;break;
+		case "Scene14":completoNumbers = GlobalVariables.Scene14Numbers;break;
+		case "Scene15":completoNumbers = GlobalVariables.Scene15Numbers;break;
+		case "Scene16":completoNumbers = GlobalVariables.Scene16Numbers;break;
+		case "Scene17":completoNumbers = GlobalVariables.Scene17Numbers;break;
+		case "Scene18":completoNumbers = GlobalVariables.Scene18Numbers;break;
+		case "Scene19":completoNumbers = GlobalVariables.Scene19Numbers;break;
+		case "Scene20":completoNumbers = GlobalVariables.Scene20Numbers;break;
 		}
 		string completoPath = "";
 		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
@@ -119,6 +134,21 @@ public class InGame : MonoBehaviour {
 		case "Scene3":completoPath = GlobalVariables.Scene3Path;break;
 		case "Scene4":completoPath = GlobalVariables.Scene4Path;break;
 		case "Scene5":completoPath = GlobalVariables.Scene5Path;break;
+		case "Scene6":completoPath = GlobalVariables.Scene6Path;break;
+		case "Scene7":completoPath = GlobalVariables.Scene7Path;break;
+		case "Scene8":completoPath = GlobalVariables.Scene8Path;break;
+		case "Scene9":completoPath = GlobalVariables.Scene9Path;break;
+		case "Scene10":completoPath = GlobalVariables.Scene10Path;break;
+		case "Scene11":completoPath = GlobalVariables.Scene11Path;break;
+		case "Scene12":completoPath = GlobalVariables.Scene12Path;break;
+		case "Scene13":completoPath = GlobalVariables.Scene13Path;break;
+		case "Scene14":completoPath = GlobalVariables.Scene14Path;break;
+		case "Scene15":completoPath = GlobalVariables.Scene15Path;break;
+		case "Scene16":completoPath = GlobalVariables.Scene16Path;break;
+		case "Scene17":completoPath = GlobalVariables.Scene17Path;break;
+		case "Scene18":completoPath = GlobalVariables.Scene18Path;break;
+		case "Scene19":completoPath = GlobalVariables.Scene19Path;break;
+		case "Scene20":completoPath = GlobalVariables.Scene20Path;break;
 		}
 		string [] auxPath = completoPath.Split (new char[1]{ '|' });
 		string[] auxCoord = new string[2];
@@ -260,6 +290,7 @@ public class InGame : MonoBehaviour {
 	public void finishGame(){
 		print("Finished");
 		dice.enabled = false;
+		finishedSign.SetActive (true);
 		finishedSign.SendMessage ("PlayForward");
 		dice.enabled = false;
 		dice.transform.rotation = Quaternion.identity;
@@ -350,6 +381,7 @@ public class InGame : MonoBehaviour {
 		if (level > GlobalVariables.nLevels)
 			exit ();
 		else {
+			PlayerPrefs.SetInt ("timesDied", 0);
 			PlayerPrefs.SetString ("scene", "Scene" + level);
 			SceneManager.LoadScene ("InGame");
 		}
