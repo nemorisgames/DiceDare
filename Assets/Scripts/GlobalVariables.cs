@@ -314,7 +314,7 @@ public static class GlobalVariables {
 												"  23|  45|  70|  44|  26|  18| -10|   0|   0|" +
 												"  34|  28|  36|   0|   0|   0|   0|   0|   0|";
 
-	public static string Scene11Path = "2,5|3,5|3,6|3,7|4,7|5,7|5,6|5,5|6,5|6,4|6,3|6,2|5,2|5,1";*/
+	public static string Scene11Path = "2,5|3,5|3,6|3,7|4,7|5,7|5,6|5,5|6,5|6,4|6,3|6,2|5,2|5,1";
 
 	//12
 	//filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4    5    6   

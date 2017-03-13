@@ -92,6 +92,21 @@ public class InGame : MonoBehaviour {
 		case "Scene3":completo = GlobalVariables.Scene3;break;
 		case "Scene4":completo = GlobalVariables.Scene4;break;
 		case "Scene5":completo = GlobalVariables.Scene5;break;
+		case "Scene6":completo = GlobalVariables.Scene6;break;
+		case "Scene7":completo = GlobalVariables.Scene7;break;
+		case "Scene8":completo = GlobalVariables.Scene8;break;
+		case "Scene9":completo = GlobalVariables.Scene9;break;
+		case "Scene10":completo = GlobalVariables.Scene10;break;
+		case "Scene11":completo = GlobalVariables.Scene11;break;
+		case "Scene12":completo = GlobalVariables.Scene12;break;
+		case "Scene13":completo = GlobalVariables.Scene13;break;
+		case "Scene14":completo = GlobalVariables.Scene14;break;
+		case "Scene15":completo = GlobalVariables.Scene15;break;
+		case "Scene16":completo = GlobalVariables.Scene16;break;
+		case "Scene17":completo = GlobalVariables.Scene17;break;
+		case "Scene18":completo = GlobalVariables.Scene18;break;
+		case "Scene19":completo = GlobalVariables.Scene19;break;
+		case "Scene20":completo = GlobalVariables.Scene20;break;
 		}
 		string[] aux = completo.Split(new char[1]{'$'});
 		string[] info = aux[0].Split(new char[1]{'|'});
