@@ -239,30 +239,25 @@ public static class GlobalVariables {
 
 
 	//9
-	//PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER
-	//filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4    5    6    7    8 
-	public static string Scene9 = "8|9|5|1|0$   0|   0|   0|   0|   1|   1|   1|   0|   0|" +
-		"   0|   0|   0|   0|   1|  -1|   1|   0|   0|" +
-		"   0|   0|   0|   0|   1|   1|   1|   1|   1|" +
-		"   1|   1|   1|   0|   1|   7|   1|   1|   1|" +
-		"   1|   1|   1|   0|   1|   1|   1|   1|   1|" +
-		"  -2|   1|   1|   9|   9|   1|   1|   8|   1|" +
-		"   1|   1|   8|   1|   1|   3|   1|   9|   0|" +
-		"   1|   1|   1|   9|   9|   9|   9|   0|   0|";
+	//filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4    5    6    
+	public static string Scene9 = "7|7|5|1|0$   0|   9|   9|   9|   9|   9|   0|"+
+											"   9|   1|   1|   1|   4|  -1|   9|" +
+											"   9|   1|   7|   1|   1|   4|   9|" +
+											"   9|   1|   3|   0|   3|   1|   9|" +
+											"   9|   1|   1|   1|   1|   1|   9|" +
+											"   9|   1|   1|   4|   1|  -2|   9|" +
+											"   0|   9|   9|   9|   9|   9|   0|";
 
-	//filas|columnas|posxini|posyini|imgtut	      //0    1    2    3    4    5    6    7    8  
-	public static string Scene9Numbers = "1|1|1$    0|   0|   0|   0|   5|   4|   2|   0|   0|" +
-		"   0|   0|   0|   0|   2|   0|   1|   0|   0|" +
-		"   0|   0|   0|   0|   4|   2|   5|  -1|   5|" +
-		" 233| 234| 266|   0|   4|   3|   5|   8|   9|" +
-		" 223| 340| 358|   0|   5|   3|  34|   9|  16|" +
-		"   0| 361| 318|   0|   0|  43|  26|  17|  34|" +
-		" 123| 315| 196| 122|  74|  48|  41|   0|   0|" +
-		" 130| 234| 236|   0|   0|   0|   0|   0|   0|";
+	//dadoUp/dadoLeft/dadoForward				  //0    1    2    3    4    5    6
+	public static string Scene9Numbers = "10|3|7$   0|   0|   0|   0|   0|   0|   0|" +
+												"   0|  35|  14|   3|  13|   0|   0|" +
+												"   0|  16| -17|  -4|  14|  16|   0|" +
+												"   0|  15| -13|   0|   5|  24|   0|" +
+												"   0|  12| -30|   8|  19|  32|   0|" +
+												"   0|  20| -43| -40|   3| 256|   0|" +
+												"   0|   0|   0|   0|   0|   0|   0|";
 
-	public static string Scene9Path = "2,5|3,5|3,6|3,7|4,7|5,7|5,6|5,5|6,5|6,4|6,3|6,2|5,2|5,1";
-
-	//PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER
+	public static string Scene9Path = "1,4|1,3|2,3|2,2|3,2|4,2|5,2|5,3|5,4";
 
 
 	//10
