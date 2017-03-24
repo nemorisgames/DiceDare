@@ -72,7 +72,7 @@ public static class GlobalVariables {
 	//2
 
 	//filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4    5    6  
-	public static string Scene2 = "6|7|5|1|1$	1|   1|   1|   1|   1|   1|   1|" +
+	public static string Scene2 = "6|7|5|1|0$	1|   1|   1|   1|   1|   1|   1|" +
 											"   1|   2|   2|   2|   2|  -1|   1|" +
 											"   1|   2|   1|   1|   1|   1|   1|" +
 											"   1|   2|   1|   0|   0|   0|   0|" +
@@ -156,15 +156,15 @@ public static class GlobalVariables {
 				                              "   1|   1|   1|   1|   1|   1|   0|   0|   0|";
 
 	//filas|columnas|posxini|posyini|imgtut	      //0    1    2    3    4    5    6    7    8  
-	public static string Scene5Numbers = "1|1|1$    0|   0|   0|   0|   5|   4|   2|   0|   0|" +
-												"   0|   0|   0|  74| 117| 191|   1|   0|   0|" +
-												"   0|   0|  43|  69|   4| 308| 377|  -1|   5|" +
-												" 233|  31|  26|   0|   4|   3| 568|   8|   9|" +
-												" 223|  26|  17|   0|   0|   3|  34|   9|  16|" +
-												"   0| 361|   9|   0|   2|  43|  26|  17|  34|" +
-												" 123|  13|   8|   5|   3|  48|  41|   0|   0|" +
-												" 123| 315| 196| 122|  74|  48|  41|   0|   0|" +
-												" 130| 234| 236|   0|   0|   0|   0|   0|   0|";
+	public static string Scene5Numbers = "1|1|1$   53|  42|  78|  60| 109| 132| 230| 319| 334|" +
+												"  39|  40|  65|  74| 117| 191| 243| 311| 451|" +
+												"  36|  41|  43|  69| 190| 308| 377| 223| 235|" +
+												"  32|  31|  26|   6|   4| 341| 568| 521| 431|" +
+												"  34|  26|  17|   1|   0|   3|  34| 523| 443|" +
+												"  12|  16|   9|  12|   2|   3|   0|   0|   0|" +
+												"  33|  13|   8|   5|   3|   4|   0|   0|   0|" +
+												"  23|  21|  10|  12|   7|   8|   0|   0|   0|" +
+												"  13|  14|  15|  15|   9|   3|   0|   0|   0|";
 
 	public static string Scene5Path = "5,4|6,4|6,3|6,2|5,2|4,2|3,2|2,2|2,3|1,3|1,4|1,5|2,5|2,6|3,6|4,6";
 
@@ -260,7 +260,6 @@ public static class GlobalVariables {
 
 
 	//10
-	//PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER
 	//filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4    5    6    7    8 
 	public static string Scene10 = "6|6|4|0|0$  0|   0|   0|   9|  -1|   1|" +
 											"   0|   9|   9|   9|   1|   7|" +
@@ -278,8 +277,6 @@ public static class GlobalVariables {
 												"   0|   3|   5|   0|   0|   4|";
 
 	public static string Scene10Path = "2,5|3,5|3,5|3,5|3,5|3,5|3,5|3,5|3,5|3,5|3,5|3,5";
-
-	//PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER PLACEHOLDER
 
 
 	//11
@@ -333,7 +330,7 @@ public static class GlobalVariables {
 	//13
 
 	//filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4    5    6  
-	public static string Scene13 = "7|7|5|1|0$   0|   0|   0|   0|   0|   1|   0|" +
+	public static string Scene13 = "7|7|5|1|3$   0|   0|   0|   0|   0|   1|   0|" +
 											"   0|   0|   0|   0|   1|  -1|   1|" +
 											"   0|   0|   0|   0|   1|   1|   1|" +
 											"   0|   0|   0|   0|   1|   1|   1|" +
@@ -438,7 +435,7 @@ public static class GlobalVariables {
 	//17
 
 	//filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4    5    6
-	public static string Scene17 = "9|9|7|1|0$  0|   9|   9|   9|   9|   9|   9|   9|   0|"+
+	public static string Scene17 = "9|9|7|1|4$  0|   9|   9|   9|   9|   9|   9|   9|   0|"+
 											"   9|   1|   1|   6|   1|   1|   5|  -1|   9|" +
 											"   9|   1|   5|   1|   1|   9|   9|   9|   0|" +
 											"   9|   1|   7|   3|   1|   9|   0|   0|   0|" +
