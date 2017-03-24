@@ -315,6 +315,7 @@ public class Dice : MonoBehaviour {
 				}
 			}
 			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.EndCell) {
+				c.GetComponent<Cell> ().stateCell = Cell.StateCell.Passed;
 				inGame.finishGame ();
 			}
 			calculated = true;

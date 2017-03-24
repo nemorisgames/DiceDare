@@ -306,9 +306,11 @@ public class InGame : MonoBehaviour {
 
 	public void finishGame(){
 		print("Finished");
+		Pause ();
+		StartCoroutine (dropCells ());
 		dice.enabled = false;
-		finishedSign.SetActive (true);
-		finishedSign.SendMessage ("PlayForward");
+		//finishedSign.SetActive (true);
+		//finishedSign.SendMessage ("PlayForward");
 		dice.enabled = false;
 		dice.transform.rotation = Quaternion.identity;
 		dice.GetComponent<Animator> ().SetTrigger ("Finished");
@@ -358,6 +360,30 @@ public class InGame : MonoBehaviour {
 			}
 		}
 		rotating = false;
+	}
+
+	IEnumerator dropCells(){
+		Cell[] cellsAux = GameObject.Find ("Cells").transform.GetComponentsInChildren<Cell> ();
+		for (int i = 0; i < cellsAux.Length; i++) {
+			if (cellsAux [i].stateCell != Cell.StateCell.Passed) {
+				float rnd = Random.Range (0.01f, 0.08f);
+				yield return new WaitForSeconds (rnd);
+				Rigidbody rb = cellsAux[i].GetComponent<Rigidbody> ();
+				rb.isKinematic = false;
+				rb.useGravity = true;
+				StartCoroutine (disableCell (cellsAux[i]));
+				if (i == cellsAux.Length - 1) {
+					yield return new WaitForSeconds (1.4f);
+					finishedSign.SetActive (true);
+					finishedSign.SendMessage ("PlayForward");
+				}
+			}
+		}
+	}
+
+	IEnumerator disableCell(Cell c){
+		yield return new WaitForSeconds (2f);
+		c.gameObject.SetActive (false);
 	}
 
 	void timesUp(){
