@@ -318,7 +318,6 @@ public class InGame : MonoBehaviour {
 		audio.PlayOneShot(audioFinish);
 		if(Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), float.MaxValue))
 			PlayerPrefs.SetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
-		
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("finish", new Dictionary<string, object> {
 		{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
@@ -410,6 +409,11 @@ public class InGame : MonoBehaviour {
 	}
 
 	public void exit(){
+		string texto = PlayerPrefs.GetString ("scene", "Scene1");
+		string num = texto.Split (new char[1]{ 'e' }) [2];
+		int level = (int.Parse (num) + 1);
+		if(level < GlobalVariables.nLevels)
+			PlayerPrefs.SetInt ("unlockedScene" + level, 1);
 		SceneManager.LoadScene ("LevelSelection");
 	}
 
@@ -425,6 +429,7 @@ public class InGame : MonoBehaviour {
 			exit ();
 		else {
 			PlayerPrefs.SetInt ("timesDied", 0);
+			PlayerPrefs.SetInt ("unlockedScene" + level, 1);
 			PlayerPrefs.SetString ("scene", "Scene" + level);
 			SceneManager.LoadScene ("InGame");
 		}

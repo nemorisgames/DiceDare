@@ -9,11 +9,17 @@ public class LevelSelection : MonoBehaviour {
 	public UIButton[] recordButtons;
 	// Use this for initialization
 	void Start () {
+		if (PlayerPrefs.GetInt ("unlockedScene1") != 1) {
+			PlayerPrefs.SetInt ("unlockedScene1", 1);
+		}
 		//PlayerPrefs.DeleteAll ();
 		PlayerPrefs.SetInt ("timesDied", 0);
-
-		//for(int i = 1; i < recordButtons.Length; i++)
-		//	recordButtons[i].isEnabled = false;
+		for (int i = 0; i < recordButtons.Length; i++) {
+			if (PlayerPrefs.GetInt ("unlockedScene" + (i+1),0) != 1) {
+				recordButtons[i].isEnabled = false;
+			}
+		}
+		//	
 
 		for (int i = 0; i < recordButtons.Length; i++) {
 			float recordSeconds = PlayerPrefs.GetFloat ("recordScene" + (i + 1), -1f);
@@ -40,6 +46,19 @@ public class LevelSelection : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			Application.Quit ();
+		}
+
+		if (Input.GetKeyDown (KeyCode.P)) {
+			PlayerPrefs.DeleteAll ();
+			Debug.Log ("delet this");
+			SceneManager.LoadScene ("LevelSelection");
+		}
+
+		if (Input.GetKeyDown (KeyCode.U)) {
+			for (int i = 0; i < recordButtons.Length; i++) {
+				PlayerPrefs.SetInt ("unlockedScene" + (i+1), 1);
+			}
+			SceneManager.LoadScene ("LevelSelection");
 		}
 	}
 }
