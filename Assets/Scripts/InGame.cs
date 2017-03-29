@@ -19,6 +19,7 @@ public class InGame : MonoBehaviour {
 	public UILabel clockSeconds;
 	public UILabel clockDecimals;
 	public UILabel record;
+	public UILabel levelNum;
 	float recordSeconds;
 	[HideInInspector]
 	public float pauseTime = 0;
@@ -54,6 +55,12 @@ public class InGame : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+		string texto = PlayerPrefs.GetString ("scene", "Scene1");
+		string num = texto.Split (new char[1]{ 'e' }) [2];
+		int level = (int.Parse (num));
+		levelNum.text = "LEVEL " + level.ToString ();
+
 		timesDied = PlayerPrefs.GetInt ("timesDied", 0);
 		dice = GameObject.FindGameObjectWithTag ("Dice").GetComponent<Dice> ();
 		componerEscena ();

@@ -7,12 +7,22 @@ using UnityEngine.Analytics;
 public class LevelSelection : MonoBehaviour {
 	
 	public UIButton[] recordButtons;
+	public UIPanel panel;
 	// Use this for initialization
 	void Start () {
 		if (PlayerPrefs.GetInt ("unlockedScene1") != 1) {
 			PlayerPrefs.SetInt ("unlockedScene1", 1);
 		}
 		//PlayerPrefs.DeleteAll ();
+
+		if (PlayerPrefs.GetString ("scene") != "") {
+			string texto = PlayerPrefs.GetString ("scene", "Scene1");
+			string num = texto.Split (new char[1]{ 'e' }) [2];
+			int level = (int.Parse (num) - 1);
+			panel.transform.localPosition = new Vector3 (-400 * level, panel.transform.position.y, panel.transform.position.z);
+			panel.clipOffset = new Vector2 (400 * level, panel.clipOffset.y);
+		}
+
 		PlayerPrefs.SetInt ("timesDied", 0);
 		for (int i = 0; i < recordButtons.Length; i++) {
 			if (PlayerPrefs.GetInt ("unlockedScene" + (i+1),0) != 1) {
