@@ -10,6 +10,7 @@ public class LevelSelection : MonoBehaviour {
 	public UIPanel panel;
 	// Use this for initialization
 	void Start () {
+		PlayerPrefs.SetInt ("continueBGM", 0);
 		if (PlayerPrefs.GetInt ("unlockedScene1") != 1) {
 			PlayerPrefs.SetInt ("unlockedScene1", 1);
 		}

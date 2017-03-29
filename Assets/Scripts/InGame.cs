@@ -44,6 +44,9 @@ public class InGame : MonoBehaviour {
 	public GameObject cellCCW;
 	public GameObject cellDeath;
 
+	public AudioSource bgm_go;
+	public static AudioSource bgm;
+
 	//[HideInInspector]
 	public bool pause = false;
 
@@ -55,7 +58,13 @@ public class InGame : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
+		if (bgm == null) {
+			bgm = bgm_go;
+			DontDestroyOnLoad (bgm);
+			bgm.Play ();
+		}/* else {
+			DestroyImmediate (bgm_go);
+		}*/
 		string texto = PlayerPrefs.GetString ("scene", "Scene1");
 		string num = texto.Split (new char[1]{ 'e' }) [2];
 		int level = (int.Parse (num));
@@ -421,6 +430,7 @@ public class InGame : MonoBehaviour {
 		int level = (int.Parse (num) + 1);
 		if(level < GlobalVariables.nLevels)
 			PlayerPrefs.SetInt ("unlockedScene" + level, 1);
+		Destroy (bgm.gameObject);
 		SceneManager.LoadScene ("LevelSelection");
 	}
 
@@ -444,8 +454,10 @@ public class InGame : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if(Input.GetKeyDown(KeyCode.Escape))
+		if (Input.GetKeyDown (KeyCode.Escape)) {
+			Destroy (bgm.gameObject);
 			SceneManager.LoadScene ("LevelSelection");
+		}
 		if (finishedSign.activeSelf || TimesUpSign.activeSelf) {
 			return;
 		}
