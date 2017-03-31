@@ -29,7 +29,7 @@ public class InGame : MonoBehaviour {
 	public Texture2D[] imgTutorial;
 	AudioSource audio;
 	public AudioClip audioBadMove;
-	public AudioClip audioGoodMove;
+	public AudioClip [] audioGoodMove;
 	public AudioClip audioFinish;
 
 	public GameObject cellNormal;
@@ -55,6 +55,7 @@ public class InGame : MonoBehaviour {
 	int hintsAvailable = 3;
 
 	public bool testing = false;
+	float diceSize;
 
 	// Use this for initialization
 	void Start () {
@@ -92,6 +93,7 @@ public class InGame : MonoBehaviour {
 			StartCoroutine(lightPath (2));
 		//StartCoroutine (cellArray[1,2].GetComponent<Cell>().shine ());
 		//StartCoroutine (lightPath (2));
+		diceSize = dice.GetComponent<MeshRenderer>().bounds.size.y/2;
 	}
 
 	public void hint(){
@@ -263,8 +265,10 @@ public class InGame : MonoBehaviour {
 			badMove ();
 		} else {
 			audio.pitch = Random.Range (0.95f, 1.05f);
-			audio.PlayOneShot(audioGoodMove);
+			int aux = Random.Range (0, audioGoodMove.Length-1);
+			audio.PlayOneShot(audioGoodMove[aux]);
 			path.RemoveAt (0);
+			Instantiate (dice.goodMove, new Vector3(dice.transform.position.x,dice.transform.position.y + diceSize, dice.transform.position.z), Quaternion.LookRotation(Vector3.up));
 		}
 	}
 

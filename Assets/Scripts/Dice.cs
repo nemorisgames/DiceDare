@@ -30,6 +30,7 @@ public class Dice : MonoBehaviour {
 	LineRenderer line;
 	public Material[] materialsLine;
 	public UITexture backgroundTexture;
+	public ParticleSystem goodMove;
 	// Use this for initialization
 	void Start () {
 		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
