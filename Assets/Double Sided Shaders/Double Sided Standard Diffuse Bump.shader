@@ -1,18 +1,11 @@
-// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
-// Shader created with Shader Forge v1.26 
-// Shader Forge (c) Neat Corporation / Joachim Holmer - http://www.acegikmo.com/shaderforge/
-// Note: Manually altering this data may prevent you from opening it in Shader Forge
-/*SF_DATA;ver:1.26;sub:START;pass:START;ps:flbk:,iptp:0,cusa:False,bamd:0,lico:1,lgpr:1,limd:1,spmd:1,trmd:0,grmd:0,uamb:True,mssp:True,bkdf:True,hqlp:True,rprd:True,enco:False,rmgx:True,rpth:0,vtps:0,hqsc:True,nrmq:1,nrsp:0,vomd:0,spxs:False,tesm:0,olmd:1,culm:2,bsrc:0,bdst:1,dpts:2,wrdp:True,dith:2,rfrpo:True,rfrpn:Refraction,coma:15,ufog:True,aust:False,igpj:False,qofs:0,qpre:1,rntp:1,fgom:False,fgoc:False,fgod:False,fgor:False,fgmd:0,fgcr:0.5,fgcg:0.5,fgcb:0.5,fgca:1,fgde:0.01,fgrn:0,fgrf:300,stcl:False,stva:128,stmr:255,stmw:255,stcp:6,stps:0,stfa:0,stfz:0,ofsf:0,ofsu:0,f2p0:False,fnsp:False,fnfb:False;n:type:ShaderForge.SFN_Final,id:9123,x:32987,y:32692,varname:node_9123,prsc:2|diff-8824-OUT,spec-9061-OUT,gloss-1274-OUT,normal-7195-OUT;n:type:ShaderForge.SFN_Tex2d,id:1035,x:31947,y:32167,ptovrint:False,ptlb:Diffuse Map (Spec A),ptin:_DiffuseMapSpecA,varname:node_1035,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,ntxv:0,isnm:False;n:type:ShaderForge.SFN_Multiply,id:8824,x:32239,y:32276,varname:node_8824,prsc:2|A-1035-RGB,B-9096-RGB;n:type:ShaderForge.SFN_Color,id:9096,x:31969,y:32390,ptovrint:False,ptlb:Diffuse color,ptin:_Diffusecolor,varname:node_9096,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,c1:1,c2:1,c3:1,c4:1;n:type:ShaderForge.SFN_Tex2d,id:3318,x:32490,y:33317,ptovrint:False,ptlb:Normal Map,ptin:_NormalMap,varname:node_3318,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,ntxv:3,isnm:True;n:type:ShaderForge.SFN_Slider,id:3024,x:32349,y:33499,ptovrint:False,ptlb:Normal Intensity,ptin:_NormalIntensity,varname:node_3024,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,min:0,cur:1,max:2;n:type:ShaderForge.SFN_Color,id:3546,x:32404,y:32761,ptovrint:False,ptlb:Spec color,ptin:_Speccolor,varname:node_3546,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,c1:1,c2:1,c3:1,c4:1;n:type:ShaderForge.SFN_Multiply,id:1450,x:32404,y:32610,varname:node_1450,prsc:2|A-1035-A,B-7242-OUT;n:type:ShaderForge.SFN_Multiply,id:9061,x:32577,y:32641,varname:node_9061,prsc:2|A-1450-OUT,B-3546-RGB;n:type:ShaderForge.SFN_Slider,id:7242,x:32032,y:32744,ptovrint:False,ptlb:Spec Intensity,ptin:_SpecIntensity,varname:node_7242,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,min:0,cur:0.5,max:2;n:type:ShaderForge.SFN_Slider,id:1274,x:32314,y:32983,ptovrint:False,ptlb:Glossiness,ptin:_Glossiness,varname:node_1274,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,min:0,cur:0.3,max:1;n:type:ShaderForge.SFN_Lerp,id:7195,x:32702,y:33383,varname:node_7195,prsc:2|A-496-OUT,B-3318-RGB,T-3024-OUT;n:type:ShaderForge.SFN_Vector3,id:496,x:32471,y:33153,varname:node_496,prsc:2,v1:0,v2:0,v3:1;proporder:9096-3546-7242-1274-1035-3318-3024;pass:END;sub:END;*/
-
 Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
     Properties {
         _Diffusecolor ("Diffuse color", Color) = (1,1,1,1)
+        _MainTex ("Diffuse Map (Spec A)", 2D) = "white" {}
         _Speccolor ("Spec color", Color) = (1,1,1,1)
-        _SpecIntensity ("Spec Intensity", Range(0, 2)) = 0.5
-        _Glossiness ("Glossiness", Range(0, 1)) = 0.3
-        _DiffuseMapSpecA ("Diffuse Map (Spec A)", 2D) = "white" {}
-        _NormalMap ("Normal Map", 2D) = "bump" {}
+        _SpecIntensity ("Spec Intensity", Range(0, 2)) = 0.2
+        _Glossiness ("Glossiness", Range(0, 1)) = 0.5
+        _BumpMap ("Normal Map", 2D) = "bump" {}
         _NormalIntensity ("Normal Intensity", Range(0, 2)) = 1
     }
     SubShader {
@@ -43,11 +36,11 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
             #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
             #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
-            #pragma exclude_renderers xbox360 ps3 
+            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
             #pragma target 3.0
-            uniform sampler2D _DiffuseMapSpecA; uniform float4 _DiffuseMapSpecA_ST;
+            uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform float4 _Diffusecolor;
-            uniform sampler2D _NormalMap; uniform float4 _NormalMap_ST;
+            uniform sampler2D _BumpMap; uniform float4 _BumpMap_ST;
             uniform float _NormalIntensity;
             uniform float4 _Speccolor;
             uniform float _SpecIntensity;
@@ -104,8 +97,8 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
                 i.normalDir *= faceSign;
                 float3x3 tangentTransform = float3x3( i.tangentDir, i.bitangentDir, i.normalDir);
                 float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
-                float3 _NormalMap_var = UnpackNormal(tex2D(_NormalMap,TRANSFORM_TEX(i.uv0, _NormalMap)));
-                float3 normalLocal = lerp(float3(0,0,1),_NormalMap_var.rgb,_NormalIntensity);
+                float3 _BumpMap_var = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(i.uv0, _BumpMap)));
+                float3 normalLocal = lerp(float3(0,0,1),_BumpMap_var.rgb,_NormalIntensity);
                 float3 normalDirection = normalize(mul( normalLocal, tangentTransform )); // Perturbed normals
                 float3 viewReflectDirection = reflect( -viewDirection, normalDirection );
                 float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
@@ -114,6 +107,8 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
 ////// Lighting:
                 float attenuation = LIGHT_ATTENUATION(i);
                 float3 attenColor = attenuation * _LightColor0.xyz;
+                float Pi = 3.141592654;
+                float InvPi = 0.31830988618;
 ///////// Gloss:
                 float gloss = _Glossiness;
                 float specPow = exp2( gloss * 10.0+1.0);
@@ -139,13 +134,17 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
                 #else
                     d.ambient = i.ambientOrLightmapUV;
                 #endif
-                d.boxMax[0] = unity_SpecCube0_BoxMax;
-                d.boxMin[0] = unity_SpecCube0_BoxMin;
-                d.probePosition[0] = unity_SpecCube0_ProbePosition;
+                #if UNITY_SPECCUBE_BLENDING || UNITY_SPECCUBE_BOX_PROJECTION
+                    d.boxMin[0] = unity_SpecCube0_BoxMin;
+                    d.boxMin[1] = unity_SpecCube1_BoxMin;
+                #endif
+                #if UNITY_SPECCUBE_BOX_PROJECTION
+                    d.boxMax[0] = unity_SpecCube0_BoxMax;
+                    d.boxMax[1] = unity_SpecCube1_BoxMax;
+                    d.probePosition[0] = unity_SpecCube0_ProbePosition;
+                    d.probePosition[1] = unity_SpecCube1_ProbePosition;
+                #endif
                 d.probeHDR[0] = unity_SpecCube0_HDR;
-                d.boxMax[1] = unity_SpecCube1_BoxMax;
-                d.boxMin[1] = unity_SpecCube1_BoxMin;
-                d.probePosition[1] = unity_SpecCube1_ProbePosition;
                 d.probeHDR[1] = unity_SpecCube1_HDR;
                 Unity_GlossyEnvironmentData ugls_en_data;
                 ugls_en_data.roughness = 1.0 - gloss;
@@ -154,10 +153,12 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
                 lightDirection = gi.light.dir;
                 lightColor = gi.light.color;
 ////// Specular:
-                float NdotL = max(0, dot( normalDirection, lightDirection ));
-                float4 _DiffuseMapSpecA_var = tex2D(_DiffuseMapSpecA,TRANSFORM_TEX(i.uv0, _DiffuseMapSpecA));
-                float3 specularColor = ((_DiffuseMapSpecA_var.a*_SpecIntensity)*_Speccolor.rgb);
-                float3 directSpecular = 1 * pow(max(0,dot(halfDirection,normalDirection)),specPow)*specularColor;
+                float NdotL = saturate(dot( normalDirection, lightDirection ));
+                float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
+                float3 specularColor = ((_MainTex_var.a*_SpecIntensity)*_Speccolor.rgb);
+                float specularMonochrome = max( max(specularColor.r, specularColor.g), specularColor.b);
+                float normTerm = (specPow + 8.0 ) / (8.0 * Pi);
+                float3 directSpecular = attenColor * pow(max(0,dot(halfDirection,normalDirection)),specPow)*normTerm*specularColor;
                 float3 indirectSpecular = (gi.indirect.specular)*specularColor;
                 float3 specular = (directSpecular + indirectSpecular);
 /////// Diffuse:
@@ -165,7 +166,8 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
                 float3 directDiffuse = max( 0.0, NdotL) * attenColor;
                 float3 indirectDiffuse = float3(0,0,0);
                 indirectDiffuse += gi.indirect.diffuse;
-                float3 diffuseColor = (_DiffuseMapSpecA_var.rgb*_Diffusecolor.rgb);
+                float3 diffuseColor = (_MainTex_var.rgb*_Diffusecolor.rgb);
+                diffuseColor *= 1-specularMonochrome;
                 float3 diffuse = (directDiffuse + indirectDiffuse) * diffuseColor;
 /// Final Color:
                 float3 finalColor = diffuse + specular;
@@ -200,11 +202,11 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
             #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
             #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
-            #pragma exclude_renderers xbox360 ps3 
+            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
             #pragma target 3.0
-            uniform sampler2D _DiffuseMapSpecA; uniform float4 _DiffuseMapSpecA_ST;
+            uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform float4 _Diffusecolor;
-            uniform sampler2D _NormalMap; uniform float4 _NormalMap_ST;
+            uniform sampler2D _BumpMap; uniform float4 _BumpMap_ST;
             uniform float _NormalIntensity;
             uniform float4 _Speccolor;
             uniform float _SpecIntensity;
@@ -251,8 +253,8 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
                 i.normalDir *= faceSign;
                 float3x3 tangentTransform = float3x3( i.tangentDir, i.bitangentDir, i.normalDir);
                 float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
-                float3 _NormalMap_var = UnpackNormal(tex2D(_NormalMap,TRANSFORM_TEX(i.uv0, _NormalMap)));
-                float3 normalLocal = lerp(float3(0,0,1),_NormalMap_var.rgb,_NormalIntensity);
+                float3 _BumpMap_var = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(i.uv0, _BumpMap)));
+                float3 normalLocal = lerp(float3(0,0,1),_BumpMap_var.rgb,_NormalIntensity);
                 float3 normalDirection = normalize(mul( normalLocal, tangentTransform )); // Perturbed normals
                 float3 lightDirection = normalize(lerp(_WorldSpaceLightPos0.xyz, _WorldSpaceLightPos0.xyz - i.posWorld.xyz,_WorldSpaceLightPos0.w));
                 float3 lightColor = _LightColor0.rgb;
@@ -260,25 +262,84 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
 ////// Lighting:
                 float attenuation = LIGHT_ATTENUATION(i);
                 float3 attenColor = attenuation * _LightColor0.xyz;
+                float Pi = 3.141592654;
+                float InvPi = 0.31830988618;
 ///////// Gloss:
                 float gloss = _Glossiness;
                 float specPow = exp2( gloss * 10.0+1.0);
 ////// Specular:
-                float NdotL = max(0, dot( normalDirection, lightDirection ));
-                float4 _DiffuseMapSpecA_var = tex2D(_DiffuseMapSpecA,TRANSFORM_TEX(i.uv0, _DiffuseMapSpecA));
-                float3 specularColor = ((_DiffuseMapSpecA_var.a*_SpecIntensity)*_Speccolor.rgb);
-                float3 directSpecular = attenColor * pow(max(0,dot(halfDirection,normalDirection)),specPow)*specularColor;
+                float NdotL = saturate(dot( normalDirection, lightDirection ));
+                float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
+                float3 specularColor = ((_MainTex_var.a*_SpecIntensity)*_Speccolor.rgb);
+                float specularMonochrome = max( max(specularColor.r, specularColor.g), specularColor.b);
+                float normTerm = (specPow + 8.0 ) / (8.0 * Pi);
+                float3 directSpecular = attenColor * pow(max(0,dot(halfDirection,normalDirection)),specPow)*normTerm*specularColor;
                 float3 specular = directSpecular;
 /////// Diffuse:
                 NdotL = max(0.0,dot( normalDirection, lightDirection ));
                 float3 directDiffuse = max( 0.0, NdotL) * attenColor;
-                float3 diffuseColor = (_DiffuseMapSpecA_var.rgb*_Diffusecolor.rgb);
+                float3 diffuseColor = (_MainTex_var.rgb*_Diffusecolor.rgb);
+                diffuseColor *= 1-specularMonochrome;
                 float3 diffuse = directDiffuse * diffuseColor;
 /// Final Color:
                 float3 finalColor = diffuse + specular;
                 fixed4 finalRGBA = fixed4(finalColor * 1,0);
                 UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
                 return finalRGBA;
+            }
+            ENDCG
+        }
+        Pass {
+            Name "ShadowCaster"
+            Tags {
+                "LightMode"="ShadowCaster"
+            }
+            Offset 1, 1
+            Cull Off
+            
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #define UNITY_PASS_SHADOWCASTER
+            #define SHOULD_SAMPLE_SH ( defined (LIGHTMAP_OFF) && defined(DYNAMICLIGHTMAP_OFF) )
+            #define _GLOSSYENV 1
+            #include "UnityCG.cginc"
+            #include "Lighting.cginc"
+            #include "UnityPBSLighting.cginc"
+            #include "UnityStandardBRDF.cginc"
+            #pragma fragmentoption ARB_precision_hint_fastest
+            #pragma multi_compile_shadowcaster
+            #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+            #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
+            #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
+            #pragma multi_compile_fog
+            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
+            #pragma target 3.0
+            struct VertexInput {
+                float4 vertex : POSITION;
+                float2 texcoord1 : TEXCOORD1;
+                float2 texcoord2 : TEXCOORD2;
+            };
+            struct VertexOutput {
+                V2F_SHADOW_CASTER;
+                float2 uv1 : TEXCOORD1;
+                float2 uv2 : TEXCOORD2;
+                float4 posWorld : TEXCOORD3;
+            };
+            VertexOutput vert (VertexInput v) {
+                VertexOutput o = (VertexOutput)0;
+                o.uv1 = v.texcoord1;
+                o.uv2 = v.texcoord2;
+                o.posWorld = mul(unity_ObjectToWorld, v.vertex);
+                o.pos = mul(UNITY_MATRIX_MVP, v.vertex );
+                TRANSFER_SHADOW_CASTER(o)
+                return o;
+            }
+            float4 frag(VertexOutput i, float facing : VFACE) : COLOR {
+                float isFrontFace = ( facing >= 0 ? 1 : 0 );
+                float faceSign = ( facing >= 0 ? 1 : -1 );
+                float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
+                SHADOW_CASTER_FRAGMENT(i)
             }
             ENDCG
         }
@@ -306,9 +367,9 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
             #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
             #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
-            #pragma exclude_renderers xbox360 ps3 
+            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
             #pragma target 3.0
-            uniform sampler2D _DiffuseMapSpecA; uniform float4 _DiffuseMapSpecA_ST;
+            uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform float4 _Diffusecolor;
             uniform float4 _Speccolor;
             uniform float _SpecIntensity;
@@ -344,9 +405,9 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
                 
                 o.Emission = 0;
                 
-                float4 _DiffuseMapSpecA_var = tex2D(_DiffuseMapSpecA,TRANSFORM_TEX(i.uv0, _DiffuseMapSpecA));
-                float3 diffColor = (_DiffuseMapSpecA_var.rgb*_Diffusecolor.rgb);
-                float3 specColor = ((_DiffuseMapSpecA_var.a*_SpecIntensity)*_Speccolor.rgb);
+                float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
+                float3 diffColor = (_MainTex_var.rgb*_Diffusecolor.rgb);
+                float3 specColor = ((_MainTex_var.a*_SpecIntensity)*_Speccolor.rgb);
                 float roughness = 1.0 - _Glossiness;
                 o.Albedo = diffColor + specColor * roughness * roughness * 0.5;
                 
@@ -356,5 +417,4 @@ Shader "Ciconia Studio/Double Sided/Standard/Diffuse Bump" {
         }
     }
     FallBack "Diffuse"
-    CustomEditor "ShaderForgeMaterialInspector"
 }

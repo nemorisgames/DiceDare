@@ -8,6 +8,7 @@ public class LevelSelection : MonoBehaviour {
 	
 	public UIButton[] recordButtons;
 	public UIPanel panel;
+	public GameObject loading;
 	// Use this for initialization
 	void Start () {
 		PlayerPrefs.SetInt ("continueBGM", 0);
@@ -50,6 +51,7 @@ public class LevelSelection : MonoBehaviour {
 		Analytics.CustomEvent ("enteringLevel" + num);
 		#endif
 		PlayerPrefs.SetString ("scene", "Scene" + num);
+		loading.SetActive (true);
 		SceneManager.LoadScene ("InGame");
 	}
 	

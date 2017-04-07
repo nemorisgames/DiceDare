@@ -102,18 +102,20 @@ public class InGame : MonoBehaviour {
 	}
 
 	public void hint(){
-		if (hintsAvailable <= 0) {
-			hintScreen.SendMessage ("PlayForward");
-			Pause ();
-		} else {
-			StartCoroutine (lightPath (2));
-			hintsAvailable--;
-			hintIndicator.text = "" + hintsAvailable;
-			PlayerPrefs.SetInt ("hints", hintsAvailable);
+		if (!pause) {
+			if (hintsAvailable <= 0) {
+				hintScreen.SendMessage ("PlayForward");
+				Pause ();
+			} else {
+				StartCoroutine (lightPath (2));
+				hintsAvailable--;
+				hintIndicator.text = "" + hintsAvailable;
+				PlayerPrefs.SetInt ("hints", hintsAvailable);
+			}
+			#if !UNITY_EDITOR
+			Analytics.CustomEvent ("hints");
+			#endif
 		}
-		#if !UNITY_EDITOR
-		Analytics.CustomEvent ("hints");
-		#endif
 	}
 
 	public void showInterstitial()
@@ -304,14 +306,18 @@ public class InGame : MonoBehaviour {
 	}
 
 	public void Pause(){
-		pauseAux = Time.timeSinceLevelLoad;
-		pause = true;
+		if (!pause) {
+			pauseAux = Time.timeSinceLevelLoad;
+			pause = true;
+		}
 	}
 
 	public void UnPause(){
-		pause = false;
-		pauseTime += Time.timeSinceLevelLoad - pauseAux;
-		pauseAux = 0;
+		if (pause) {
+			pause = false;
+			pauseTime += Time.timeSinceLevelLoad - pauseAux;
+			pauseAux = 0;
+		}
 	}
 
 	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
