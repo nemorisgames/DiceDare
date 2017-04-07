@@ -69,6 +69,10 @@ public class InGame : MonoBehaviour {
 		}/* else {
 			DestroyImmediate (bgm_go);
 		}*/
+		if (PlayerPrefs.GetInt ("Mute") == 1)
+			bgm.mute = true;
+		else
+			bgm.mute = false;
 		string texto = PlayerPrefs.GetString ("scene", "Scene1");
 		string num = texto.Split (new char[1]{ 'e' }) [2];
 		int level = (int.Parse (num));

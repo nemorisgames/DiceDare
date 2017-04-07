@@ -9,6 +9,7 @@ public class LevelSelection : MonoBehaviour {
 	public UIButton[] recordButtons;
 	public UIPanel panel;
 	public GameObject loading;
+	public UISprite muteButton;
 	// Use this for initialization
 	void Start () {
 		PlayerPrefs.SetInt ("continueBGM", 0);
@@ -16,6 +17,9 @@ public class LevelSelection : MonoBehaviour {
 			PlayerPrefs.SetInt ("unlockedScene1", 1);
 		}
 		//PlayerPrefs.DeleteAll ();
+
+		if (PlayerPrefs.GetInt ("Mute") == 1)
+			Mute ();
 
 		if (PlayerPrefs.GetString ("scene") != "") {
 			string texto = PlayerPrefs.GetString ("scene", "Scene1");
@@ -73,5 +77,24 @@ public class LevelSelection : MonoBehaviour {
 			}
 			SceneManager.LoadScene ("LevelSelection");
 		}
+	}
+
+	void Mute(){
+		PlayerPrefs.SetInt ("Mute", 1);
+		muteButton.spriteName = "mute2";
+		Camera.main.GetComponent<AudioSource> ().mute = true;
+	}
+
+	void UnMute(){
+		PlayerPrefs.SetInt ("Mute", 0);
+		muteButton.spriteName = "mute";
+		Camera.main.GetComponent<AudioSource> ().mute = false;
+	}
+
+	public void MuteButton(){
+		if (PlayerPrefs.GetInt ("Mute") == 0)
+			Mute ();
+		else
+			UnMute ();
 	}
 }
