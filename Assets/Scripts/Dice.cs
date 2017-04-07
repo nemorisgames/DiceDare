@@ -233,7 +233,7 @@ public class Dice : MonoBehaviour {
 				case Direction.Up:
 				//diceValueA = int.Parse (((TextMesh)currentNumbers [1]).text);
 				//diceValueB = int.Parse (((TextMesh)currentNumbers [5]).text);
-					cellValue = 0;
+					cellValue = -1;
 					break;
 				case Direction.Down:
 					diceValueA = int.Parse (((TextMesh)currentNumbers [1]).text);
@@ -244,7 +244,7 @@ public class Dice : MonoBehaviour {
 					diceValueB = int.Parse (((TextMesh)currentNumbers [2]).text);
 					break;
 				case Direction.Right:
-					cellValue = 0;
+					cellValue = -1;
 				//diceValueA = int.Parse (((TextMesh)currentNumbers [1]).text);
 				//diceValueB = int.Parse (((TextMesh)currentNumbers [3]).text);
 					break;

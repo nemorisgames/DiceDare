@@ -362,6 +362,8 @@ public class InGame : MonoBehaviour {
 			break;
 		case Dice.Operation.Div:
 			res = ((diceValueA / diceValueB));
+			//if (res == 0)
+			//	res = -1;
 			break;
 		}
 		return res;
