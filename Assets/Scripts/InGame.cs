@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 using UnityEngine.Analytics;
+using UnityEngine.Advertisements;
 
 public class InGame : MonoBehaviour {
 	Dice dice;
@@ -51,8 +52,10 @@ public class InGame : MonoBehaviour {
 	public bool pause = false;
 
 	int timesDied = 0;
-	public GameObject hintButton;
+	public GameObject hintScreen;
+	public UILabel hintIndicator;
 	int hintsAvailable = 3;
+
 
 	public bool testing = false;
 	float diceSize;
@@ -94,14 +97,66 @@ public class InGame : MonoBehaviour {
 		//StartCoroutine (cellArray[1,2].GetComponent<Cell>().shine ());
 		//StartCoroutine (lightPath (2));
 		diceSize = dice.GetComponent<MeshRenderer>().bounds.size.y/2;
+		hintsAvailable = PlayerPrefs.GetInt ("hints", 2);
+		hintIndicator.text = "" + hintsAvailable;
 	}
 
 	public void hint(){
-		StartCoroutine (lightPath (1));
-		hintsAvailable--;
 		if (hintsAvailable <= 0) {
-			hintButton.SetActive (false);
+			hintScreen.SendMessage ("PlayForward");
+			Pause ();
+		} else {
+			StartCoroutine (lightPath (2));
+			hintsAvailable--;
+			hintIndicator.text = "" + hintsAvailable;
+			PlayerPrefs.SetInt ("hints", hintsAvailable);
 		}
+		#if !UNITY_EDITOR
+		Analytics.CustomEvent ("hints");
+		#endif
+	}
+
+	public void showInterstitial()
+	{
+		if (Advertisement.IsReady())
+		{
+			Advertisement.Show();
+		}
+	}
+
+	public void showVideo(){
+		if (Advertisement.IsReady("rewardedVideo"))
+		{
+			var options = new ShowOptions { resultCallback = HandleShowResult };
+			Advertisement.Show("rewardedVideo", options);
+		}
+		#if !UNITY_EDITOR
+		Analytics.CustomEvent ("showVideo");
+		#endif
+	}
+
+	private void HandleShowResult(ShowResult result)
+	{
+		switch (result)
+		{
+		case ShowResult.Finished:
+			hintsAvailable += 2;
+			PlayerPrefs.SetInt ("hints", hintsAvailable);
+			hintIndicator.text = "" + hintsAvailable;
+			closeHintScreen ();
+			break;
+		case ShowResult.Skipped:
+			Debug.Log("The ad was skipped before reaching the end.");
+			break;
+		case ShowResult.Failed:
+			Debug.LogError("The ad failed to be shown.");
+			break;
+		}
+	}
+
+	public void closeHintScreen(){
+		hintScreen.SendMessage ("PlayReverse");
+		UnPause ();
 	}
 
 	public void componerEscena(){

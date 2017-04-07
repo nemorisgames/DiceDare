@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Advertisements;
+//using UnityEngine.Advertisements;
 using UnityEngine.Analytics;
 
 public class InGame_RC : MonoBehaviour {
-	Dice dice;
+/*	Dice dice;
 	Transform cells;
 	GameObject [,] cellArray;
 	public TextMesh [] cellsText;
@@ -494,15 +494,6 @@ public class InGame_RC : MonoBehaviour {
 		if (finishedSign.activeSelf || TimesUpSign.activeSelf) {
 			return;
 		}
-		/*if (secondsAvailable - Time.timeSinceLevelLoad <= 0) {
-			timesUp ();
-		}
-		else {
-			int minutes = (int)((secondsAvailable - Time.timeSinceLevelLoad) / 60);
-			int seconds = (int)((secondsAvailable - Time.timeSinceLevelLoad) % 60);
-			int dec = (int)(((secondsAvailable - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((secondsAvailable - Time.timeSinceLevelLoad) % 60) * 10));
-			clock.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
-		}*/
 		if (!pause) {
 			int minutes = (int)((Time.timeSinceLevelLoad - pauseTime) / 60);
 			int seconds = (int)((Time.timeSinceLevelLoad - pauseTime) % 60);
@@ -530,5 +521,5 @@ public class InGame_RC : MonoBehaviour {
 				PlayerPrefs.DeleteAll ();
 			}
 		}
-	}
+	}*/
 }
