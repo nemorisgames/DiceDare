@@ -337,7 +337,8 @@ public class Dice : MonoBehaviour {
 	void changeOperation(Operation op){
 		nextOperation = op;
 	}
-
+	Vector3 initialPosition;
+	float timeSwipe;
 	// Update is called once per frame
 	void Update () {
 		if (onMovement || inGame.rotating || Time.timeSinceLevelLoad < 2f || inGame.pause)
@@ -349,6 +350,31 @@ public class Dice : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.W)) { StartCoroutine(turn (Direction.Up)); }
 		if (Input.GetKeyDown (KeyCode.S)) { StartCoroutine(turn (Direction.Down)); }
 		if (Input.GetKeyDown (KeyCode.A)) { StartCoroutine(turn (Direction.Left)); }
-		if (Input.GetKeyDown (KeyCode.D)) { StartCoroutine(turn (Direction.Right)); }
+		if (Input.GetKeyDown (KeyCode.D)) { StartCoroutine(turn (Direction.Right));}
+
+		if (Input.GetMouseButtonDown (0)) {
+			initialPosition = Input.mousePosition;
+			timeSwipe = Time.time;
+		}
+		if (Input.GetMouseButtonUp (0)) {
+			if (timeSwipe + 1f > Time.time && Vector3.Distance(initialPosition, Input.mousePosition) >= 50f) {
+				Vector3 dir = (Input.mousePosition - initialPosition).normalized;
+				print ("swipe!" + Vector3.Angle(new Vector3(1f, 0f, 0f), dir));
+				float angle = Vector3.Angle (new Vector3 (1f, 0f, 0f), dir);
+				if (angle >= 0f && angle < 90f) {
+					if (dir.y > 0f) {
+						StartCoroutine (turn (Direction.Right));
+					} else {
+						StartCoroutine (turn (Direction.Down));
+					}
+				} else {
+					if (dir.y > 0f) {
+						StartCoroutine (turn (Direction.Up));
+					} else {
+						StartCoroutine (turn (Direction.Left));
+					}
+				}
+			}
+		}
 	}
 }
