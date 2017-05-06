@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
 using UnityEngine.Advertisements;
 
+using VoxelBusters.NativePlugins;
+
 public class InGame : MonoBehaviour {
 	Dice dice;
 	Transform cells;
@@ -59,10 +61,17 @@ public class InGame : MonoBehaviour {
 
 	public bool testing = false;
 	float diceSize;
-
-	// Use this for initialization
-	void Start () {
-		if (bgm == null) {
+    LeaderboardsNemoris ln;
+    // Use this for initialization
+    void Start () {
+        GameObject g = GameObject.FindGameObjectWithTag("Leaderboard");
+        if(g != null)
+        {
+            ln = g.GetComponent<LeaderboardsNemoris>();
+        }
+        if (ln != null)
+            ln.verLeaderboard();
+        if (bgm == null) {
 			bgm = bgm_go;
 			DontDestroyOnLoad (bgm);
 			bgm.Play ();
@@ -350,7 +359,8 @@ public class InGame : MonoBehaviour {
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioBadMove);
 		dice.GetComponent<Animator> ().SetTrigger ("BadMove");
-	}
+
+    }
 
 	IEnumerator reloadScene(){
 		yield return new WaitForSeconds (1f);
@@ -402,14 +412,17 @@ public class InGame : MonoBehaviour {
 		audio.PlayOneShot(audioFinish);
 		if(Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), float.MaxValue))
 			PlayerPrefs.SetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
-		#if !UNITY_EDITOR
+
+        if (ln != null)
+            ln.enviarScore();
+#if !UNITY_EDITOR
 		Analytics.CustomEvent ("finish", new Dictionary<string, object> {
 		{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
 			{ "steps", dice.steps },
 			{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});
-			#endif
-	}
+#endif
+    }
 
 	public int checkOperationResult(int diceValueB, int diceValueA){
 		int res = 0;
