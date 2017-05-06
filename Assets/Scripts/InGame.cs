@@ -108,8 +108,11 @@ public class InGame : MonoBehaviour {
 	public void hint(){
 		if (!pause) {
 			if (hintsAvailable <= 0) {
-				hintScreen.SendMessage ("PlayForward");
+                showVideo();
+                
+                //hintScreen.SendMessage ("PlayForward");
 				Pause ();
+                
 			} else {
 				StartCoroutine (lightPath (2));
 				hintsAvailable--;
