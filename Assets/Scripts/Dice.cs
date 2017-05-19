@@ -32,6 +32,7 @@ public class Dice : MonoBehaviour {
 	public UITexture backgroundTexture;
 	public ParticleSystem goodMove;
 	// Use this for initialization
+	bool swipe;
 	void Start () {
 		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
 		line = GetComponent<LineRenderer> ();
@@ -56,6 +57,11 @@ public class Dice : MonoBehaviour {
 		StartCoroutine(applyRootMotion ());
 
 		timeLastMove = Time.timeSinceLevelLoad;
+		if (PlayerPrefs.GetInt ("Control",0) == 0) {
+			ToggleSwipe (true);
+		} else {
+			ToggleSwipe (false);
+		}
 	}
 
 	IEnumerator applyRootMotion(){
@@ -337,6 +343,19 @@ public class Dice : MonoBehaviour {
 	void changeOperation(Operation op){
 		nextOperation = op;
 	}
+
+	public void ToggleSwipe(bool b){
+		if (b) {
+			swipe = true;
+			plane.gameObject.SetActive (false);
+			PlayerPrefs.SetInt ("Control", 0);
+		} else {
+			swipe = false;
+			plane.gameObject.SetActive (true);
+			PlayerPrefs.SetInt ("Control", 1);
+		}
+	}
+
 	Vector3 initialPosition;
 	float timeSwipe;
 	// Update is called once per frame
@@ -352,26 +371,28 @@ public class Dice : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.A)) { StartCoroutine(turn (Direction.Left)); }
 		if (Input.GetKeyDown (KeyCode.D)) { StartCoroutine(turn (Direction.Right));}
 
-		if (Input.GetMouseButtonDown (0)) {
-			initialPosition = Input.mousePosition;
-			timeSwipe = Time.time;
-		}
-		if (Input.GetMouseButtonUp (0)) {
-			if (timeSwipe + 1f > Time.time && Vector3.Distance(initialPosition, Input.mousePosition) >= 50f) {
-				Vector3 dir = (Input.mousePosition - initialPosition).normalized;
-				print ("swipe!" + Vector3.Angle(new Vector3(1f, 0f, 0f), dir));
-				float angle = Vector3.Angle (new Vector3 (1f, 0f, 0f), dir);
-				if (angle >= 0f && angle < 90f) {
-					if (dir.y > 0f) {
-						StartCoroutine (turn (Direction.Right));
+		if (swipe) {
+			if (Input.GetMouseButtonDown (0)) {
+				initialPosition = Input.mousePosition;
+				timeSwipe = Time.time;
+			}
+			if (Input.GetMouseButtonUp (0)) {
+				if (timeSwipe + 1f > Time.time && Vector3.Distance (initialPosition, Input.mousePosition) >= 50f) {
+					Vector3 dir = (Input.mousePosition - initialPosition).normalized;
+					print ("swipe!" + Vector3.Angle (new Vector3 (1f, 0f, 0f), dir));
+					float angle = Vector3.Angle (new Vector3 (1f, 0f, 0f), dir);
+					if (angle >= 0f && angle < 90f) {
+						if (dir.y > 0f) {
+							StartCoroutine (turn (Direction.Right));
+						} else {
+							StartCoroutine (turn (Direction.Down));
+						}
 					} else {
-						StartCoroutine (turn (Direction.Down));
-					}
-				} else {
-					if (dir.y > 0f) {
-						StartCoroutine (turn (Direction.Up));
-					} else {
-						StartCoroutine (turn (Direction.Left));
+						if (dir.y > 0f) {
+							StartCoroutine (turn (Direction.Up));
+						} else {
+							StartCoroutine (turn (Direction.Left));
+						}
 					}
 				}
 			}
