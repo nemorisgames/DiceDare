@@ -34,10 +34,6 @@ public class Title : MonoBehaviour {
         }
     }
 
-<<<<<<< HEAD
-    public void play(){
-		SceneManager.LoadScene ("LevelSelection");
-=======
 	public void play(){
 		if (PlayerPrefs.GetInt ("PlayedGame", 0) == 0) {
 			PlayerPrefs.SetInt ("PlayedGame", 1);
@@ -46,7 +42,6 @@ public class Title : MonoBehaviour {
 		} else {
 			SceneManager.LoadScene ("LevelSelection");
 		}
->>>>>>> d3a67747d1e7e5d9ef3c6bc3e48cf2ad47dfe34f
 	}
 	
 	// Update is called once per frame
