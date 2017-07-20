@@ -10,6 +10,7 @@ public class LevelSelection : MonoBehaviour {
 	public UIPanel panel;
 	public GameObject loading;
 	public UISprite muteButton;
+	public UISprite controlButton;
 	// Use this for initialization
 	void Start () {
 		PlayerPrefs.SetInt ("continueBGM", 0);
@@ -20,6 +21,10 @@ public class LevelSelection : MonoBehaviour {
 
 		if (PlayerPrefs.GetInt ("Mute") == 1)
 			Mute ();
+
+		if (PlayerPrefs.GetInt ("Control") == 1) {
+			controlButton.spriteName = "tap";
+		}
 
 		if (PlayerPrefs.GetString ("scene") != "") {
 			string texto = PlayerPrefs.GetString ("scene", "Scene1");
@@ -55,7 +60,8 @@ public class LevelSelection : MonoBehaviour {
 		Analytics.CustomEvent ("enteringLevel" + num);
 		#endif
 		PlayerPrefs.SetString ("scene", "Scene" + num);
-		loading.SetActive (true);
+		if(loading != null)
+			loading.SetActive (true);
 		SceneManager.LoadScene ("InGame");
 	}
 	
@@ -96,5 +102,15 @@ public class LevelSelection : MonoBehaviour {
 			Mute ();
 		else
 			UnMute ();
+	}
+
+	public void ControlButton(){
+		if (PlayerPrefs.GetInt ("Control") == 0) {
+			controlButton.spriteName = "tap";
+			PlayerPrefs.SetInt ("Control", 1);
+		} else {
+			controlButton.spriteName = "swipe";
+			PlayerPrefs.SetInt ("Control", 0);
+		}
 	}
 }
