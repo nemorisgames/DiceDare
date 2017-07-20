@@ -6,106 +6,115 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
 using UnityEngine.Advertisements;
 
+using VoxelBusters.NativePlugins;
+
 public class InGame : MonoBehaviour {
-	Dice dice;
-	Transform cells;
-	GameObject [,] cellArray;
-	public TextMesh [] cellsText;
-	ArrayList texts = new ArrayList();
-	ArrayList path = new ArrayList();
-	public bool rotating = false;
-	public GameObject finishedSign;
-	public GameObject TimesUpSign;
-	public UILabel clockMinutes;
-	public UILabel clockSeconds;
-	public UILabel clockDecimals;
-	public UILabel record;
-	public UILabel levelNum;
-	float recordSeconds;
-	[HideInInspector]
-	public float pauseTime = 0;
-	float pauseAux = 0;
-	public int secondsAvailable = 65;
-	public UITexture tutorial;
-	public Texture2D[] imgTutorial;
-	AudioSource audio;
-	public AudioClip audioBadMove;
-	public AudioClip audioGoodMove;
-	public AudioClip audioFinish;
+    Dice dice;
+    Transform cells;
+    GameObject[,] cellArray;
+    public TextMesh[] cellsText;
+    ArrayList texts = new ArrayList();
+    ArrayList path = new ArrayList();
+    public bool rotating = false;
+    public GameObject finishedSign;
+    public GameObject TimesUpSign;
+    public UILabel clockMinutes;
+    public UILabel clockSeconds;
+    public UILabel clockDecimals;
+    public UILabel record;
+    public UILabel levelNum;
+    float recordSeconds;
+    [HideInInspector]
+    public float pauseTime = 0;
+    float pauseAux = 0;
+    public int secondsAvailable = 65;
+    public UITexture tutorial;
+    public Texture2D[] imgTutorial;
+    AudioSource audio;
+    public AudioClip audioBadMove;
+    public AudioClip audioGoodMove;
+    public AudioClip audioFinish;
 
-	public GameObject cellNormal;
-	public GameObject cellBegin;
-	public GameObject cellEnd;
+    public GameObject cellNormal;
+    public GameObject cellBegin;
+    public GameObject cellEnd;
 
-	public GameObject cellSum;
-	public GameObject cellSubstraction;
-	public GameObject cellMultiplication;
-	public GameObject cellDivision;
-	public GameObject cellCW;
-	public GameObject cellCCW;
-	public GameObject cellDeath;
+    public GameObject cellSum;
+    public GameObject cellSubstraction;
+    public GameObject cellMultiplication;
+    public GameObject cellDivision;
+    public GameObject cellCW;
+    public GameObject cellCCW;
+    public GameObject cellDeath;
 
-	public AudioSource bgm_go;
-	public static AudioSource bgm;
+    public AudioSource bgm_go;
+    public static AudioSource bgm;
 
-	//[HideInInspector]
-	public bool pause = false;
+    //[HideInInspector]
+    public bool pause = false;
 
-	int timesDied = 0;
-	public GameObject hintScreen;
-	public UILabel hintIndicator;
-	int hintsAvailable = 3;
+    int timesDied = 0;
+    public GameObject hintScreen;
+    public UILabel hintIndicator;
+    int hintsAvailable = 3;
 
 
-	public bool testing = false;
-	float diceSize;
+    public bool testing = false;
+    float diceSize;
 
-	// Use this for initialization
-	void Start () {
-		if (bgm == null) {
-			bgm = bgm_go;
-			DontDestroyOnLoad (bgm);
-			bgm.Play ();
-		}/* else {
+    // Use this for initialization
+    void Start() {
+        if (bgm == null) {
+            bgm = bgm_go;
+            DontDestroyOnLoad(bgm);
+            bgm.Play();
+        }/* else {
 			DestroyImmediate (bgm_go);
 		}*/
-		if (PlayerPrefs.GetInt ("Mute") == 1)
-			bgm.mute = true;
-		else
-			bgm.mute = false;
-		string texto = PlayerPrefs.GetString ("scene", "Scene1");
-		string num = texto.Split (new char[1]{ 'e' }) [2];
-		int level = (int.Parse (num));
-		levelNum.text = "LEVEL " + level.ToString ();
+        if (PlayerPrefs.GetInt("Mute") == 1)
+            bgm.mute = true;
+        else
+            bgm.mute = false;
+        string texto = PlayerPrefs.GetString("scene", "Scene1");
+        string num = texto.Split(new char[1] { 'e' })[2];
+        int level = (int.Parse(num));
+        levelNum.text = "LEVEL " + level.ToString();
 
-		timesDied = PlayerPrefs.GetInt ("timesDied", 0);
-		dice = GameObject.FindGameObjectWithTag ("Dice").GetComponent<Dice> ();
-		componerEscena ();
+        timesDied = PlayerPrefs.GetInt("timesDied", 0);
+        dice = GameObject.FindGameObjectWithTag("Dice").GetComponent<Dice>();
+        componerEscena();
 
-		cells = GameObject.Find ("Cells").transform;
-		cellsText = cells.GetComponentsInChildren<TextMesh> ();
-		foreach (TextMesh t in cellsText) {
-			texts.Add(t.GetComponent<Transform>());
-		}
-		recordSeconds = PlayerPrefs.GetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), -1f);
-		if (recordSeconds > 0) {
-			int minutes = (int)((recordSeconds) / 60);
-			int seconds = (int)((recordSeconds) % 60);
-			int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
-			record.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
-		}
-		audio = GetComponent<AudioSource> ();
-		print ("timesDied " + timesDied);
-		if (timesDied >= 5)
-			StartCoroutine(lightPath (2));
-		//StartCoroutine (cellArray[1,2].GetComponent<Cell>().shine ());
-		//StartCoroutine (lightPath (2));
-		diceSize = dice.GetComponent<MeshRenderer>().bounds.size.y/2;
-		hintsAvailable = PlayerPrefs.GetInt ("hints", 2);
-		hintIndicator.text = "" + hintsAvailable;
-	}
+        cells = GameObject.Find("Cells").transform;
+        cellsText = cells.GetComponentsInChildren<TextMesh>();
+        foreach (TextMesh t in cellsText) {
+            texts.Add(t.GetComponent<Transform>());
+        }
+        recordSeconds = PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), -1f);
+        if (recordSeconds > 0) {
+            int minutes = (int)((recordSeconds) / 60);
+            int seconds = (int)((recordSeconds) % 60);
+            int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
+            record.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
+        }
+        audio = GetComponent<AudioSource>();
+        print("timesDied " + timesDied);
+        if (timesDied >= 5)
+            StartCoroutine(lightPath(2));
+        //StartCoroutine (cellArray[1,2].GetComponent<Cell>().shine ());
+        //StartCoroutine (lightPath (2));
+        diceSize = dice.GetComponent<MeshRenderer>().bounds.size.y / 2;
+        hintsAvailable = PlayerPrefs.GetInt("hints", 2);
+        hintIndicator.text = "" + hintsAvailable;
 
-	public void hint(){
+        
+    }
+
+    private void OnGUI()
+    {
+        
+    }
+
+    public void hint(){
 		if (!pause) {
 			if (hintsAvailable <= 0) {
                 showVideo();
@@ -403,18 +412,45 @@ public class InGame : MonoBehaviour {
 		dice.GetComponent<Animator> ().SetTrigger ("Finished");
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioFinish);
-		if(Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), float.MaxValue))
-			PlayerPrefs.SetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
+        if (Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
+        {
+            PlayerPrefs.SetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
+            if (NPBinding.GameServices.LocalUser.IsAuthenticated)
+            {
+                NPBinding.GameServices.ReportScoreWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), (int)((Time.timeSinceLevelLoad - pauseTime) * 100), (bool _success, string _error) => {
+
+                    if (_success)
+                    {
+                        Debug.Log(string.Format("Request to report score to leaderboard with GID= {0} finished successfully.", PlayerPrefs.GetString("scene", "Scene1")));
+                        Debug.Log(string.Format("New score= {0}.", Time.timeSinceLevelLoad - pauseTime));
+                    }
+                    else
+                    {
+                        Debug.Log(string.Format("Request to report score to leaderboard with GID= {0} failed.", PlayerPrefs.GetString("scene", "Scene1")));
+                        Debug.Log(string.Format("Error= {0}.", _error.ToString()));
+                    }
+                });
+            }
+        }
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("finish", new Dictionary<string, object> {
 		{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
 			{ "steps", dice.steps },
 			{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});
-			#endif
+		#endif
 	}
 
-	public int checkOperationResult(int diceValueB, int diceValueA){
+    public void checkLeaderboard()
+    {
+        NPBinding.GameServices.ShowLeaderboardUIWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), eLeaderboardTimeScope.ALL_TIME, leaderboardCallback());
+    }
+    GameServices.GameServiceViewClosed leaderboardCallback()
+    {
+        return null;
+    }
+
+    public int checkOperationResult(int diceValueB, int diceValueA){
 		int res = 0;
 		print(dice.currentOperation);
 		switch (dice.currentOperation) {
