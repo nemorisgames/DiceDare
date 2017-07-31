@@ -9,7 +9,7 @@ public class Cell : MonoBehaviour {
 	public int number = 3;
 	// Use this for initialization
 	void Start () {
-		text = transform.FindChild ("Text").GetComponent<TextMesh> ();
+		text = transform.Find ("Text").GetComponent<TextMesh> ();
 		text.text = "" + number;
 		changeState (stateCell);
 	}

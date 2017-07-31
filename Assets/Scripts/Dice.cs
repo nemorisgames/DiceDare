@@ -37,12 +37,12 @@ public class Dice : MonoBehaviour {
 		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
 		line = GetComponent<LineRenderer> ();
 		currentPos = transform.position;
-		numbers.Add(transform.FindChild("TextUp").GetComponent<TextMesh>());
-		numbers.Add(transform.FindChild("TextDown").GetComponent<TextMesh>());
-		numbers.Add(transform.FindChild("TextLeft").GetComponent<TextMesh>());
-		numbers.Add(transform.FindChild("TextRight").GetComponent<TextMesh>());
-		numbers.Add(transform.FindChild("TextForward").GetComponent<TextMesh>());
-		numbers.Add(transform.FindChild("TextBackward").GetComponent<TextMesh>());
+		numbers.Add(transform.Find("TextUp").GetComponent<TextMesh>());
+		numbers.Add(transform.Find("TextDown").GetComponent<TextMesh>());
+		numbers.Add(transform.Find("TextLeft").GetComponent<TextMesh>());
+		numbers.Add(transform.Find("TextRight").GetComponent<TextMesh>());
+		numbers.Add(transform.Find("TextForward").GetComponent<TextMesh>());
+		numbers.Add(transform.Find("TextBackward").GetComponent<TextMesh>());
 
 		currentNumbers = numbers;
 

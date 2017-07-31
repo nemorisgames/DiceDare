@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Ciconia Studio/Double Sided/Emissive/Diffuse" {
     Properties {
         _Diffusecolor ("Diffuse color", Color) = (1,1,1,1)
@@ -40,7 +42,7 @@ Shader "Ciconia Studio/Double Sided/Emissive/Diffuse" {
             VertexOutput vert (VertexInput v) {
                 VertexOutput o = (VertexOutput)0;
                 o.uv0 = v.texcoord0;
-                o.pos = mul(UNITY_MATRIX_MVP, v.vertex );
+                o.pos = UnityObjectToClipPos(v.vertex );
                 UNITY_TRANSFER_FOG(o,o.pos);
                 return o;
             }
@@ -85,7 +87,7 @@ Shader "Ciconia Studio/Double Sided/Emissive/Diffuse" {
             };
             VertexOutput vert (VertexInput v) {
                 VertexOutput o = (VertexOutput)0;
-                o.pos = mul(UNITY_MATRIX_MVP, v.vertex );
+                o.pos = UnityObjectToClipPos(v.vertex );
                 TRANSFER_SHADOW_CASTER(o)
                 return o;
             }

@@ -24,6 +24,7 @@ public class LevelSelection : MonoBehaviour {
 
 		if (PlayerPrefs.GetInt ("Control") == 1) {
 			controlButton.spriteName = "tap";
+			controlButton.GetComponent<UIButton> ().normalSprite = "tap";
 		}
 
 		if (PlayerPrefs.GetString ("scene") != "") {
@@ -44,12 +45,12 @@ public class LevelSelection : MonoBehaviour {
 
 		for (int i = 0; i < recordButtons.Length; i++) {
 			float recordSeconds = PlayerPrefs.GetFloat ("recordScene" + (i + 1), -1f);
-			recordButtons[i].transform.FindChild("record").gameObject.SetActive(recordSeconds > 0);
+			recordButtons[i].transform.Find("record").gameObject.SetActive(recordSeconds > 0);
 			if (recordSeconds > 0) {
 				int minutes = (int)((recordSeconds) / 60);
 				int seconds = (int)((recordSeconds) % 60);
 				int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
-				recordButtons[i].transform.FindChild("record").GetComponent<UILabel>().text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
+				recordButtons[i].transform.Find("record").GetComponent<UILabel>().text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 			}
 		}
 	}
@@ -88,12 +89,14 @@ public class LevelSelection : MonoBehaviour {
 	void Mute(){
 		PlayerPrefs.SetInt ("Mute", 1);
 		muteButton.spriteName = "mute2";
+		muteButton.GetComponent<UIButton> ().normalSprite = "mute2";
 		Camera.main.GetComponent<AudioSource> ().mute = true;
 	}
 
 	void UnMute(){
 		PlayerPrefs.SetInt ("Mute", 0);
 		muteButton.spriteName = "mute";
+		muteButton.GetComponent<UIButton> ().normalSprite = "mute";
 		Camera.main.GetComponent<AudioSource> ().mute = false;
 	}
 
@@ -107,9 +110,11 @@ public class LevelSelection : MonoBehaviour {
 	public void ControlButton(){
 		if (PlayerPrefs.GetInt ("Control") == 0) {
 			controlButton.spriteName = "tap";
+			controlButton.GetComponent<UIButton> ().normalSprite = "tap";
 			PlayerPrefs.SetInt ("Control", 1);
 		} else {
 			controlButton.spriteName = "swipe";
+			controlButton.GetComponent<UIButton> ().normalSprite = "swipe";
 			PlayerPrefs.SetInt ("Control", 0);
 		}
 	}

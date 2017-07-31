@@ -48,6 +48,8 @@ public class InGame : MonoBehaviour {
 	public AudioSource bgm_go;
 	public static AudioSource bgm;
 
+	public TutorialVideo tutorialVideo;
+
 	//[HideInInspector]
 	public bool pause = false;
 
@@ -196,13 +198,19 @@ public class InGame : MonoBehaviour {
 		string[] info = aux[0].Split(new char[1]{'|'});
 		string[] arreglo = aux[1].Split(new char[1]{'|'});
 		Vector3 posIni = new Vector3 (int.Parse (info [2]), 0f, -int.Parse (info [3]));
-		if (int.Parse (info [4]) > 0) { 
-			tutorial.mainTexture = imgTutorial [int.Parse (info [4]) - 1];
-			tutorial.transform.FindChild ("Sprite").GetComponent<UISprite> ().alpha = 1f;
-			tutorial.transform.SendMessage ("PlayForward");
-			tutorial.transform.FindChild ("Sprite").SendMessage ("PlayForward");
+		if (int.Parse (info [4]) > 0) {
+			//tutorialVideo.PlayClip (int.Parse (info [4]) - 1);
+			//tutorial.mainTexture = imgTutorial [int.Parse (info [4]) - 1];
+			//tutorial.transform.Find ("Sprite").GetComponent<UISprite> ().alpha = 1f;
+			//tutorial.transform.SendMessage ("PlayForward");
+			//tutorial.transform.Find ("Sprite").SendMessage ("PlayForward");
+			tutorialVideo.gameObject.SetActive(true);
+			tutorialVideo.PlayClip(int.Parse (info [4]) - 1);
 			Pause ();
 		}
+		else
+			tutorialVideo.gameObject.SetActive(false);
+		
 		string completoNumbers = "";
 		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
 		case "Scene1":completoNumbers = GlobalVariables.Scene1Numbers;break;
@@ -260,9 +268,9 @@ public class InGame : MonoBehaviour {
 		string[] auxNumbers = completoNumbers.Split(new char[1]{'$'});
 		string[] infoNumbers = auxNumbers[0].Split(new char[1]{'|'});
 		string[] arregloNumbers = auxNumbers[1].Split(new char[1]{'|'});
-		dice.transform.FindChild ("TextUp").GetComponent<TextMesh> ().text = "" + int.Parse (infoNumbers[0]);
-		dice.transform.FindChild ("TextLeft").GetComponent<TextMesh> ().text = "" + int.Parse (infoNumbers[1]);
-		dice.transform.FindChild ("TextForward").GetComponent<TextMesh> ().text = "" + int.Parse (infoNumbers[2]);
+		dice.transform.Find ("TextUp").GetComponent<TextMesh> ().text = "" + int.Parse (infoNumbers[0]);
+		dice.transform.Find ("TextLeft").GetComponent<TextMesh> ().text = "" + int.Parse (infoNumbers[1]);
+		dice.transform.Find ("TextForward").GetComponent<TextMesh> ().text = "" + int.Parse (infoNumbers[2]);
 		int indice = 0;
 		Transform rootCells = GameObject.Find ("Cells").transform;
 		cellArray = new GameObject[int.Parse(info[0]),int.Parse(info[1])];
@@ -401,6 +409,7 @@ public class InGame : MonoBehaviour {
 		dice.enabled = false;
 		dice.transform.rotation = Quaternion.identity;
 		dice.GetComponent<Animator> ().SetTrigger ("Finished");
+		tutorialVideo.ToggleOff ();
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioFinish);
 		if(Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat ("record"+PlayerPrefs.GetString ("scene", "Scene1"), float.MaxValue))
