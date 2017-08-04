@@ -28,7 +28,7 @@ VideoClipImporter:
     0:
       enableTranscoding: 1
       codec: 0
-      resizeFormat: 0
+      resizeFormat: 3
       aspectRatio: 0
       customWidth: 600
       customHeight: 600
@@ -39,20 +39,20 @@ VideoClipImporter:
     settings:
       enableTranscoding: 1
       codec: 0
-      resizeFormat: 0
+      resizeFormat: 3
       aspectRatio: 0
       customWidth: 600
       customHeight: 600
       bitrateMode: 2
       spatialQuality: 2
-    encodedWidth: 600
-    encodedHeight: 600
+    encodedWidth: 150
+    encodedHeight: 150
     encodedStartFrame: 0
     encodedEndFrame: 213
     streamedResource:
       source: library/metadata/60/60e89d652507a814eac90afa7daa7c36.resource
       offset: 0
-      size: 681904
+      size: 51758
   userData: 
   assetBundleName: 
   assetBundleVariant: 
