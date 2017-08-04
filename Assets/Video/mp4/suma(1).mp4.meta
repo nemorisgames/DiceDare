@@ -28,31 +28,31 @@ VideoClipImporter:
     0:
       enableTranscoding: 1
       codec: 1
-      resizeFormat: 3
+      resizeFormat: 2
       aspectRatio: 0
       customWidth: 600
       customHeight: 600
-      bitrateMode: 2
+      bitrateMode: 1
       spatialQuality: 2
   output:
     format: 1
     settings:
       enableTranscoding: 1
       codec: 1
-      resizeFormat: 3
+      resizeFormat: 2
       aspectRatio: 0
       customWidth: 600
       customHeight: 600
-      bitrateMode: 2
+      bitrateMode: 1
       spatialQuality: 2
-    encodedWidth: 150
-    encodedHeight: 150
+    encodedWidth: 300
+    encodedHeight: 300
     encodedStartFrame: 0
     encodedEndFrame: 260
     streamedResource:
       source: library/metadata/a0/a019ad4275bd2bb4e9eb7698b851870a.resource
       offset: 0
-      size: 59289
+      size: 167035
   userData: 
   assetBundleName: 
   assetBundleVariant: 

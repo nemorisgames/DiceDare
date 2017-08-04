@@ -19,10 +19,17 @@ public class TutorialVideo : MonoBehaviour {
 		
 	}
 
-	public void PlayClip(int i){
+	public IEnumerator PlayClip(int i){
 		Debug.Log (i);
 		//vp.Stop ();
 		vp.clip = clips [i];
+		vp.skipOnDrop = false;
+		vp.Prepare ();
+		WaitForSeconds waitTime = new WaitForSeconds (2f);
+		while (!vp.isPrepared) {
+			yield return waitTime;
+			break;
+		}
 		vp.Play ();
 		anim.SetTrigger ("Start");
 	}
