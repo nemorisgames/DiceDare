@@ -213,8 +213,8 @@ public class InGame : MonoBehaviour {
 			//tutorial.transform.Find ("Sprite").GetComponent<UISprite> ().alpha = 1f;
 			//tutorial.transform.SendMessage ("PlayForward");
 			//tutorial.transform.Find ("Sprite").SendMessage ("PlayForward");
-			tutorialVideo.gameObject.SetActive(true);
-			tutorialVideo.PlayClip(int.Parse (info [4]) - 1);
+			//tutorialVideo.gameObject.SetActive(true);
+			//tutorialVideo.PlayClip(int.Parse (info [4]) - 1);
 			Pause ();
 		}
 		else
