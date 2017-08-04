@@ -12,6 +12,9 @@ public class TutorialVideo : MonoBehaviour {
 	void Start () {
 		vp = GetComponent<VideoPlayer> ();
 		anim = GetComponentInChildren<Animator> ();
+		vp.skipOnDrop = false;
+		vp.Prepare ();
+		//Debug.Log (vp.frameRate);
 	}
 	
 	// Update is called once per frame
