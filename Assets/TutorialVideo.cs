@@ -6,7 +6,7 @@ using UnityEngine.Video;
 public class TutorialVideo : MonoBehaviour {
 	VideoPlayer vp;
 	Animator anim;
-	public VideoClip [] clips; //0 = suma, 1 = resta, 2 = multi, 3 = div
+	//public VideoClip [] clips; //0 = suma, 1 = resta, 2 = multi, 3 = div
 
 	// Use this for initialization
 	void Start () {
@@ -22,7 +22,7 @@ public class TutorialVideo : MonoBehaviour {
 		
 	}
 
-	public IEnumerator PlayClip(int i){
+	/*public IEnumerator PlayClip(int i){
 		Debug.Log (i);
 		//vp.Stop ();
 		vp.clip = clips [i];
@@ -35,7 +35,7 @@ public class TutorialVideo : MonoBehaviour {
 		}
 		vp.Play ();
 		anim.SetTrigger ("Start");
-	}
+	}*/
 
 	public void ToggleOff(){
 		anim.SetTrigger ("FadeOut");
