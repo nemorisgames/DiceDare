@@ -214,7 +214,7 @@ public class InGame : MonoBehaviour {
 			//tutorial.transform.SendMessage ("PlayForward");
 			//tutorial.transform.Find ("Sprite").SendMessage ("PlayForward");
 			tutorialVideo.gameObject.SetActive(true);
-			tutorialVideo.PlayClip(int.Parse (info [4]) - 1);
+			StartCoroutine(tutorialVideo.PlayClip(int.Parse (info [4]) - 1));
 			Pause ();
 		}
 		else
