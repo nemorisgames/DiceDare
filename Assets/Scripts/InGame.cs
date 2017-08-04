@@ -217,7 +217,7 @@ public class InGame : MonoBehaviour {
 			tutorialClips[(int.Parse (info [4]) - 1)].gameObject.SetActive(true);
 			//tutorialVideo.gameObject.SetActive(true);
 			//StartCoroutine(tutorialVideo.PlayClip(int.Parse (info [4]) - 1));
-			Pause ();
+			//Pause ();
 		}
 		else
 			tutorialVideo.gameObject.SetActive(false);
