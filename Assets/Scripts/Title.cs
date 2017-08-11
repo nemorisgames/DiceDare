@@ -7,6 +7,7 @@ using VoxelBusters.NativePlugins;
 public class Title : MonoBehaviour {
 	bool credits = false;
 	public UIPanel creditsPanel;
+    public GameObject loading;
 
     bool _isAvailable = false;
     bool _isAuthenticated = false;
@@ -36,7 +37,8 @@ public class Title : MonoBehaviour {
 
 	public void play(){
 		if (PlayerPrefs.GetInt ("PlayedGame", 0) == 0) {
-			PlayerPrefs.SetInt ("PlayedGame", 1);
+            loading.SetActive(true);
+            PlayerPrefs.SetInt ("PlayedGame", 1);
 			PlayerPrefs.SetString ("scene", "Scene" + 1);
 			SceneManager.LoadScene ("InGame");
 		} else {
