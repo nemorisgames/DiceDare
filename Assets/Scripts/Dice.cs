@@ -287,7 +287,11 @@ public class Dice : MonoBehaviour {
 					break;
 
 				case "Death":
-					inGame.badMove ();
+					//Rigidbody rb = GetComponent<Rigidbody> ();
+					//rb.AddForce (new Vector3 (0f, -1000f, 0f));
+					//Debug.Log("here");
+					//Drop();
+					//inGame.badMove ();
 					break;
 				}
 				if (nextOperation != currentOperation) {
@@ -336,6 +340,9 @@ public class Dice : MonoBehaviour {
 				Destroy (c.gameObject);
 				StartCoroutine (inGame.rotateCells (false));
 				break;
+			case "Death":
+				StartCoroutine(Drop ());
+				break;
 			}
 		}
 	}
@@ -343,6 +350,18 @@ public class Dice : MonoBehaviour {
 	void changeOperation(Operation op){
 		nextOperation = op;
 	}
+
+	IEnumerator Drop(){
+		for (int i = 0; i < 25; i++) {
+			transform.position = new Vector3 (transform.position.x, transform.position.y - (Mathf.Max(i / (50f),0.01f)), transform.position.z);
+			yield return new WaitForSeconds (0.001f);
+			if (i == 25 / 5) {
+				inGame.badMove ();
+				inGame.GetComponent<CameraControl> ().follow = false;
+			}
+		}
+	}
+		
 
 	public void ToggleSwipe(bool b){
 		if (b) {

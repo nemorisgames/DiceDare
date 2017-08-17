@@ -7,11 +7,13 @@ public class Cell : MonoBehaviour {
 	public enum StateCell {Normal, Passed, EndCell};
 	public StateCell stateCell = StateCell.Normal;
 	public int number = 3;
+	Color32 defaultColor;
 	// Use this for initialization
 	void Start () {
 		text = transform.Find ("Text").GetComponent<TextMesh> ();
 		text.text = "" + number;
 		changeState (stateCell);
+		defaultColor = GetComponent<Renderer> ().material.GetColor ("_EmissionColor");
 	}
 
 	public void changeState(StateCell s){
@@ -38,6 +40,10 @@ public class Cell : MonoBehaviour {
 			}
 		}
 		m.SetColor ("_EmissionColor", colorDefault);
+	}
+
+	public void unshine(){
+		GetComponent<Renderer> ().material.SetColor ("_EmissionColor", defaultColor);
 	}
 	
 	// Update is called once per frame

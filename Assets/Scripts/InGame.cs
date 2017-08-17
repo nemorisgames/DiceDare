@@ -47,7 +47,7 @@ public class InGame : MonoBehaviour {
 	public AudioSource bgm_go;
 	public static AudioSource bgm;
 
-	public TutorialVideo tutorialVideo;
+	//public TutorialVideo tutorialVideo;
 
 	//[HideInInspector]
 	public bool pause = false;
@@ -61,6 +61,7 @@ public class InGame : MonoBehaviour {
 
 	public bool testing = false;
 	float diceSize;
+	public Transform adjacentCells;
 
 	// Use this for initialization
 	void Start () {
@@ -216,8 +217,6 @@ public class InGame : MonoBehaviour {
 			//StartCoroutine(tutorialVideo.PlayClip(int.Parse (info [4]) - 1));
 			//Pause ();
 		}
-		else
-			tutorialVideo.gameObject.SetActive(false);
 		
 		string completoNumbers = "";
 		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
@@ -417,7 +416,7 @@ public class InGame : MonoBehaviour {
 		dice.enabled = false;
 		dice.transform.rotation = Quaternion.identity;
 		dice.GetComponent<Animator> ().SetTrigger ("Finished");
-		tutorialVideo.ToggleOff ();
+		//tutorialVideo.ToggleOff ();
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioFinish);
         if (Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
@@ -614,5 +613,7 @@ public class InGame : MonoBehaviour {
 				PlayerPrefs.DeleteAll ();
 			}
 		}
+
+		adjacentCells.position = dice.transform.position;
 	}
 }

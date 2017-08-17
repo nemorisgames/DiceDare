@@ -6,6 +6,7 @@ public class CameraControl : MonoBehaviour {
 	Transform obj;
 	Dice dice;
 	Vector3 initialPosition;
+	public bool follow = true;
 	//bool rotating = false;
 	// Use this for initialization
 	void Start () {
@@ -34,7 +35,7 @@ public class CameraControl : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (dice.enabled && Time.timeSinceLevelLoad > 2f) {
+		if (dice.enabled && Time.timeSinceLevelLoad > 2f && follow) {
 			transform.position = Vector3.Lerp (transform.position, initialPosition + obj.position, Time.deltaTime * 10f);
 			transform.LookAt (obj);
 		}
