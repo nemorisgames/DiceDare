@@ -17,10 +17,7 @@ public class InGame : MonoBehaviour {
 	ArrayList path = new ArrayList();
 	public bool rotating = false;
 	public GameObject finishedSign;
-	public GameObject TimesUpSign;
-	public UILabel clockMinutes;
-	public UILabel clockSeconds;
-	public UILabel clockDecimals;
+	public UILabel clockShow;
 	public UILabel record;
 	public UILabel levelNum;
 	float recordSeconds;
@@ -522,10 +519,7 @@ public class InGame : MonoBehaviour {
 	}
 
 	void timesUp(){
-		clockMinutes.text = "00";
-		clockSeconds.text = "00";
-		clockDecimals.text = "00";
-		TimesUpSign.SetActive (true);
+		clockShow.text = "00";
 		dice.enabled = false;
 		StartCoroutine (reloadScene ());
 		audio.pitch = 1f;
@@ -554,6 +548,11 @@ public class InGame : MonoBehaviour {
 		SceneManager.LoadScene ("LevelSelection");
 	}
 
+    public void exitGame()
+    {
+        Application.Quit();
+    }
+
 
 	public void next(){
 		string texto = PlayerPrefs.GetString ("scene", "Scene1");
@@ -578,7 +577,7 @@ public class InGame : MonoBehaviour {
 			Destroy (bgm.gameObject);
 			SceneManager.LoadScene ("LevelSelection");
 		}
-		if (finishedSign.activeSelf || TimesUpSign.activeSelf) {
+		if (finishedSign.activeSelf) {
 			return;
 		}
 		/*if (secondsAvailable - Time.timeSinceLevelLoad <= 0) {
@@ -593,10 +592,8 @@ public class InGame : MonoBehaviour {
 		if (!pause) {
 			int minutes = (int)((Time.timeSinceLevelLoad - pauseTime) / 60);
 			int seconds = (int)((Time.timeSinceLevelLoad - pauseTime) % 60);
-			int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 100f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 100));
-			clockMinutes.text = (minutes < 10 ? "0" : "") + minutes;
-			clockSeconds.text = (seconds < 10 ? "0" : "") + seconds;
-			clockDecimals.text = (dec < 10 ? "0" : "") + dec;
+			int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 10f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 10));
+			clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
 		}
 
 		//test
