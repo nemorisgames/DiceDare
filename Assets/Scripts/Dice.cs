@@ -301,25 +301,25 @@ public class Dice : MonoBehaviour {
 						audio.pitch = 1f;
 						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (255, 90, 118, 255));
 						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 ((int)(255 * 0.3676471f), (int)(255 * 0.1621972f), (int)(255 * 0.191952f), (int)(255 * 0.3676471f)));
-						line.material = materialsLine [0];
+						//line.material = materialsLine [0];
 						break;
 					case Operation.Rest:
 						audio.pitch = 1.1f;
 						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (90, 112, 255, 255));
 						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 ((int)(255 * 0.1621972f), (int)(255 * 0.2146223f), (int)(255 * 0.3676471f), (int)(255 * 0.3676471f)));
-						line.material = materialsLine [1];
+						//line.material = materialsLine [1];
 						break;
 					case Operation.Mult:
 						audio.pitch = 1.2f;
 						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (125, 0, 255, 255));
 						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 ((int)(255 * 0.3223064f), (int)(255 * 0.1621972f), (int)(255 * 0.3676471f), (int)(255 * 0.3676471f)));
-						line.material = materialsLine [2];
+						//line.material = materialsLine [2];
 						break;
 					case Operation.Div:
 						audio.pitch = 1.3f;
 						GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (60, 113, 46, 255));
 						GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32((int)(255 * 0.1308764f), (int)(255 * 0.1985294f), (int)(255 * 0.07590831f), (int)(255 * 0.3676471f)));
-						line.material = materialsLine [3];
+						//line.material = materialsLine [3];
 						break;
 					}
 					audio.PlayOneShot(audioCubeChange);
@@ -377,6 +377,12 @@ public class Dice : MonoBehaviour {
 
 	Vector3 initialPosition;
 	float timeSwipe;
+
+	public void EnableAdjCells(){
+		foreach (Transform t in inGame.adjacentCells)
+			t.GetComponent<AdjacentCellFinder> ().EnableCell (true);
+	}
+
 	// Update is called once per frame
 	void Update () {
 		if (onMovement || inGame.rotating || Time.timeSinceLevelLoad < 2f || inGame.pause)

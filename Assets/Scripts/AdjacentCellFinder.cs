@@ -4,25 +4,51 @@ using UnityEngine;
 
 public class AdjacentCellFinder : MonoBehaviour {
 	InGame ingame;
+	bool active = false;
+	Cell previousCell;
 
 	// Use this for initialization
 	void Start () {
 		ingame = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<InGame>();
+		StartCoroutine (Delay (1f));
 	}
 
-	void OnTriggerStay(Collider c){
-		if (!ingame.rotating && c.name.Substring (0, 4) == "Cell") {
-			Cell cell = c.GetComponent<Cell> ();
-			if (cell.stateCell != Cell.StateCell.Passed)
-				//StartCoroutine(cell.shine (1));
-				Debug.Log(this.name+": "+cell.number);
-		}
+	void OnTriggerEnter(Collider c){
+		if(!ingame.finished)
+			EnableCell (c, true);
 	}
 
 	void OnTriggerExit(Collider c){
-		if (c.name.Substring (0, 4) == "Cell") {
+		EnableCell (c, false);
+	}
+
+	void EnableCell(Collider c, bool b){
+		if (c.name.Substring (0, 4) == "Cell" && active) {
 			Cell cell = c.GetComponent<Cell> ();
-			Debug.Log (this.name + ": " + cell.number);
+			if (cell.stateCell == Cell.StateCell.Normal && !cell.operation) {
+				SwitchMaterial (cell, b);
+			}
+			if (b) {
+				if(previousCell != null && previousCell != cell)
+					SwitchMaterial (previousCell, !b);
+				previousCell = cell;
+			}
 		}
+	}
+
+	void SwitchMaterial(Cell cell, bool b){
+		if (ingame.cellMaterials != null && ingame.cellTextMaterials != null && cell.stateCell == Cell.StateCell.Normal && !cell.operation) {
+			cell.GetComponent<MeshRenderer> ().material = (b ? ingame.cellMaterials [1] : ingame.cellMaterials [0]);
+			cell.transform.Find ("Text").GetComponent<MeshRenderer> ().material = (b ? ingame.cellTextMaterials [1] : ingame.cellTextMaterials [0]);
+		}
+	}
+
+	IEnumerator Delay(float f){
+		yield return new WaitForSeconds (f);
+		active = true;
+	}
+
+	public void EnableCell(bool b){
+		SwitchMaterial (previousCell, b);
 	}
 }

@@ -8,6 +8,7 @@ public class Cell : MonoBehaviour {
 	public StateCell stateCell = StateCell.Normal;
 	public int number = 3;
 	Color32 defaultColor;
+	public bool operation = false;
 	// Use this for initialization
 	void Start () {
 		text = transform.Find ("Text").GetComponent<TextMesh> ();

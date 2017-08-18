@@ -62,6 +62,10 @@ public class InGame : MonoBehaviour {
 	public bool testing = false;
 	float diceSize;
 	public Transform adjacentCells;
+	public Material[] cellMaterials;
+	public Material[] cellTextMaterials;
+
+	int tutorialIndex;
 
 	// Use this for initialization
 	void Start () {
@@ -106,7 +110,7 @@ public class InGame : MonoBehaviour {
         diceSize = dice.GetComponent<MeshRenderer>().bounds.size.y / 2;
         hintsAvailable = PlayerPrefs.GetInt("hints", 2);
         hintIndicator.text = "" + hintsAvailable;
-
+		showTutorial = nguiCam.cullingMask;
         
     }
 
@@ -207,6 +211,7 @@ public class InGame : MonoBehaviour {
 		string[] arreglo = aux[1].Split(new char[1]{'|'});
 		Vector3 posIni = new Vector3 (int.Parse (info [2]), 0f, -int.Parse (info [3]));
 		if (int.Parse (info [4]) > 0) {
+			tutorialIndex = int.Parse (info [4]);
 			//tutorialVideo.PlayClip (int.Parse (info [4]) - 1);
 			//tutorial.mainTexture = imgTutorial [int.Parse (info [4]) - 1];
 			//tutorial.transform.Find ("Sprite").GetComponent<UISprite> ().alpha = 1f;
@@ -398,17 +403,41 @@ public class InGame : MonoBehaviour {
 			case 2:
 				foreach (Vector2 v in path) {
 					StartCoroutine (cellArray [(int)v.x, (int)v.y].GetComponent<Cell> ().shine (1));
-					yield return new WaitForSeconds (1f/2);
+					yield return new WaitForSeconds (1f / 2);
 				}
+				StartCoroutine (cellArray [(int)((Vector2)path [0]).x, (int)((Vector2)path [0]).y].GetComponent<Cell> ().shine (1));
+				yield return new WaitForSeconds (1f);
 				break;
 			}
 			UnPause ();
+			/*yield return new WaitForSeconds (0.03f);
+			foreach (Transform t in adjacentCells)
+				t.GetComponent<AdjacentCellFinder> ().EnableCell (true);*/
 		}
 	}
 
+	public Camera nguiCam;
+	public LayerMask hideTutorial;
+	LayerMask showTutorial;
+
+	public void HideTutorial(){
+		if (nguiCam.cullingMask != hideTutorial)
+			nguiCam.cullingMask = hideTutorial;
+		else
+			nguiCam.cullingMask = showTutorial;
+	}
+
+	public bool finished = false;
+
 	public void finishGame(){
+		finished = true;
 		print("Finished");
+		HideTutorial();
 		Pause ();
+		foreach (Transform t in adjacentCells)
+			t.GetComponent<AdjacentCellFinder> ().EnableCell (false);
+		//for (int i = 0; i < tutorialClips.Length; i++)
+
 		StartCoroutine (dropCells ());
 		dice.enabled = false;
 		//finishedSign.SetActive (true);
@@ -613,6 +642,15 @@ public class InGame : MonoBehaviour {
 				PlayerPrefs.DeleteAll ();
 			}
 		}
+		if (rotating || pause || dice.onMovement) {
+			if (rotating)
+				foreach (Transform t in adjacentCells)
+					t.GetComponent<AdjacentCellFinder> ().EnableCell (false);
+			adjacentCells.gameObject.SetActive (false);
+		}
+		else if (!adjacentCells.gameObject.activeSelf && !finished)
+			adjacentCells.gameObject.SetActive (true);
+				
 
 		adjacentCells.position = dice.transform.position;
 	}
