@@ -358,16 +358,14 @@ public class Dice : MonoBehaviour {
 
 	IEnumerator Drop(){
         dropped = true;
-		for (int i = 0; i < 25; i++) {
-			transform.position = new Vector3 (transform.position.x, transform.position.y - (Mathf.Max(i / (50f),0.01f)), transform.position.z);
+		inGame.GetComponent<CameraControl> ().follow = false;
+		for (int i = 0; i < 50; i++) {
+			transform.position = new Vector3 (transform.position.x, transform.position.y - ((i*i)/20f / (50f)), transform.position.z);
 			yield return new WaitForSeconds (0.001f);
-			/*if (i == 25 - 1) {
+			if (i == 25) {
 				inGame.badMove ();
-				inGame.GetComponent<CameraControl> ().follow = false;
-			}*/
+			}
 		}
-        inGame.badMove();
-        inGame.GetComponent<CameraControl>().follow = false;
     }
 		
 
@@ -386,10 +384,11 @@ public class Dice : MonoBehaviour {
 	Vector3 initialPosition;
 	float timeSwipe;
 
-	public void EnableAdjCells(){
-		foreach (Transform t in inGame.adjacentCells)
+	/*public void EnableAdjCells(){
+		foreach (Transform t in inGame.adjacentCells) {
 			t.GetComponent<AdjacentCellFinder> ().EnableCell (true);
-	}
+		}
+	}*/
 
 	// Update is called once per frame
 	void Update () {

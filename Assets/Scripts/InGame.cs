@@ -423,9 +423,9 @@ public class InGame : MonoBehaviour {
 					StartCoroutine (cellArray [(int)v.x, (int)v.y].GetComponent<Cell> ().shine (1));
 					yield return new WaitForSeconds (1f / 2);
 				}
-
-                    //StartCoroutine (cellArray [(int)((Vector2)path [0]).x, (int)((Vector2)path [0]).y].GetComponent<Cell> ().shine (1));
-                
+				foreach (Transform t in adjacentCells)
+					t.GetComponent<AdjacentCellFinder> ().active = true;
+                StartCoroutine (cellArray [(int)((Vector2)path [0]).x, (int)((Vector2)path [0]).y].GetComponent<Cell> ().shine (2));
 				yield return new WaitForSeconds (1f);
 				break;
 			}

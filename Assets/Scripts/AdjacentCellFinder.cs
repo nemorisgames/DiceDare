@@ -4,16 +4,24 @@ using UnityEngine;
 
 public class AdjacentCellFinder : MonoBehaviour {
 	InGame ingame;
-	bool active = false;
-	Cell previousCell;
+	public bool active = false;
+	public Cell previousCell;
+	public Cell cell;
+	int previousID;
+	int timesDied;
 
 	// Use this for initialization
 	void Start () {
 		ingame = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<InGame>();
-		StartCoroutine (Delay (1f));
+		timesDied = PlayerPrefs.GetInt ("timesDied");
+		if (timesDied < 5){
+			StartCoroutine (Delay (1f));
+			StartCoroutine (DoubleCheck ());
+		}
 	}
 
 	void OnTriggerEnter(Collider c){
+		cell = c.GetComponent<Cell> ();
 		if(!ingame.finished)
 			EnableCell (c, true);
 	}
@@ -24,7 +32,7 @@ public class AdjacentCellFinder : MonoBehaviour {
 
 	void EnableCell(Collider c, bool b){
 		if (c.name.Substring (0, 4) == "Cell" && active) {
-			Cell cell = c.GetComponent<Cell> ();
+			previousID = cell.GetInstanceID ();
 			if (cell.stateCell == Cell.StateCell.Normal && !cell.operation) {
 				SwitchMaterial (cell, b);
 			}
@@ -49,7 +57,21 @@ public class AdjacentCellFinder : MonoBehaviour {
 		active = true;
 	}
 
+	IEnumerator DoubleCheck(){
+		yield return new WaitForSeconds (2f);
+		if (previousCell == null) {
+			active = true;
+			SwitchMaterial (cell, true);
+			previousCell = cell;
+		}
+	}
+
 	public void EnableCell(bool b){
 		SwitchMaterial (previousCell, b);
+		//StartCoroutine(Delay (0.1f));
+	}
+
+	public int getId(){
+		return previousID;
 	}
 }
