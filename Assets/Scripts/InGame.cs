@@ -68,8 +68,7 @@ public class InGame : MonoBehaviour {
 	int tutorialIndex;
     public TweenAlpha hintMessage;
     int hintPressedNumber = 0;
-
-    public Vector3 posIni;
+    
 
 	// Use this for initialization
 	void Start () {
@@ -227,7 +226,7 @@ public class InGame : MonoBehaviour {
 		string[] aux = completo.Split(new char[1]{'$'});
 		string[] info = aux[0].Split(new char[1]{'|'});
 		string[] arreglo = aux[1].Split(new char[1]{'|'});
-		posIni = new Vector3 (int.Parse (info [2]), 0f, -int.Parse (info [3]));
+		Vector3 posIni = new Vector3 (int.Parse (info [2]), 0f, -int.Parse (info [3]));
 		if (int.Parse (info [4]) > 0) {
 			tutorialIndex = int.Parse (info [4]);
 			//tutorialVideo.PlayClip (int.Parse (info [4]) - 1);
@@ -426,8 +425,7 @@ public class InGame : MonoBehaviour {
 				}
 
                     //StartCoroutine (cellArray [(int)((Vector2)path [0]).x, (int)((Vector2)path [0]).y].GetComponent<Cell> ().shine (1));
-                yield return new WaitForSeconds(0.5f);
-                StartCoroutine(dice.turn(getDirection(dice.currentPos, (Vector2)path[0])));
+                
 				yield return new WaitForSeconds (1f);
 				break;
 			}
@@ -440,9 +438,9 @@ public class InGame : MonoBehaviour {
 
     public Dice.Direction getDirection(Vector3 currentPos, Vector2 endPos)
     {
-        Vector2 pos = new Vector2(currentPos.x * -1, currentPos.z * -1);
-        endPos = new Vector2(endPos.y - posIni.x, endPos.x + posIni.z);
-        print(currentPos + ", (" + (currentPos.x * -1) + ", " + (currentPos.z * -1) + "), " + endPos);
+        Vector2 pos = new Vector2(currentPos.x * 1, currentPos.z * 1);
+        endPos = new Vector2(endPos.y, endPos.x);
+        print(currentPos + ", (" + (pos.x) + ", " + (pos.y) + "), " + endPos);
         if (pos.x == (int)endPos.x)
         {
             if (pos.y < (int)endPos.y)
@@ -478,7 +476,9 @@ public class InGame : MonoBehaviour {
 	public bool finished = false;
 
 	public void finishGame(){
-		finished = true;
+        PlayerPrefs.SetInt("timesDied", 0);
+
+        finished = true;
 		print("Finished");
 		HideTutorial();
 		Pause ();
