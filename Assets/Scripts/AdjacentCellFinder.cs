@@ -37,6 +37,7 @@ public class AdjacentCellFinder : MonoBehaviour {
 	}
 
 	void SwitchMaterial(Cell cell, bool b){
+        if (cell == null) return;
 		if (ingame.cellMaterials != null && ingame.cellTextMaterials != null && cell.stateCell == Cell.StateCell.Normal && !cell.operation) {
 			cell.GetComponent<MeshRenderer> ().material = (b ? ingame.cellMaterials [1] : ingame.cellMaterials [0]);
 			cell.transform.Find ("Text").GetComponent<MeshRenderer> ().material = (b ? ingame.cellTextMaterials [1] : ingame.cellTextMaterials [0]);

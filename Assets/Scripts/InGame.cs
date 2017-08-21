@@ -66,6 +66,10 @@ public class InGame : MonoBehaviour {
 	public Material[] cellTextMaterials;
 
 	int tutorialIndex;
+    public TweenAlpha hintMessage;
+    int hintPressedNumber = 0;
+
+    public Vector3 posIni;
 
 	// Use this for initialization
 	void Start () {
@@ -114,14 +118,28 @@ public class InGame : MonoBehaviour {
         
     }
 
+    public void hintPressed()
+    {
+        if (hintPressedNumber <= 0)
+        {
+            hintMessage.PlayForward();
+            hintPressedNumber++;
+        }
+        else
+        {
+            hint();
+        }
+    }
+
     private void OnGUI()
     {
         
     }
 
     public void hint(){
-		if (!pause) {
-			if (hintsAvailable <= 0) {
+		if (!pause && path.Count > 0)
+        {
+            if (hintsAvailable <= 0) {
                 showVideo();
                 
                 //hintScreen.SendMessage ("PlayForward");
@@ -209,7 +227,7 @@ public class InGame : MonoBehaviour {
 		string[] aux = completo.Split(new char[1]{'$'});
 		string[] info = aux[0].Split(new char[1]{'|'});
 		string[] arreglo = aux[1].Split(new char[1]{'|'});
-		Vector3 posIni = new Vector3 (int.Parse (info [2]), 0f, -int.Parse (info [3]));
+		posIni = new Vector3 (int.Parse (info [2]), 0f, -int.Parse (info [3]));
 		if (int.Parse (info [4]) > 0) {
 			tutorialIndex = int.Parse (info [4]);
 			//tutorialVideo.PlayClip (int.Parse (info [4]) - 1);
@@ -360,14 +378,15 @@ public class InGame : MonoBehaviour {
 	}
 
 	public void badMove(){
-		#if !UNITY_EDITOR
+#if !UNITY_EDITOR
 		Analytics.CustomEvent ("badMove", new Dictionary<string, object> {
 		{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
 		{ "steps", dice.steps },
 		{ "place", dice.gameObject.transform.position},
 		{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});
-		#endif
+#endif
+        print("badMove");
 		dice.enabled = false;
 		StartCoroutine (reloadScene ());
 		audio.pitch = 1f;
@@ -397,7 +416,7 @@ public class InGame : MonoBehaviour {
 				int aux = Mathf.Min (3, path.Count);
 				for (int i = 0; i < aux; i++) {
 					StartCoroutine (cellArray [(int)((Vector2)path [i]).x, (int)((Vector2)path [i]).y].GetComponent<Cell> ().shine (1));
-					yield return new WaitForSeconds (1f/2);
+					yield return new WaitForSeconds (1f / 2);
 				}
 				break;
 			case 2:
@@ -405,7 +424,10 @@ public class InGame : MonoBehaviour {
 					StartCoroutine (cellArray [(int)v.x, (int)v.y].GetComponent<Cell> ().shine (1));
 					yield return new WaitForSeconds (1f / 2);
 				}
-				StartCoroutine (cellArray [(int)((Vector2)path [0]).x, (int)((Vector2)path [0]).y].GetComponent<Cell> ().shine (1));
+
+                    //StartCoroutine (cellArray [(int)((Vector2)path [0]).x, (int)((Vector2)path [0]).y].GetComponent<Cell> ().shine (1));
+                yield return new WaitForSeconds(0.5f);
+                StartCoroutine(dice.turn(getDirection(dice.currentPos, (Vector2)path[0])));
 				yield return new WaitForSeconds (1f);
 				break;
 			}
@@ -416,7 +438,33 @@ public class InGame : MonoBehaviour {
 		}
 	}
 
-	public Camera nguiCam;
+    public Dice.Direction getDirection(Vector3 currentPos, Vector2 endPos)
+    {
+        Vector2 pos = new Vector2(currentPos.x * -1, currentPos.z * -1);
+        endPos = new Vector2(endPos.y - posIni.x, endPos.x + posIni.z);
+        print(currentPos + ", (" + (currentPos.x * -1) + ", " + (currentPos.z * -1) + "), " + endPos);
+        if (pos.x == (int)endPos.x)
+        {
+            if (pos.y < (int)endPos.y)
+                return Dice.Direction.Down;
+            else
+                return Dice.Direction.Up;
+        }
+        else
+        {
+            if(pos.y == (int)endPos.y)
+            {
+                if (pos.x < (int)endPos.x)
+                    return Dice.Direction.Left;
+                else
+                    return Dice.Direction.Right;
+            }
+        }
+        return Dice.Direction.Down;
+    }
+
+
+    public Camera nguiCam;
 	public LayerMask hideTutorial;
 	LayerMask showTutorial;
 
@@ -536,6 +584,7 @@ public class InGame : MonoBehaviour {
 					yield return new WaitForSeconds (1.4f);
 					finishedSign.SetActive (true);
 					finishedSign.SendMessage ("PlayForward");
+                    showInterstitial();
 				}
 			}
 		}

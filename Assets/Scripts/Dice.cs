@@ -31,8 +31,9 @@ public class Dice : MonoBehaviour {
 	public Material[] materialsLine;
 	public UITexture backgroundTexture;
 	public ParticleSystem goodMove;
-	// Use this for initialization
-	bool swipe;
+    bool dropped = false;
+    // Use this for initialization
+    bool swipe;
 	void Start () {
 		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
 		line = GetComponent<LineRenderer> ();
@@ -341,7 +342,11 @@ public class Dice : MonoBehaviour {
 				StartCoroutine (inGame.rotateCells (false));
 				break;
 			case "Death":
-				StartCoroutine(Drop ());
+                    if (!dropped)
+                    {
+                        dropped = true;
+                        StartCoroutine(Drop());
+                    }
 				break;
 			}
 		}
@@ -352,15 +357,18 @@ public class Dice : MonoBehaviour {
 	}
 
 	IEnumerator Drop(){
+        dropped = true;
 		for (int i = 0; i < 25; i++) {
 			transform.position = new Vector3 (transform.position.x, transform.position.y - (Mathf.Max(i / (50f),0.01f)), transform.position.z);
 			yield return new WaitForSeconds (0.001f);
-			if (i == 25 / 5) {
+			/*if (i == 25 - 1) {
 				inGame.badMove ();
 				inGame.GetComponent<CameraControl> ().follow = false;
-			}
+			}*/
 		}
-	}
+        inGame.badMove();
+        inGame.GetComponent<CameraControl>().follow = false;
+    }
 		
 
 	public void ToggleSwipe(bool b){
