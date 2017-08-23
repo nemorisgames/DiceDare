@@ -15,9 +15,9 @@ public class TutorialVideo : MonoBehaviour {
 		anim = GetComponentInChildren<Animator> ();
 
 		#if !UNITY_EDITOR
-		lastOrientation = Input.DeviceOrientation;
+		lastOrientation = Input.deviceOrientation;
 		#else
-		//lastOrientation = DeviceOrientation.LandscapeLeft;
+		lastOrientation = DeviceOrientation.LandscapeLeft;
 		anim.SetTrigger("Landscape");
 		#endif
 
