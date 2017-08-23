@@ -15,12 +15,7 @@ public class TutorialVideo : MonoBehaviour {
 		anim = GetComponentInChildren<Animator> ();
 
 		#if !UNITY_EDITOR
-		lastOrientation = Input.deviceOrientation;
-		if (lastOrientation == DeviceOrientation.Portrait) {
-			anim.SetTrigger ("Portrait");
-		} else {
-			anim.SetTrigger ("Landscape");
-		}
+		lastOrientation = DeviceOrientation.Unknown;
 		#else
 		lastOrientation = DeviceOrientation.LandscapeLeft;
 		anim.SetTrigger("Landscape");
