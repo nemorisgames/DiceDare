@@ -38,11 +38,27 @@ public class TutorialVideo : MonoBehaviour {
 
 		if (currentOrientation != lastOrientation) {
 			lastOrientation = currentOrientation;
-			if (lastOrientation == DeviceOrientation.Portrait) {
-				anim.SetTrigger ("Portrait");
-			} else {
-				anim.SetTrigger ("Landscape");
+			switch (lastOrientation) {
+			case DeviceOrientation.FaceDown:
+			case DeviceOrientation.FaceUp:
+			case DeviceOrientation.Unknown:
+				break;
+			case DeviceOrientation.PortraitUpsideDown:
+			case DeviceOrientation.Portrait:
+				if(!anim.GetCurrentAnimatorStateInfo(0).IsName("IdlePortrait"))
+					anim.SetTrigger ("Portrait");
+				break;
+			case DeviceOrientation.LandscapeLeft:
+			case DeviceOrientation.LandscapeRight:
+				if(!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+					anim.SetTrigger ("Landscape");
+				break;
 			}
+			/*if (lastOrientation == DeviceOrientation.Portrait) {
+				anim.SetTrigger ("Portrait");
+			} else if(lastOrientation == DeviceOrientation.LandscapeLeft || lastOrientation == DeviceOrientation.LandscapeRight){
+				anim.SetTrigger ("Landscape");
+			}*/
 		}
 	}
 
