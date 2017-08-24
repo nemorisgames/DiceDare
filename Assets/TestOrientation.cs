@@ -16,7 +16,7 @@ public class TestOrientation : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		label.text = Input.deviceOrientation.ToString ();
+		label.text = Input.acceleration.ToString ();
 		/*DeviceOrientation currentOrientation = Input.deviceOrientation;
 		if(currentOrientation != lastOrientation){
 			lastOrientation = currentOrientation;

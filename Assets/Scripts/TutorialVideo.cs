@@ -39,13 +39,18 @@ public class TutorialVideo : MonoBehaviour {
 		if (currentOrientation != lastOrientation) {
 			lastOrientation = currentOrientation;
 			switch (lastOrientation) {
-			case DeviceOrientation.FaceDown:
-			case DeviceOrientation.FaceUp:
 			case DeviceOrientation.Unknown:
+				break;
+			case DeviceOrientation.FaceUp:
+			case DeviceOrientation.FaceDown:
+				if (Screen.width > Screen.height && !anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+					anim.SetTrigger ("Landscape");
+				else if(Screen.height > Screen.width && !anim.GetCurrentAnimatorStateInfo(0).IsName("IdlePortrait"))
+					anim.SetTrigger ("Portrait");
 				break;
 			case DeviceOrientation.PortraitUpsideDown:
 			case DeviceOrientation.Portrait:
-				if(!anim.GetCurrentAnimatorStateInfo(0).IsName("IdlePortrait"))
+				if()
 					anim.SetTrigger ("Portrait");
 				break;
 			case DeviceOrientation.LandscapeLeft:
