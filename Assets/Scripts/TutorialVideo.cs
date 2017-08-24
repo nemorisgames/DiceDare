@@ -23,7 +23,6 @@ public class TutorialVideo : MonoBehaviour {
 
 		vp.skipOnDrop = false;
 		vp.Prepare ();
-		StartCoroutine (firstCheck ());
 		//Debug.Log (vp.frameRate);
 	}
 
@@ -80,11 +79,5 @@ public class TutorialVideo : MonoBehaviour {
 
 	public void ToggleOff(){
 		anim.SetTrigger ("FadeOut");
-	}
-
-	IEnumerator firstCheck(){
-		yield return new WaitForSeconds (0.5f);
-		if (Input.deviceOrientation == DeviceOrientation.Portrait)
-			anim.SetTrigger ("Portrait");
 	}
 }
