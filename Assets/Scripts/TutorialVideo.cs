@@ -50,7 +50,7 @@ public class TutorialVideo : MonoBehaviour {
 				break;
 			case DeviceOrientation.PortraitUpsideDown:
 			case DeviceOrientation.Portrait:
-				if()
+				if(!anim.GetCurrentAnimatorStateInfo(0).IsName("IdlePortrait"))
 					anim.SetTrigger ("Portrait");
 				break;
 			case DeviceOrientation.LandscapeLeft:
