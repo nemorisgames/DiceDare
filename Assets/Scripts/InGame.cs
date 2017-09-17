@@ -10,7 +10,7 @@ using VoxelBusters.NativePlugins;
 using AppodealAds.Unity.Api;
 using AppodealAds.Unity.Common;
 
-public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
+public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener, IInterstitialAdListener
 {
 	Dice dice;
 	Transform cells;
@@ -162,26 +162,27 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 
     public void showBanner()
     {
-        if (Appodeal.isLoaded(Appodeal.BANNER))
+        if (Appodeal.isLoaded(Appodeal.BANNER_BOTTOM))
         {
             Appodeal.show(Appodeal.BANNER_BOTTOM);
             Appodeal.setBannerCallbacks(this);
         }
         else
         {
-            HandleShowResult(ShowResult.Failed);
+            HandleShowResult(-1);
         }
     }
 
 	public void showInterstitial()
 	{
-		if (Advertisement.IsReady())
+		if (Appodeal.isLoaded(Appodeal.INTERSTITIAL))
 		{
-			Advertisement.Show();
+            Appodeal.show(Appodeal.INTERSTITIAL);
+            Appodeal.setInterstitialCallbacks(this);
 		}
         else
         {
-            HandleShowResult(ShowResult.Failed);
+            HandleShowResult(-1);
         }
     }
 
@@ -196,7 +197,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
         }
         else
         {
-            HandleShowResult(ShowResult.Failed);
+            HandleShowResult(-1);
         }
     }
     #region Rewarded Video callback handlers
@@ -214,23 +215,31 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
     public void onBannerClicked() { mensaje += ("banner clicked"); }
     #endregion
 
-    private void HandleShowResult(ShowResult result)
+    #region Interstitial callback handlers
+    public void onInterstitialLoaded() { mensaje += ("Interstitial loaded"); }
+    public void onInterstitialFailedToLoad() { mensaje += ("Interstitial failed"); }
+    public void onInterstitialShown() { mensaje += ("Interstitial opened"); }
+    public void onInterstitialClosed() { mensaje += ("Interstitial closed"); }
+    public void onInterstitialClicked() { mensaje += ("Interstitial clicked"); }
+    #endregion
+
+    private void HandleShowResult(int result)
 	{
 		switch (result)
 		{
-		case ShowResult.Finished:
+		case 0:
 			    hintsAvailable += 2;
 			    PlayerPrefs.SetInt ("hints", hintsAvailable);
 			    hintIndicator.text = "" + hintsAvailable;
 			    closeHintScreen ();
                 mensaje += "Ad succesful";
                 break;
-		case ShowResult.Skipped:
+		case 1:
 			    Debug.Log("The ad was skipped before reaching the end.");
                 mensaje += "The ad was skipped before reaching the end.";
                 closeHintScreen();
             break;
-		case ShowResult.Failed:
+		case -1:
 			    Debug.LogError("The ad failed to be shown.");
                 mensaje += "The ad failed to be shown.";
                 closeHintScreen();

@@ -11,14 +11,14 @@ public class AppodealDemo : MonoBehaviour, IInterstitialAdListener, IBannerAdLis
 	#if UNITY_EDITOR && !UNITY_ANDROID && !UNITY_IPHONE
 		string appKey = "";
 	#elif UNITY_ANDROID
-		string appKey = "fee50c333ff3825fd6ad6d38cff78154de3025546d47a84f";
-	#elif UNITY_IPHONE
-		string appKey = "722fb56678445f72fe2ec58b2fa436688b920835405d3ca6";
-	#else
+		string appKey = "7db225fc3f0d8f1a441776cfd1413e123475b21648b84ae3";
+#elif UNITY_IPHONE
+		string appKey = "7db225fc3f0d8f1a441776cfd1413e123475b21648b84ae3";
+#else
 		string appKey = "";
-	#endif
+#endif
 
-	public Toggle LoggingToggle, TestingToggle, ConfirmToggle;
+    public Toggle LoggingToggle, TestingToggle, ConfirmToggle;
 	private bool isIntCached;
 
 	void Awake ()
