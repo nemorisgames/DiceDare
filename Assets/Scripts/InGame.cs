@@ -7,10 +7,10 @@ using UnityEngine.Analytics;
 using UnityEngine.Advertisements;
 
 using VoxelBusters.NativePlugins;
-//using AppodealAds.Unity.Api;
-//using AppodealAds.Unity.Common;
+using AppodealAds.Unity.Api;
+using AppodealAds.Unity.Common;
 
-public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListener
+public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 {
 	Dice dice;
 	Transform cells;
@@ -162,7 +162,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
     public void showBanner()
     {
-        /*if (Appodeal.isLoaded(Appodeal.BANNER))
+        if (Appodeal.isLoaded(Appodeal.BANNER))
         {
             Appodeal.show(Appodeal.BANNER_BOTTOM);
             Appodeal.setBannerCallbacks(this);
@@ -170,7 +170,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         else
         {
             HandleShowResult(ShowResult.Failed);
-        }*/
+        }
     }
 
 	public void showInterstitial()
@@ -186,7 +186,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     }
 
 	public void showVideo(){
-        /*if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO))
+        if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO))
         {
             Appodeal.show(Appodeal.REWARDED_VIDEO);
             Appodeal.setRewardedVideoCallbacks(this);
@@ -197,7 +197,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         else
         {
             HandleShowResult(ShowResult.Failed);
-        }*/
+        }
     }
     #region Rewarded Video callback handlers
     public void onRewardedVideoLoaded() { mensaje += ("Video loaded"); }
