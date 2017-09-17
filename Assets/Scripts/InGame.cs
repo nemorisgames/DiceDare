@@ -7,8 +7,11 @@ using UnityEngine.Analytics;
 using UnityEngine.Advertisements;
 
 using VoxelBusters.NativePlugins;
+//using AppodealAds.Unity.Api;
+//using AppodealAds.Unity.Common;
 
-public class InGame : MonoBehaviour {
+public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListener
+{
 	Dice dice;
 	Transform cells;
 	GameObject [,] cellArray;
@@ -68,10 +71,11 @@ public class InGame : MonoBehaviour {
 	int tutorialIndex;
     public TweenAlpha hintMessage;
     int hintPressedNumber = 0;
-    
 
-	// Use this for initialization
-	void Start () {
+    string mensaje = "";
+
+    // Use this for initialization
+    void Start () {
 		if (bgm == null) {
 			bgm = bgm_go;
 			DontDestroyOnLoad (bgm);
@@ -132,7 +136,7 @@ public class InGame : MonoBehaviour {
 
     private void OnGUI()
     {
-        
+        GUI.Label(new Rect(10, 10, 400, 200), mensaje);
     }
 
     public void hint(){
@@ -156,41 +160,81 @@ public class InGame : MonoBehaviour {
 		}
 	}
 
+    public void showBanner()
+    {
+        /*if (Appodeal.isLoaded(Appodeal.BANNER))
+        {
+            Appodeal.show(Appodeal.BANNER_BOTTOM);
+            Appodeal.setBannerCallbacks(this);
+        }
+        else
+        {
+            HandleShowResult(ShowResult.Failed);
+        }*/
+    }
+
 	public void showInterstitial()
 	{
 		if (Advertisement.IsReady())
 		{
 			Advertisement.Show();
 		}
-	}
+        else
+        {
+            HandleShowResult(ShowResult.Failed);
+        }
+    }
 
 	public void showVideo(){
-		if (Advertisement.IsReady("rewardedVideo"))
-		{
-			var options = new ShowOptions { resultCallback = HandleShowResult };
-			Advertisement.Show("rewardedVideo", options);
-		}
-		#if !UNITY_EDITOR
+        /*if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO))
+        {
+            Appodeal.show(Appodeal.REWARDED_VIDEO);
+            Appodeal.setRewardedVideoCallbacks(this);
+#if !UNITY_EDITOR
 		Analytics.CustomEvent ("showVideo");
-		#endif
-	}
+#endif
+        }
+        else
+        {
+            HandleShowResult(ShowResult.Failed);
+        }*/
+    }
+    #region Rewarded Video callback handlers
+    public void onRewardedVideoLoaded() { mensaje += ("Video loaded"); }
+    public void onRewardedVideoFailedToLoad() { mensaje += ("Video failed"); }
+    public void onRewardedVideoShown() { mensaje += ("Video shown"); }
+    public void onRewardedVideoClosed() { mensaje += ("Video closed"); }
+    public void onRewardedVideoFinished(int amount, string name) { mensaje += ("Reward: " + amount + " " + name); }
+    #endregion
 
-	private void HandleShowResult(ShowResult result)
+    #region Banner callback handlers
+    public void onBannerLoaded() { mensaje += ("banner loaded"); }
+    public void onBannerFailedToLoad() { mensaje += ("banner failed"); }
+    public void onBannerShown() { mensaje += ("banner opened"); }
+    public void onBannerClicked() { mensaje += ("banner clicked"); }
+    #endregion
+
+    private void HandleShowResult(ShowResult result)
 	{
 		switch (result)
 		{
 		case ShowResult.Finished:
-			hintsAvailable += 2;
-			PlayerPrefs.SetInt ("hints", hintsAvailable);
-			hintIndicator.text = "" + hintsAvailable;
-			closeHintScreen ();
-			break;
+			    hintsAvailable += 2;
+			    PlayerPrefs.SetInt ("hints", hintsAvailable);
+			    hintIndicator.text = "" + hintsAvailable;
+			    closeHintScreen ();
+                mensaje += "Ad succesful";
+                break;
 		case ShowResult.Skipped:
-			Debug.Log("The ad was skipped before reaching the end.");
-			break;
+			    Debug.Log("The ad was skipped before reaching the end.");
+                mensaje += "The ad was skipped before reaching the end.";
+                closeHintScreen();
+            break;
 		case ShowResult.Failed:
-			Debug.LogError("The ad failed to be shown.");
-			break;
+			    Debug.LogError("The ad failed to be shown.");
+                mensaje += "The ad failed to be shown.";
+                closeHintScreen();
+                break;
 		}
 	}
 
@@ -584,8 +628,8 @@ public class InGame : MonoBehaviour {
 					yield return new WaitForSeconds (1.4f);
 					finishedSign.SetActive (true);
 					finishedSign.SendMessage ("PlayForward");
-                    showInterstitial();
-				}
+                    showBanner();
+                }
 			}
 		}
 	}
