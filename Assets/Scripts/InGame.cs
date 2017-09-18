@@ -6,11 +6,11 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
 using UnityEngine.Advertisements;
 
-using VoxelBusters.NativePlugins;
-//using AppodealAds.Unity.Api;
-//using AppodealAds.Unity.Common;
+//using VoxelBusters.NativePlugins;
+using AppodealAds.Unity.Api;
+using AppodealAds.Unity.Common;
 
-public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListener
+public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener, IInterstitialAdListener
 {
 	Dice dice;
 	Transform cells;
@@ -162,7 +162,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
     public void showBanner()
     {
-        /*if (Appodeal.isLoaded(Appodeal.BANNER))
+        if (Appodeal.isLoaded(Appodeal.BANNER_BOTTOM))
         {
             Appodeal.show(Appodeal.BANNER_BOTTOM);
             Appodeal.setBannerCallbacks(this);
@@ -170,15 +170,16 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         else
         {
             HandleShowResult(ShowResult.Failed);
-        }*/
+        }
     }
 
 	public void showInterstitial()
 	{
-		if (Advertisement.IsReady())
+		if (Appodeal.isLoaded(Appodeal.INTERSTITIAL))
 		{
-			Advertisement.Show();
-		}
+            Appodeal.show(Appodeal.INTERSTITIAL);
+            Appodeal.setInterstitialCallbacks(this);
+        }
         else
         {
             HandleShowResult(ShowResult.Failed);
@@ -186,7 +187,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     }
 
 	public void showVideo(){
-        /*if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO))
+        if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO))
         {
             Appodeal.show(Appodeal.REWARDED_VIDEO);
             Appodeal.setRewardedVideoCallbacks(this);
@@ -197,21 +198,29 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         else
         {
             HandleShowResult(ShowResult.Failed);
-        }*/
+        }
     }
     #region Rewarded Video callback handlers
     public void onRewardedVideoLoaded() { mensaje += ("Video loaded"); }
     public void onRewardedVideoFailedToLoad() { mensaje += ("Video failed"); }
     public void onRewardedVideoShown() { mensaje += ("Video shown"); }
-    public void onRewardedVideoClosed() { mensaje += ("Video closed"); }
+    public void onRewardedVideoClosed(bool r) { mensaje += ("Video closed" + r); HandleShowResult(ShowResult.Finished); }
     public void onRewardedVideoFinished(int amount, string name) { mensaje += ("Reward: " + amount + " " + name); }
     #endregion
 
     #region Banner callback handlers
-    public void onBannerLoaded() { mensaje += ("banner loaded"); }
+    public void onBannerLoaded(bool r) { mensaje += ("banner loaded" + r); }
     public void onBannerFailedToLoad() { mensaje += ("banner failed"); }
     public void onBannerShown() { mensaje += ("banner opened"); }
     public void onBannerClicked() { mensaje += ("banner clicked"); }
+    #endregion
+
+    #region Interstitial callback handlers
+    public void onInterstitialLoaded(bool r) { mensaje += ("Interstitial loaded" + r); }
+    public void onInterstitialFailedToLoad() { mensaje += ("Interstitial failed"); }
+    public void onInterstitialShown() { mensaje += ("Interstitial opened"); }
+    public void onInterstitialClosed() { mensaje += ("Interstitial closed"); }
+    public void onInterstitialClicked() { mensaje += ("Interstitial clicked"); }
     #endregion
 
     private void HandleShowResult(ShowResult result)
@@ -543,7 +552,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         if (Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
         {
             PlayerPrefs.SetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
-            if (NPBinding.GameServices.LocalUser.IsAuthenticated)
+            /*if (NPBinding.GameServices.LocalUser.IsAuthenticated)
             {
                 NPBinding.GameServices.ReportScoreWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), (int)((Time.timeSinceLevelLoad - pauseTime) * 100), (bool _success, string _error) => {
 
@@ -558,7 +567,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
                         Debug.Log(string.Format("Error= {0}.", _error.ToString()));
                     }
                 });
-            }
+            }*/
         }
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("finish", new Dictionary<string, object> {
@@ -571,11 +580,11 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
     public void checkLeaderboard()
     {
-        NPBinding.GameServices.ShowLeaderboardUIWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), eLeaderboardTimeScope.ALL_TIME, leaderboardCallback());
+        /*NPBinding.GameServices.ShowLeaderboardUIWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), eLeaderboardTimeScope.ALL_TIME, leaderboardCallback());
     }
     GameServices.GameServiceViewClosed leaderboardCallback()
     {
-        return null;
+        return null;*/
     }
 
     public int checkOperationResult(int diceValueB, int diceValueA){
@@ -656,11 +665,14 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	public void playAgain(){
-		SceneManager.LoadScene (SceneManager.GetActiveScene().name);
+        Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        SceneManager.LoadScene (SceneManager.GetActiveScene().name);
 	}
 
-	public void exit(){
-		string texto = PlayerPrefs.GetString ("scene", "Scene1");
+	public void exit()
+    {
+        Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        string texto = PlayerPrefs.GetString ("scene", "Scene1");
 		string num = texto.Split (new char[1]{ 'e' }) [2];
 		int level = (int.Parse (num) + 1);
 		if(level < GlobalVariables.nLevels)
@@ -671,12 +683,15 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
     public void exitGame()
     {
+        Appodeal.hide(Appodeal.BANNER_BOTTOM);
         Application.Quit();
     }
 
 
-	public void next(){
-		string texto = PlayerPrefs.GetString ("scene", "Scene1");
+	public void next()
+    {
+        Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        string texto = PlayerPrefs.GetString ("scene", "Scene1");
 		string num = texto.Split (new char[1]{ 'e' }) [2];
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("enteringLevel" + num);
@@ -696,7 +711,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			Destroy (bgm.gameObject);
-			SceneManager.LoadScene ("LevelSelection");
+            Appodeal.hide(Appodeal.BANNER_BOTTOM);
+            SceneManager.LoadScene ("LevelSelection");
 		}
 		if (finishedSign.activeSelf) {
 			return;
