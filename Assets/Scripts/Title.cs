@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 //using VoxelBusters.NativePlugins;
-using AppodealAds.Unity.Api;
-using AppodealAds.Unity.Common;
 
-public class Title : MonoBehaviour, IInterstitialAdListener {
+public class Title : MonoBehaviour {
 	bool credits = false;
 	public UIPanel creditsPanel;
     public GameObject loading;
@@ -14,21 +12,7 @@ public class Title : MonoBehaviour, IInterstitialAdListener {
     bool _isAvailable = false;
     bool _isAuthenticated = false;
     string message = "";
-    // Use this for initialization
-
-	#region Interstitial callback handlers
-	public void onInterstitialLoaded(bool r) { Appodeal.show(Appodeal.INTERSTITIAL); }
-	public void onInterstitialFailedToLoad() {  }
-	public void onInterstitialShown() { }
-	public void onInterstitialClosed() { }
-	public void onInterstitialClicked() { }
-	#endregion
-
     void Start () {
-
-		Appodeal.setAutoCache(Appodeal.INTERSTITIAL, false);
-		Appodeal.cache(Appodeal.INTERSTITIAL);
-		Appodeal.setInterstitialCallbacks(this);
         /*_isAvailable = NPBinding.GameServices.IsAvailable();
         if (_isAvailable)
         {

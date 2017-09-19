@@ -165,40 +165,19 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 
     public void showBanner()
     {
-        //if (Appodeal.isLoaded(Appodeal.BANNER_BOTTOM))
-        //{
-            Appodeal.show(Appodeal.BANNER_BOTTOM);
-        //}
-        //else
-        //{
-        //    HandleShowResult(ShowResult.Failed);
-        //}
+        Appodeal.show(Appodeal.BANNER_BOTTOM);
     }
 
 	public void showInterstitial()
 	{
-		//if (Appodeal.isLoaded(Appodeal.INTERSTITIAL))
-		//{
-			Appodeal.show(Appodeal.INTERSTITIAL);
-        /*}
-        else
-        {
-            HandleShowResult(ShowResult.Failed);
-        }*/
+		Appodeal.show(Appodeal.INTERSTITIAL);
     }
 
 	public void showVideo(){
-        //if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO))
-        //{
-			Appodeal.show(Appodeal.REWARDED_VIDEO);
+        Appodeal.show(Appodeal.REWARDED_VIDEO);
 #if !UNITY_EDITOR
 		Analytics.CustomEvent ("showVideo");
 #endif
-        /*}
-        else
-        {
-            HandleShowResult(ShowResult.Failed);
-        }*/
     }
     #region Rewarded Video callback handlers
     public void onRewardedVideoLoaded() { mensaje += ("Video loaded"); }
