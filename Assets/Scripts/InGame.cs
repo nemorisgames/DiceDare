@@ -118,7 +118,10 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
         hintsAvailable = PlayerPrefs.GetInt("hints", 2);
         hintIndicator.text = "" + hintsAvailable;
 		showTutorial = nguiCam.cullingMask;
-        
+
+		Appodeal.setBannerCallbacks(this);
+		Appodeal.setInterstitialCallbacks(this);
+		Appodeal.setRewardedVideoCallbacks(this);
     }
 
     public void hintPressed()
@@ -162,43 +165,40 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 
     public void showBanner()
     {
-        if (Appodeal.isLoaded(Appodeal.BANNER_BOTTOM))
-        {
+        //if (Appodeal.isLoaded(Appodeal.BANNER_BOTTOM))
+        //{
             Appodeal.show(Appodeal.BANNER_BOTTOM);
-            Appodeal.setBannerCallbacks(this);
-        }
-        else
-        {
-            HandleShowResult(ShowResult.Failed);
-        }
+        //}
+        //else
+        //{
+        //    HandleShowResult(ShowResult.Failed);
+        //}
     }
 
 	public void showInterstitial()
 	{
-		if (Appodeal.isLoaded(Appodeal.INTERSTITIAL))
-		{
-            Appodeal.show(Appodeal.INTERSTITIAL);
-            Appodeal.setInterstitialCallbacks(this);
-        }
+		//if (Appodeal.isLoaded(Appodeal.INTERSTITIAL))
+		//{
+			Appodeal.show(Appodeal.INTERSTITIAL);
+        /*}
         else
         {
             HandleShowResult(ShowResult.Failed);
-        }
+        }*/
     }
 
 	public void showVideo(){
-        if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO))
-        {
-            Appodeal.show(Appodeal.REWARDED_VIDEO);
-            Appodeal.setRewardedVideoCallbacks(this);
+        //if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO))
+        //{
+			Appodeal.show(Appodeal.REWARDED_VIDEO);
 #if !UNITY_EDITOR
 		Analytics.CustomEvent ("showVideo");
 #endif
-        }
+        /*}
         else
         {
             HandleShowResult(ShowResult.Failed);
-        }
+        }*/
     }
     #region Rewarded Video callback handlers
     public void onRewardedVideoLoaded() { mensaje += ("Video loaded"); }
