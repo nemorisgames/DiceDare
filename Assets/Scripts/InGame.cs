@@ -5,8 +5,8 @@ using UnityEngine.SceneManagement;
 
 using UnityEngine.Analytics;
 using UnityEngine.Advertisements;
-
-using VoxelBusters.NativePlugins;
+//using VoxelBusters.NativePlugins;
+using EasyMobile;
 
 public class InGame : MonoBehaviour {
 	Dice dice;
@@ -156,26 +156,71 @@ public class InGame : MonoBehaviour {
 		}
 	}
 
-	public void showInterstitial()
-	{
+    // Subscribe to the event
+    void OnEnable()
+    {
+        AdManager.RewardedAdCompleted += RewardedAdCompletedHandler;
+    }
+    // The event handler
+    void RewardedAdCompletedHandler(RewardedAdNetwork network, AdLocation location)
+    {
+        Debug.Log("Rewarded ad has completed. The user should be rewarded now.");
+        hintsAvailable += 2;
+        PlayerPrefs.SetInt("hints", hintsAvailable);
+        hintIndicator.text = "" + hintsAvailable;
+        closeHintScreen();
+    }
+    // Unsubscribe
+    void OnDisable()
+    {
+        AdManager.RewardedAdCompleted -= RewardedAdCompletedHandler;
+    }
+
+    public void showBanner()
+    {
+        AdManager.ShowBannerAd(BannerAdPosition.Bottom);
+        /*
 		if (Advertisement.IsReady())
 		{
 			Advertisement.Show();
-		}
-	}
+		}*/
+    }
+
+    public void showInterstitial()
+	{
+        // Check if interstitial ad is ready
+        bool isReady = AdManager.IsInterstitialAdReady();
+        // Show it if it's ready
+        if (isReady)
+        {
+            AdManager.ShowInterstitialAd();
+        }
+        /*
+		if (Advertisement.IsReady())
+		{
+			Advertisement.Show();
+		}*/
+    }
 
 	public void showVideo(){
-		if (Advertisement.IsReady("rewardedVideo"))
+        // Check if rewarded ad is ready
+        bool isReady = AdManager.IsRewardedAdReady();
+        // Show it if it's ready
+        if (isReady)
+        {
+            AdManager.ShowRewardedAd();
+        }
+        /*if (Advertisement.IsReady("rewardedVideo"))
 		{
 			var options = new ShowOptions { resultCallback = HandleShowResult };
 			Advertisement.Show("rewardedVideo", options);
-		}
-		#if !UNITY_EDITOR
+		}*/
+#if !UNITY_EDITOR
 		Analytics.CustomEvent ("showVideo");
-		#endif
-	}
+#endif
+    }
 
-	private void HandleShowResult(ShowResult result)
+	/*private void HandleShowResult(ShowResult result)
 	{
 		switch (result)
 		{
@@ -192,7 +237,7 @@ public class InGame : MonoBehaviour {
 			Debug.LogError("The ad failed to be shown.");
 			break;
 		}
-	}
+	}*/
 
 	public void closeHintScreen(){
 		hintScreen.SendMessage ("PlayReverse");
@@ -499,7 +544,7 @@ public class InGame : MonoBehaviour {
         if (Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
         {
             PlayerPrefs.SetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
-            if (NPBinding.GameServices.LocalUser.IsAuthenticated)
+            /*if (NPBinding.GameServices.LocalUser.IsAuthenticated)
             {
                 NPBinding.GameServices.ReportScoreWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), (int)((Time.timeSinceLevelLoad - pauseTime) * 100), (bool _success, string _error) => {
 
@@ -514,7 +559,7 @@ public class InGame : MonoBehaviour {
                         Debug.Log(string.Format("Error= {0}.", _error.ToString()));
                     }
                 });
-            }
+            }*/
         }
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("finish", new Dictionary<string, object> {
@@ -527,11 +572,11 @@ public class InGame : MonoBehaviour {
 
     public void checkLeaderboard()
     {
-        NPBinding.GameServices.ShowLeaderboardUIWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), eLeaderboardTimeScope.ALL_TIME, leaderboardCallback());
+        /*NPBinding.GameServices.ShowLeaderboardUIWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), eLeaderboardTimeScope.ALL_TIME, leaderboardCallback());
     }
     GameServices.GameServiceViewClosed leaderboardCallback()
     {
-        return null;
+        return null;*/
     }
 
     public int checkOperationResult(int diceValueB, int diceValueA){
@@ -584,7 +629,7 @@ public class InGame : MonoBehaviour {
 					yield return new WaitForSeconds (1.4f);
 					finishedSign.SetActive (true);
 					finishedSign.SendMessage ("PlayForward");
-                    showInterstitial();
+                    showBanner();
 				}
 			}
 		}
@@ -612,11 +657,13 @@ public class InGame : MonoBehaviour {
 	}
 
 	public void playAgain(){
-		SceneManager.LoadScene (SceneManager.GetActiveScene().name);
+        AdManager.HideBannerAd();
+        SceneManager.LoadScene (SceneManager.GetActiveScene().name);
 	}
 
 	public void exit(){
-		string texto = PlayerPrefs.GetString ("scene", "Scene1");
+        AdManager.HideBannerAd();
+        string texto = PlayerPrefs.GetString ("scene", "Scene1");
 		string num = texto.Split (new char[1]{ 'e' }) [2];
 		int level = (int.Parse (num) + 1);
 		if(level < GlobalVariables.nLevels)
@@ -627,12 +674,14 @@ public class InGame : MonoBehaviour {
 
     public void exitGame()
     {
+        AdManager.HideBannerAd();
         Application.Quit();
     }
 
 
 	public void next(){
-		string texto = PlayerPrefs.GetString ("scene", "Scene1");
+        AdManager.HideBannerAd();
+        string texto = PlayerPrefs.GetString ("scene", "Scene1");
 		string num = texto.Split (new char[1]{ 'e' }) [2];
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("enteringLevel" + num);
@@ -651,7 +700,8 @@ public class InGame : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape)) {
-			Destroy (bgm.gameObject);
+            AdManager.HideBannerAd();
+            Destroy (bgm.gameObject);
 			SceneManager.LoadScene ("LevelSelection");
 		}
 		if (finishedSign.activeSelf) {

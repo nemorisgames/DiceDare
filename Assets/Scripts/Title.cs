@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using VoxelBusters.NativePlugins;
+using EasyMobile;
+//using VoxelBusters.NativePlugins;
 
 public class Title : MonoBehaviour {
 	bool credits = false;
@@ -13,29 +14,38 @@ public class Title : MonoBehaviour {
     bool _isAuthenticated = false;
     string message = "";
     // Use this for initialization
-    void Start () {
-        _isAvailable = NPBinding.GameServices.IsAvailable();
-        if (_isAvailable)
+    void Start()
+    {
+        // Check if interstitial ad is ready
+        bool isReady = AdManager.IsInterstitialAdReady();
+        // Show it if it's ready
+        if (isReady)
         {
-            _isAuthenticated = NPBinding.GameServices.LocalUser.IsAuthenticated;
-            if (!_isAuthenticated)
+            AdManager.ShowInterstitialAd();
+
+            /*_isAvailable = NPBinding.GameServices.IsAvailable();
+            if (_isAvailable)
             {
-                NPBinding.GameServices.LocalUser.Authenticate((bool _success, string _error) => {
+                _isAuthenticated = NPBinding.GameServices.LocalUser.IsAuthenticated;
+                if (!_isAuthenticated)
+                {
+                    NPBinding.GameServices.LocalUser.Authenticate((bool _success, string _error) => {
 
-                    if (_success)
-                    {
-                         
-                    }
-                    else
-                    {
+                        if (_success)
+                        {
 
-                    }
-                });
-            }
+                        }
+                        else
+                        {
+
+                        }
+                    });
+                }
+            }*/
         }
     }
 
-	public void play(){
+    public void play(){
 		if (PlayerPrefs.GetInt ("PlayedGame", 0) == 0) {
             loading.SetActive(true);
             PlayerPrefs.SetInt ("PlayedGame", 1);
