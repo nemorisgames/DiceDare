@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
 using UnityEngine.Advertisements;
 
-using VoxelBusters.NativePlugins;
+//using VoxelBusters.NativePlugins;
 
 public class InGame : MonoBehaviour {
 	Dice dice;
@@ -499,7 +499,7 @@ public class InGame : MonoBehaviour {
         if (Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
         {
             PlayerPrefs.SetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
-            if (NPBinding.GameServices.LocalUser.IsAuthenticated)
+            /*if (NPBinding.GameServices.LocalUser.IsAuthenticated)
             {
                 NPBinding.GameServices.ReportScoreWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), (int)((Time.timeSinceLevelLoad - pauseTime) * 100), (bool _success, string _error) => {
 
@@ -514,7 +514,7 @@ public class InGame : MonoBehaviour {
                         Debug.Log(string.Format("Error= {0}.", _error.ToString()));
                     }
                 });
-            }
+            }*/
         }
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("finish", new Dictionary<string, object> {
@@ -527,11 +527,11 @@ public class InGame : MonoBehaviour {
 
     public void checkLeaderboard()
     {
-        NPBinding.GameServices.ShowLeaderboardUIWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), eLeaderboardTimeScope.ALL_TIME, leaderboardCallback());
+        /*NPBinding.GameServices.ShowLeaderboardUIWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), eLeaderboardTimeScope.ALL_TIME, leaderboardCallback());
     }
     GameServices.GameServiceViewClosed leaderboardCallback()
     {
-        return null;
+        return null;*/
     }
 
     public int checkOperationResult(int diceValueB, int diceValueA){
