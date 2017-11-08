@@ -8,8 +8,10 @@ using UnityEngine.Advertisements;
 
 using VoxelBusters.NativePlugins;
 
+
 public class InGame : MonoBehaviour {
-	Dice dice;
+	public bool daily = false;
+	public Dice dice;
 	Transform cells;
 	GameObject [,] cellArray;
 	public TextMesh [] cellsText;
@@ -25,8 +27,8 @@ public class InGame : MonoBehaviour {
 	public float pauseTime = 0;
 	float pauseAux = 0;
 	public int secondsAvailable = 65;
-	public UITexture tutorial;
-	public Texture2D[] imgTutorial;
+	//public UITexture tutorial;
+	//public Texture2D[] imgTutorial;
 	AudioSource audio;
 	public AudioClip audioBadMove;
 	public AudioClip audioGoodMove;
@@ -57,17 +59,22 @@ public class InGame : MonoBehaviour {
 	public UILabel hintIndicator;
 	int hintsAvailable = 3;
 
-	public TutorialVideo [] tutorialClips;
+	//public TutorialVideo [] tutorialClips;
 
 	public bool testing = false;
 	float diceSize;
 	public Transform adjacentCells;
+	public Transform tutorialv2;
 	public Material[] cellMaterials;
 	public Material[] cellTextMaterials;
 
-	int tutorialIndex;
+	//int tutorialIndex;
     public TweenAlpha hintMessage;
     int hintPressedNumber = 0;
+
+	public DailyBlock currentBlock;
+	DailyBlock lastBlock;
+	public GameObject baseBlock;
     
 
 	// Use this for initialization
@@ -90,7 +97,8 @@ public class InGame : MonoBehaviour {
 
         timesDied = PlayerPrefs.GetInt("timesDied", 0);
         dice = GameObject.FindGameObjectWithTag("Dice").GetComponent<Dice>();
-        componerEscena();
+		if(!daily)
+        	componerEscena();
 
         cells = GameObject.Find("Cells").transform;
         cellsText = cells.GetComponentsInChildren<TextMesh>();
@@ -106,14 +114,23 @@ public class InGame : MonoBehaviour {
         }
         audio = GetComponent<AudioSource>();
         print("timesDied " + timesDied);
-        if (timesDied >= 5)
+        if (timesDied >= 5 && !daily)
             StartCoroutine(lightPath(2));
         //StartCoroutine (cellArray[1,2].GetComponent<Cell>().shine ());
         //StartCoroutine (lightPath (2));
         diceSize = dice.GetComponent<MeshRenderer>().bounds.size.y / 2;
         hintsAvailable = PlayerPrefs.GetInt("hints", 2);
         hintIndicator.text = "" + hintsAvailable;
-		showTutorial = nguiCam.cullingMask;
+		//showTutorial = nguiCam.cullingMask;
+
+		GetConsecutiveDays();
+		dice.EnableTutorialSign(false);
+
+		if(daily){
+			levelNum.text = "";
+			currentBlock.currentNumbers = dice.faceNumbers();
+			currentBlock.Init(currentBlock.currentNumbers);
+		}
         
     }
 
@@ -228,13 +245,13 @@ public class InGame : MonoBehaviour {
 		string[] arreglo = aux[1].Split(new char[1]{'|'});
 		Vector3 posIni = new Vector3 (int.Parse (info [2]), 0f, -int.Parse (info [3]));
 		if (int.Parse (info [4]) > 0) {
-			tutorialIndex = int.Parse (info [4]);
+			//tutorialIndex = int.Parse (info [4]);
 			//tutorialVideo.PlayClip (int.Parse (info [4]) - 1);
 			//tutorial.mainTexture = imgTutorial [int.Parse (info [4]) - 1];
 			//tutorial.transform.Find ("Sprite").GetComponent<UISprite> ().alpha = 1f;
 			//tutorial.transform.SendMessage ("PlayForward");
 			//tutorial.transform.Find ("Sprite").SendMessage ("PlayForward");
-			tutorialClips[(int.Parse (info [4]) - 1)].gameObject.SetActive(true);
+			//tutorialClips[(int.Parse (info [4]) - 1)].gameObject.SetActive(true);
 			//tutorialVideo.gameObject.SetActive(true);
 			//StartCoroutine(tutorialVideo.PlayClip(int.Parse (info [4]) - 1));
 			//Pause ();
@@ -371,8 +388,10 @@ public class InGame : MonoBehaviour {
 		} else {
 			audio.pitch = Random.Range (0.95f, 1.05f);
 			audio.PlayOneShot(audioGoodMove);
-			path.RemoveAt (0);
+			if(path.Count > 0)
+				path.RemoveAt (0);
 			Instantiate (dice.goodMove, new Vector3(dice.transform.position.x,dice.transform.position.y + diceSize, dice.transform.position.z), Quaternion.LookRotation(Vector3.up));
+			componerEscena_Daily();
 		}
 	}
 
@@ -407,9 +426,11 @@ public class InGame : MonoBehaviour {
 			mode = Mathf.Clamp (mode, 0, 2);
 			switch (mode) {
 			case 0:
+				dice.EnableTutorialSign(true);
 				if (path.Count > 0)
 					StartCoroutine (cellArray [(int)((Vector2)path [0]).x, (int)((Vector2)path [0]).y].GetComponent<Cell> ().shine (2));
 				yield return new WaitForSeconds (1f);
+				dice.EnableTutorialSign(false);
 				break;
 			case 1:
 				int aux = Mathf.Min (3, path.Count);
@@ -463,7 +484,7 @@ public class InGame : MonoBehaviour {
 
 
     public Camera nguiCam;
-	public LayerMask hideTutorial;
+	/*public LayerMask hideTutorial;
 	LayerMask showTutorial;
 
 	public void HideTutorial(){
@@ -471,7 +492,7 @@ public class InGame : MonoBehaviour {
 			nguiCam.cullingMask = hideTutorial;
 		else
 			nguiCam.cullingMask = showTutorial;
-	}
+	}*/
 
 	public bool finished = false;
 
@@ -480,7 +501,7 @@ public class InGame : MonoBehaviour {
 
         finished = true;
 		print("Finished");
-		HideTutorial();
+		//HideTutorial();
 		Pause ();
 		foreach (Transform t in adjacentCells)
 			t.GetComponent<AdjacentCellFinder> ().EnableCell (false);
@@ -670,7 +691,7 @@ public class InGame : MonoBehaviour {
 			int minutes = (int)((Time.timeSinceLevelLoad - pauseTime) / 60);
 			int seconds = (int)((Time.timeSinceLevelLoad - pauseTime) % 60);
 			int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 10f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 10));
-			clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
+			clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 		}
 
 		//test
@@ -702,5 +723,43 @@ public class InGame : MonoBehaviour {
 				
 
 		adjacentCells.position = dice.transform.position;
+	}
+
+	void GetConsecutiveDays(){
+		//load last played date
+		int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays",-1);
+		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",System.DateTime.Now.Date.ToString()));
+		int daysSinceLastPlay = (int)(System.DateTime.Now - lastPlayedDate).TotalDays;
+		if(daysSinceLastPlay == 0){
+			if(consecutiveDays == -1){
+				Debug.Log("First stage played");
+				PlayerPrefs.SetInt("consecutiveDays",1);
+			}
+			else
+				Debug.Log("Already played today");
+		}
+		if(daysSinceLastPlay == 1){
+			PlayerPrefs.SetInt("consecutiveDays",consecutiveDays + 1);
+		}
+		else if(daysSinceLastPlay > 1){
+			PlayerPrefs.SetInt("consecutiveDays",0);
+			Debug.Log("Haven't played in over a day");
+		}
+		
+		if(System.DateTime.Now != lastPlayedDate)
+			PlayerPrefs.SetString("lastPlayedDate",System.DateTime.Now.Date.ToString());
+	}
+
+	void componerEscena_Daily(){
+		currentBlock.DropRemainingBlocks();
+		GameObject aux = (GameObject)Instantiate(baseBlock, new Vector3(dice.transform.position.x, 0f, dice.transform.position.z), currentBlock.transform.rotation);
+		DailyBlock block = aux.GetComponent<DailyBlock>();
+		currentBlock.currentNumbers = dice.faceNumbers();
+		block.Init(currentBlock.currentNumbers);
+		if(lastBlock != null)
+			lastBlock.DropPassedBlocks();
+		lastBlock = currentBlock;
+		currentBlock = block;
+		
 	}
 }

@@ -51,4 +51,10 @@ public class Cell : MonoBehaviour {
 	void Update () {
 		
 	}
+
+	public void Init(int n){
+		number = n;
+		text = transform.Find ("Text").GetComponent<TextMesh> ();
+		text.text = "" + number;
+	}
 }

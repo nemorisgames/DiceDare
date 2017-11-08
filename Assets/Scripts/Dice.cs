@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Dice : MonoBehaviour {
 	[HideInInspector]
@@ -34,10 +35,9 @@ public class Dice : MonoBehaviour {
     bool dropped = false;
     // Use this for initialization
     bool swipe;
-	void Start () {
-		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
-		line = GetComponent<LineRenderer> ();
-		currentPos = transform.position;
+
+	void Awake(){
+		inGame = Camera.main.GetComponent<InGame> ();
 		numbers.Add(transform.Find("TextUp").GetComponent<TextMesh>());
 		numbers.Add(transform.Find("TextDown").GetComponent<TextMesh>());
 		numbers.Add(transform.Find("TextLeft").GetComponent<TextMesh>());
@@ -46,8 +46,15 @@ public class Dice : MonoBehaviour {
 		numbers.Add(transform.Find("TextBackward").GetComponent<TextMesh>());
 
 		currentNumbers = numbers;
+		
+	}
+	void Start () {
+		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
+		line = GetComponent<LineRenderer> ();
+		currentPos = transform.position;
+		
 
-		inGame = Camera.main.GetComponent<InGame> ();
+		
 		audio = GetComponent<AudioSource> ();
 
 		nextOperation = currentOperation;
@@ -63,6 +70,8 @@ public class Dice : MonoBehaviour {
 		} else {
 			ToggleSwipe (false);
 		}
+
+		inGame.currentBlock.currentNumbers = faceNumbers();
 	}
 
 	IEnumerator applyRootMotion(){
@@ -225,6 +234,28 @@ public class Dice : MonoBehaviour {
 		hintTime = 10f;
 	}
 
+	public int[] faceNumbers(){
+		ArrayList list = currentNumbers;
+		/*switch(lastDirection){
+			case Direction.Down:
+			TextMesh t = ((TextMesh)list [1]);
+			list [1] = list [4];
+			list [4] = list [0];
+			list [0] = list [5];
+			list [5] = t;
+			break;
+		case Direction.Left:
+			t = ((TextMesh)list [1]);
+			list [1] = list [2];
+			list [2] = list [0];
+			list [0] = list [3];
+			list [3] = t;
+			break;
+		}*/
+		//Debug.Log(int.Parse (((TextMesh)list [1]).text)+", "+int.Parse (((TextMesh)list [2]).text)+", "+int.Parse (((TextMesh)list [4]).text));
+		return new int[]{int.Parse (((TextMesh)list [0]).text),int.Parse (((TextMesh)list [2]).text),int.Parse (((TextMesh)list [4]).text)};
+	}
+
 	void OnTriggerStay(Collider c){
 		if (c.CompareTag ("Untagged") || c.CompareTag ("Sum") || c.CompareTag ("Substraction") || c.CompareTag ("Multiplication") || c.CompareTag ("Division")) {
 			if (onMovement || calculated)
@@ -258,10 +289,9 @@ public class Dice : MonoBehaviour {
 				}
 
  				print (diceValueA + " + " + diceValueB + " = " + cellValue);
-
-				inGame.calculateResult (diceValueA, diceValueB, cellValue);
-
 				c.GetComponent<Cell> ().changeState (Cell.StateCell.Passed);
+				//inGame.currentBlock.currentNumbers = faceNumbers();
+				inGame.calculateResult (diceValueA, diceValueB, cellValue);
 
 				//Cambia el color del dado si toca una operacion
 				print(c.tag);
@@ -354,6 +384,8 @@ public class Dice : MonoBehaviour {
 
 	void changeOperation(Operation op){
 		nextOperation = op;
+		UpdateTutorialSign(op);
+		EnableTutorialSign(false);
 	}
 
 	IEnumerator Drop(){
@@ -394,14 +426,15 @@ public class Dice : MonoBehaviour {
 	void Update () {
 		if (onMovement || inGame.rotating || Time.timeSinceLevelLoad < 2f || inGame.pause)
 			return;
-		if(timeLastMove <= Time.timeSinceLevelLoad - inGame.pauseTime - hintTime){
+		if(!inGame.daily && timeLastMove <= Time.timeSinceLevelLoad - inGame.pauseTime - hintTime){
 			StartCoroutine (inGame.lightPath (0));
+			//fix
 			hintTime += 5f;
 		}
-		if (Input.GetKeyDown (KeyCode.W)) { StartCoroutine(turn (Direction.Up)); }
+		if (Input.GetKeyDown (KeyCode.W)) { if(!inGame.daily) StartCoroutine(turn (Direction.Up)); }
 		if (Input.GetKeyDown (KeyCode.S)) { StartCoroutine(turn (Direction.Down)); }
 		if (Input.GetKeyDown (KeyCode.A)) { StartCoroutine(turn (Direction.Left)); }
-		if (Input.GetKeyDown (KeyCode.D)) { StartCoroutine(turn (Direction.Right));}
+		if (Input.GetKeyDown (KeyCode.D)) { if(!inGame.daily) StartCoroutine(turn (Direction.Right));}
 
 		if (swipe) {
 			if (Input.GetMouseButtonDown (0)) {
@@ -415,13 +448,13 @@ public class Dice : MonoBehaviour {
 					float angle = Vector3.Angle (new Vector3 (1f, 0f, 0f), dir);
 					if (angle >= 0f && angle < 90f) {
 						if (dir.y > 0f) {
-							StartCoroutine (turn (Direction.Right));
+							if(!inGame.daily) StartCoroutine (turn (Direction.Right));
 						} else {
 							StartCoroutine (turn (Direction.Down));
 						}
 					} else {
 						if (dir.y > 0f) {
-							StartCoroutine (turn (Direction.Up));
+							if(!inGame.daily) StartCoroutine (turn (Direction.Up));
 						} else {
 							StartCoroutine (turn (Direction.Left));
 						}
@@ -429,5 +462,32 @@ public class Dice : MonoBehaviour {
 				}
 			}
 		}
+		inGame.tutorialv2.position = transform.position;
+	}
+
+	void UpdateTutorialSign(Operation op){
+		string sign = "";
+		switch(op){
+			case Operation.Sum:
+			sign = "+";
+			break;
+			case Operation.Div:
+			sign = "÷";
+			break;
+			case Operation.Mult:
+			sign = "x";
+			break;
+			case Operation.Rest:
+			sign = "-";
+			break;
+		}
+		inGame.tutorialv2.Find("Canvas/LSign").GetComponent<Text>().text = sign;
+		inGame.tutorialv2.Find("Canvas/DSign").GetComponent<Text>().text = sign;
+	}
+
+	public void EnableTutorialSign(bool b){
+		inGame.tutorialv2.gameObject.SetActive(b);
+		if(b)
+			UpdateTutorialSign(currentOperation);
 	}
 }
