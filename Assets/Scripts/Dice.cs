@@ -382,11 +382,40 @@ public class Dice : MonoBehaviour {
 		}
 	}
 
-	void changeOperation(Operation op){
+	public void changeOperation(Operation op){
 		nextOperation = op;
 		UpdateTutorialSign(op);
 		EnableTutorialSign(false);
+		if(inGame.daily){
+			switch(op){
+				case Dice.Operation.Sum:
+					backgroundTexture.color = new Color (226f/255f, 54f/255f, 78f/255f, 255f/255f);
+					backgroundMaterial.mainTexture = backgroundSum;
+					GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (255, 90, 118, 255));
+					GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 ((int)(255 * 0.3676471f), (int)(255 * 0.1621972f), (int)(255 * 0.191952f), (int)(255 * 0.3676471f)));	
+					break;
+				case Dice.Operation.Div:
+					backgroundTexture.color = new Color (20f/255f, 116f/255f, 104f/255f, 255f/255f);
+					backgroundMaterial.mainTexture = backgroundDivision;
+					GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (60, 113, 46, 255));
+					GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32((int)(255 * 0.1308764f), (int)(255 * 0.1985294f), (int)(255 * 0.07590831f), (int)(255 * 0.3676471f)));
+					break;
+				case Dice.Operation.Mult:
+					backgroundTexture.color = new Color (116f/255f, 20f/255f, 106f/255f, 255f/255f);
+					backgroundMaterial.mainTexture = backgroundMultiplication;
+					GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (125, 0, 255, 255));
+					GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 ((int)(255 * 0.3223064f), (int)(255 * 0.1621972f), (int)(255 * 0.3676471f), (int)(255 * 0.3676471f)));	
+					break;
+				case Dice.Operation.Rest:
+					backgroundTexture.color = new Color (27f/255f, 88f/255f, 149f/255f, 255f/255f);
+					backgroundMaterial.mainTexture = backgroundSubstraction;
+					GetComponent<Renderer> ().material.SetColor ("_Color", new Color32 (90, 112, 255, 255));
+					GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 ((int)(255 * 0.1621972f), (int)(255 * 0.2146223f), (int)(255 * 0.3676471f), (int)(255 * 0.3676471f)));	
+					break;
+			}
+		}
 	}
+					
 
 	IEnumerator Drop(){
         dropped = true;

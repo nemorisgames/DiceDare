@@ -78,6 +78,8 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 	DailyBlock lastBlock;
 	public GameObject baseBlock;
     
+	int dailyCorrect;
+	int dailyWrong;
 
     string mensaje = "";
 
@@ -109,13 +111,15 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
         foreach (TextMesh t in cellsText) {
             texts.Add(t.GetComponent<Transform>());
         }
-        recordSeconds = PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), -1f);
-        if (recordSeconds > 0) {
-            int minutes = (int)((recordSeconds) / 60);
-            int seconds = (int)((recordSeconds) % 60);
-            int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
-            record.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
-        }
+		if(!daily){
+       		recordSeconds = PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), -1f);
+			if (recordSeconds > 0) {
+				int minutes = (int)((recordSeconds) / 60);
+				int seconds = (int)((recordSeconds) % 60);
+				int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
+				record.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
+			}
+		}
         audio = GetComponent<AudioSource>();
         print("timesDied " + timesDied);
         if (timesDied >= 5 && !daily)
@@ -131,12 +135,28 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		dice.EnableTutorialSign(false);
 
 		if(daily){
-			levelNum.text = "";
-			currentBlock.currentNumbers = dice.faceNumbers();
-			currentBlock.Init(currentBlock.currentNumbers);
+			DailyInit();
 		}
         
     }
+
+	void DailyInit(){
+		ResetDiceNumbers();
+		levelNum.text = "";
+		currentBlock.currentNumbers = dice.faceNumbers();
+		currentBlock.Init(currentBlock.currentNumbers, dice.currentOperation);
+		dailyCorrect = 0;
+		dailyWrong = 0;
+	}
+
+	void ResetDiceNumbers(){
+		dice.transform.Find ("TextUp").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
+		dice.transform.Find ("TextLeft").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
+		dice.transform.Find ("TextForward").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
+		dice.transform.Find ("TextDown").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
+		dice.transform.Find ("TextRight").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
+		dice.transform.Find ("TextBackward").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
+	}
 
     public void hintPressed()
     {
@@ -437,15 +457,22 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
 		print ("calculating");
 		if (checkOperationResult (diceValueA, diceValueB) != cellValue) {
-			badMove ();
+			if(daily){
+				DailyAnswer(false);
+				componerEscena_Daily();
+			}
+			else
+				badMove ();
 		} else {
 			audio.pitch = Random.Range (0.95f, 1.05f);
 			audio.PlayOneShot(audioGoodMove);
 			if(path.Count > 0)
 				path.RemoveAt (0);
 			Instantiate (dice.goodMove, new Vector3(dice.transform.position.x,dice.transform.position.y + diceSize, dice.transform.position.z), Quaternion.LookRotation(Vector3.up));
-			if(daily)
+			if(daily){
+				DailyAnswer(true);
 				componerEscena_Daily();
+			}
 		}
 	}
 
@@ -475,7 +502,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 
 	//0: adyacente, 1: tres adyacentes, 2: todos
 	public IEnumerator lightPath(int mode){
-		if (!pause) {
+		if (!pause && !daily) {
 			Pause ();
 			mode = Mathf.Clamp (mode, 0, 2);
 			switch (mode) {
@@ -741,11 +768,20 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			int dec = (int)(((secondsAvailable - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((secondsAvailable - Time.timeSinceLevelLoad) % 60) * 10));
 			clock.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
 		}*/
-		if (!pause) {
+		if (!pause && !daily) {
 			int minutes = (int)((Time.timeSinceLevelLoad - pauseTime) / 60);
 			int seconds = (int)((Time.timeSinceLevelLoad - pauseTime) % 60);
-			int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 10f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 10));
+			//int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 10f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 10));
 			clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+		}
+		if(daily){
+			int minutes = (int)((60 - Time.timeSinceLevelLoad) / 60);
+			int seconds = (int)((60 - Time.timeSinceLevelLoad) % 60);
+			//int dec = (int)(((1 - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((1 - Time.timeSinceLevelLoad) % 60) * 10));
+			clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+
+			if(60 - Time.timeSinceLevelLoad == 0)
+				badMove();
 		}
 
 		//test
@@ -809,11 +845,33 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		GameObject aux = (GameObject)Instantiate(baseBlock, new Vector3(dice.transform.position.x, 0f, dice.transform.position.z), currentBlock.transform.rotation);
 		DailyBlock block = aux.GetComponent<DailyBlock>();
 		currentBlock.currentNumbers = dice.faceNumbers();
-		block.Init(currentBlock.currentNumbers);
+		Dice.Operation operation = dice.currentOperation;
+		if(currentBlock.currentNumbers[0] > 150 || currentBlock.currentNumbers[0] == 0 && operation == Dice.Operation.Div){
+			ResetDiceNumbers();
+			currentBlock.currentNumbers = dice.faceNumbers();
+		}
+		
+		if(((dailyCorrect + dailyWrong) % 3 == 0) || dice.currentOperation == Dice.Operation.Div){
+			operation = (Dice.Operation)(Random.Range(0,4));
+			while(operation == dice.currentOperation){
+				operation = (Dice.Operation)(Random.Range(0,4));
+			}
+			dice.changeOperation(operation);
+		}
+
+		block.Init(currentBlock.currentNumbers, operation);
 		if(lastBlock != null)
 			lastBlock.DropPassedBlocks();
 		lastBlock = currentBlock;
 		currentBlock = block;
+		levelNum.text = "Right: "+dailyCorrect+" ; Wrong: "+dailyWrong;
 		
+	}
+
+	public void DailyAnswer(bool b){
+		if(b)
+			dailyCorrect++;
+		else
+			dailyWrong++;
 	}
 }

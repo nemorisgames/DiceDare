@@ -20,21 +20,46 @@ public class DailyBlock : MonoBehaviour {
 		Cell downCell = instantiateCell(inGame.cellNormal, DCell);*/
 	}
 
-	public void Init(int[] numbers){
+	public void Init(int[] numbers, Dice.Operation operation){
 		//Debug.Log(numbers[0]+", "+numbers[1]+", "+numbers[2]);
 		int index = Random.Range(1,3);
-		int sum = numbers[0] + numbers[index];
-		int wrong = sum + (int)(Mathf.Sign(Random.Range(-1,1)))*numbers[(index == 1 ? 2 : 1)];
-		while(wrong == numbers[0] + numbers[1])
-			wrong += (int)(Mathf.Sign(Random.Range(-1,1)))*1;
+		int rightOperation = 0, wrongOperation = 0;
+		switch(operation){
+			case Dice.Operation.Sum:
+				rightOperation = numbers[0] + numbers[index];
+				wrongOperation = numbers[0] + numbers[(index == 1 ? 2 : 1)] + (int)(Mathf.Sign(Random.Range(-1,1)))*numbers[(index == 1 ? 2 : 1)];
+				while(wrongOperation == numbers[0] + numbers[1])
+					wrongOperation += (int)(Mathf.Sign(Random.Range(-1,1)))*1;
+				break;
+			case Dice.Operation.Mult:
+				rightOperation = numbers[0] * numbers[index];
+				wrongOperation = numbers[0] * numbers[(index == 1 ? 2 : 1)] + (int)(Mathf.Sign(Random.Range(-1,1)))*numbers[(index == 1 ? 2 : 1)];
+				while(wrongOperation == numbers[0] + numbers[1])
+					wrongOperation += (int)(Mathf.Sign(Random.Range(-1,1)))*1;
+				break;
+			case Dice.Operation.Div:
+				rightOperation = (int)(numbers[0] / numbers[index]);
+				wrongOperation = (int)(numbers[0] / numbers[(index == 1 ? 2 : 1)])+ (int)(Mathf.Sign(Random.Range(-1,1)))*numbers[(index == 1 ? 2 : 1)];
+				while(wrongOperation == numbers[0] + numbers[1])
+					wrongOperation += (int)(Mathf.Sign(Random.Range(-1,1)))*1;
+				break;
+			case Dice.Operation.Rest:
+				rightOperation = numbers[0] - numbers[index];
+				wrongOperation = numbers[0] - numbers[(index == 1 ? 2 : 1)]+ (int)(Mathf.Sign(Random.Range(-1,1)))*numbers[(index == 1 ? 2 : 1)];
+				while(wrongOperation == numbers[0] + numbers[1])
+					wrongOperation += (int)(Mathf.Sign(Random.Range(-1,1)))*1;
+			break;
+		}
+
+		
 
 		if(index == 1){
-			Cell leftCell = instantiateCell(sum, inGame.cellNormal, LCell);
-			Cell downCell = instantiateCell(wrong, inGame.cellNormal, DCell);
+			Cell leftCell = instantiateCell(rightOperation, inGame.cellNormal, LCell);
+			Cell downCell = instantiateCell(wrongOperation, inGame.cellNormal, DCell);
 		}
 		else{
-			Cell leftCell = instantiateCell(wrong, inGame.cellNormal, LCell);
-			Cell downCell = instantiateCell(sum, inGame.cellNormal, DCell);
+			Cell leftCell = instantiateCell(wrongOperation, inGame.cellNormal, LCell);
+			Cell downCell = instantiateCell(rightOperation, inGame.cellNormal, DCell);
 		}
 		
 	}
@@ -43,7 +68,7 @@ public class DailyBlock : MonoBehaviour {
 		float aux = target.position.y;
 		float pos = cell.transform.position.y;
 		while(pos < aux){
-			pos += 0.2f;
+			pos += 0.4f;
 			cell.transform.position = new Vector3(cell.transform.position.x, pos, cell.transform.position.z);
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
