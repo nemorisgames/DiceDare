@@ -1,18 +1,14 @@
 fileFormatVersion: 2
-guid: d05dc40af42d4e3a8dad17d4faf508a8
-labels:
-- gvh
-- gvh_teditor
-- gvh_v1.2.9.0
+guid: 86616c1acc60fe843b3d2a491f6b6265
+timeCreated: 1498841395
+licenseType: Free
 PluginImporter:
   serializedVersion: 1
   iconMap: {}
   executionOrder: {}
   isPreloaded: 0
+  isOverridable: 0
   platformData:
-    Any:
-      enabled: 0
-      settings: {}
     Editor:
       enabled: 1
       settings:
@@ -21,6 +17,9 @@ PluginImporter:
       enabled: 0
       settings:
         CPU: AnyCPU
+    data:
+      enabled: 0
+      settings: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 

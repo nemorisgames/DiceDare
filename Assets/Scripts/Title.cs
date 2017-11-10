@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using VoxelBusters.NativePlugins;
+//using VoxelBusters.NativePlugins;
 
 public class Title : MonoBehaviour {
 	bool credits = false;
@@ -12,9 +12,8 @@ public class Title : MonoBehaviour {
     bool _isAvailable = false;
     bool _isAuthenticated = false;
     string message = "";
-    // Use this for initialization
     void Start () {
-        _isAvailable = NPBinding.GameServices.IsAvailable();
+        /*_isAvailable = NPBinding.GameServices.IsAvailable();
         if (_isAvailable)
         {
             _isAuthenticated = NPBinding.GameServices.LocalUser.IsAuthenticated;
@@ -32,7 +31,7 @@ public class Title : MonoBehaviour {
                     }
                 });
             }
-        }
+        }*/
     }
 
 	public void play(){
