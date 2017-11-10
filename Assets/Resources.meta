@@ -1,8 +1,15 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 5ee3534cd35068e4d88bf8c01b1d8cfa
 folderAsset: yes
 timeCreated: 1510321045
 licenseType: Free
+=======
+guid: 6f59835398c20364f994a6bc0f7f30ab
+folderAsset: yes
+timeCreated: 1509716294
+licenseType: Pro
+>>>>>>> soloappodealios
 DefaultImporter:
   userData: 
   assetBundleName: 

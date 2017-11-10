@@ -243,19 +243,19 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 	{
 		switch (result)
 		{
-		case 0:
+		case ShowResult.Finished:
 			    hintsAvailable += 2;
 			    PlayerPrefs.SetInt ("hints", hintsAvailable);
 			    hintIndicator.text = "" + hintsAvailable;
 			    closeHintScreen ();
                 mensaje += "Ad succesful";
                 break;
-		case 1:
+		case ShowResult.Skipped:
 			    Debug.Log("The ad was skipped before reaching the end.");
                 mensaje += "The ad was skipped before reaching the end.";
                 closeHintScreen();
             break;
-		case -1:
+		case ShowResult.Failed:
 			    Debug.LogError("The ad failed to be shown.");
                 mensaje += "The ad failed to be shown.";
                 closeHintScreen();

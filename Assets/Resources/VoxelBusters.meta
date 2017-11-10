@@ -1,8 +1,15 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Resources/VoxelBusters.meta
 guid: 6ff705c7eab1ce345a08f3256193f84d
 folderAsset: yes
 timeCreated: 1510321046
 licenseType: Free
+=======
+guid: 0c2c6199bbd834c4cb458b0ceb0c706b
+folderAsset: yes
+timeCreated: 1509716264
+licenseType: Pro
+>>>>>>> soloappodealios:Assets/Standard Assets/VoxelBusters.meta
 DefaultImporter:
   userData: 
   assetBundleName: 
