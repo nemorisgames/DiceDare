@@ -27,7 +27,7 @@ public class DailyBlock : MonoBehaviour {
 		switch(operation){
 			case Dice.Operation.Sum:
 				rightOperation = numbers[0] + numbers[index];
-				wrongOperation = numbers[0] + numbers[(index == 1 ? 2 : 1)] + (int)(Mathf.Sign(Random.Range(-1,1)))*numbers[(index == 1 ? 2 : 1)];
+				wrongOperation = numbers[0] + numbers[(index == 1 ? 2 : 1)] + wrongRange();
 				while(wrongOperation == numbers[0] + numbers[1])
 					wrongOperation += (int)(Mathf.Sign(Random.Range(-1,1)))*1;
 				break;
@@ -39,19 +39,20 @@ public class DailyBlock : MonoBehaviour {
 				break;
 			case Dice.Operation.Div:
 				rightOperation = (int)(numbers[0] / numbers[index]);
-				wrongOperation = (int)(numbers[0] / numbers[(index == 1 ? 2 : 1)])+ (int)(Mathf.Sign(Random.Range(-1,1)))*numbers[(index == 1 ? 2 : 1)];
+				if(numbers[(index == 1 ? 2 : 1)] != 0)
+					wrongOperation = (int)(numbers[0] / numbers[(index == 1 ? 2 : 1)]) + wrongRange();
+				else
+					wrongOperation = (int)(numbers[0] / numbers[(index == 1 ? 2 : 1)] + 1) + wrongRange();
 				while(wrongOperation == numbers[0] + numbers[1])
 					wrongOperation += (int)(Mathf.Sign(Random.Range(-1,1)))*1;
 				break;
 			case Dice.Operation.Rest:
 				rightOperation = numbers[0] - numbers[index];
-				wrongOperation = numbers[0] - numbers[(index == 1 ? 2 : 1)]+ (int)(Mathf.Sign(Random.Range(-1,1)))*numbers[(index == 1 ? 2 : 1)];
+				wrongOperation = numbers[0] - numbers[(index == 1 ? 2 : 1)] + wrongRange();
 				while(wrongOperation == numbers[0] + numbers[1])
 					wrongOperation += (int)(Mathf.Sign(Random.Range(-1,1)))*1;
 			break;
 		}
-
-		
 
 		if(index == 1){
 			Cell leftCell = instantiateCell(rightOperation, inGame.cellNormal, LCell);
@@ -61,7 +62,12 @@ public class DailyBlock : MonoBehaviour {
 			Cell leftCell = instantiateCell(wrongOperation, inGame.cellNormal, LCell);
 			Cell downCell = instantiateCell(rightOperation, inGame.cellNormal, DCell);
 		}
-		
+	}
+
+	int wrongRange(){
+		int randomSign = (int)(Mathf.Sign(Random.Range(-1,1)));
+		int randomNumber = Random.Range(1,3);
+		return randomSign * randomNumber;
 	}
 
 	IEnumerator raiseCell(Cell cell, Transform target){

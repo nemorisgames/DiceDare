@@ -118,4 +118,8 @@ public class LevelSelection : MonoBehaviour {
 			PlayerPrefs.SetInt ("Control", 0);
 		}
 	}
+
+	public void LaunchDaily(){
+		SceneManager.LoadScene("InGame_daily");
+	}
 }

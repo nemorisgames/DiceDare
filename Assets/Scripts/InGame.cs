@@ -150,6 +150,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		currentBlock.Init(currentBlock.currentNumbers, dice.currentOperation);
 		dailyCorrect = 0;
 		dailyWrong = 0;
+		Pause();
 	}
 
 	void ResetDiceNumbers(){
@@ -567,7 +568,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			t.GetComponent<AdjacentCellFinder> ().EnableCell (false);
 		//for (int i = 0; i < tutorialClips.Length; i++)
 
-		StartCoroutine (dropCells ());
+		if(!daily) StartCoroutine (dropCells ());
 		dice.enabled = false;
 		//finishedSign.SetActive (true);
 		//finishedSign.SendMessage ("PlayForward");
@@ -577,7 +578,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		//tutorialVideo.ToggleOff ();
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioFinish);
-        if (Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
+        if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
         {
             PlayerPrefs.SetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
             /*if (NPBinding.GameServices.LocalUser.IsAuthenticated)
@@ -604,6 +605,9 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});
 		#endif
+
+		if(daily)
+			StartCoroutine(finishDaily());
 	}
 
     public void checkLeaderboard()
@@ -669,6 +673,14 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
                 }
 			}
 		}
+	}
+
+	IEnumerator finishDaily(){
+		CalculateDailyResult();
+		yield return new WaitForSeconds (1.4f);
+		finishedSign.SetActive (true);
+		finishedSign.SendMessage ("PlayForward");
+		showBanner();
 	}
 
 	IEnumerator disableCell(Cell c){
@@ -758,16 +770,16 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			int minutes = (int)((Time.timeSinceLevelLoad - pauseTime) / 60);
 			int seconds = (int)((Time.timeSinceLevelLoad - pauseTime) % 60);
 			//int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 10f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 10));
-			clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+			if(!finished) clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 		}
-		if(daily){
-			int minutes = (int)((60 - Time.timeSinceLevelLoad) / 60);
-			int seconds = (int)((60 - Time.timeSinceLevelLoad) % 60);
+		if(!pause && daily){
+			int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime) / 60);
+			int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime) % 60);
 			//int dec = (int)(((1 - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((1 - Time.timeSinceLevelLoad) % 60) * 10));
-			clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+			if(!finished && seconds >= 0) clockShow.text = (seconds < 10 ? "0" : "") + seconds;
 
-			if(60 - Time.timeSinceLevelLoad == 0)
-				badMove();
+			if(!finished && 60 - (Time.timeSinceLevelLoad - pauseTime) <= 0)
+				finishGame();
 		}
 
 		//test
@@ -801,7 +813,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		adjacentCells.position = dice.transform.position;
 	}
 
-	void GetConsecutiveDays(){
+	public void GetConsecutiveDays(){
 		//load last played date
 		int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays",-1);
 		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",System.DateTime.Now.Date.ToString()));
@@ -851,6 +863,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		lastBlock = currentBlock;
 		currentBlock = block;
 		levelNum.text = "Right: "+dailyCorrect+" ; Wrong: "+dailyWrong;
+		//Pause();
 		
 	}
 
@@ -859,5 +872,28 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			dailyCorrect++;
 		else
 			dailyWrong++;
+	}
+
+	float dailyOptimo = 60;
+	float dailyPercentage;
+	public UILabel dailyCorrectLabel;
+	public UILabel dailyPercentageLabel;
+	public UISlider dailySlider;
+
+	void CalculateDailyResult(){
+		dailyCorrectLabel.text = dailyCorrect+"/"+(dailyCorrect+dailyWrong);
+		dailyPercentage = dailyCorrect/(float)(dailyCorrect+dailyWrong);
+		float result = ((dailyPercentage * dailyCorrect)/dailyOptimo);
+		dailyPercentageLabel.text = result*100f+"%";
+		float totalPercentage = PlayerPrefs.GetFloat("totalDaily",0);
+		
+		if(result > totalPercentage)
+			totalPercentage = (totalPercentage + result * 1.1f)/2f;
+		else if(result < totalPercentage)
+			totalPercentage = (totalPercentage - result * 0.05f);
+		PlayerPrefs.SetFloat("totalDaily",totalPercentage);
+
+		dailySlider.value = totalPercentage;
+
 	}
 }

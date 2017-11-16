@@ -78,6 +78,7 @@ public class Dice : MonoBehaviour {
 		yield return new WaitForSeconds (1.6f);
 		transform.rotation = Quaternion.identity;
 		GetComponent<Animator> ().applyRootMotion = true;
+		inGame.UnPause();
 	}
 
 	public IEnumerator turn(Direction d){
