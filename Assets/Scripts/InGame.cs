@@ -131,7 +131,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
         hintIndicator.text = "" + hintsAvailable;
 		//showTutorial = nguiCam.cullingMask;
 
-		GetConsecutiveDays();
+		//GetConsecutiveDays();
 		dice.EnableTutorialSign(false);
 
 		if(daily){
@@ -606,8 +606,11 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		});
 		#endif
 
-		if(daily)
+		if(daily){
+			UpdateConsecutiveDays();
 			StartCoroutine(finishDaily());
+		}
+			
 	}
 
     public void checkLeaderboard()
@@ -813,7 +816,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		adjacentCells.position = dice.transform.position;
 	}
 
-	public void GetConsecutiveDays(){
+	public static void GetConsecutiveDays(){
 		//load last played date
 		int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays",-1);
 		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",System.DateTime.Now.Date.ToString()));
@@ -836,6 +839,13 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		
 		if(System.DateTime.Now != lastPlayedDate)
 			PlayerPrefs.SetString("lastPlayedDate",System.DateTime.Now.Date.ToString());
+	}
+
+	void UpdateConsecutiveDays(){
+		int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays");
+		consecutiveDays = Mathf.Clamp(consecutiveDays + 1,0,7);
+		PlayerPrefs.SetString("lastPlayedDate",System.DateTime.Now.Date.ToString());
+		PlayerPrefs.SetInt("consecutiveDays",consecutiveDays);
 	}
 
 	void componerEscena_Daily(){

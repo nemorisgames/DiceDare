@@ -11,6 +11,11 @@ public class LevelSelection : MonoBehaviour {
 	public GameObject loading;
 	public UISprite muteButton;
 	public UISprite controlButton;
+	public UISlider mathSkillSlider;
+	public UISlider consecDaysSlider;
+	public UILabel consecDays;
+	public GameObject startDaily;
+	public GameObject alreadyPlayed;
 	// Use this for initialization
 	void Start () {
 		PlayerPrefs.SetInt ("continueBGM", 0);
@@ -122,4 +127,38 @@ public class LevelSelection : MonoBehaviour {
 	public void LaunchDaily(){
 		SceneManager.LoadScene("InGame_daily");
 	}
+
+	public void GetConsecutiveDays(){
+		ToggleCanPlay(true);
+		//load last played date
+		int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays",-1);
+		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",System.DateTime.Now.Date.ToString()));
+		int daysSinceLastPlay = (int)(System.DateTime.Now - lastPlayedDate).TotalDays;
+		if(daysSinceLastPlay == 0){
+			if(consecutiveDays == -1){
+				Debug.Log("First stage played");
+				//PlayerPrefs.SetInt("consecutiveDays",1);
+			}
+			else{
+				Debug.Log("Already played today");
+				ToggleCanPlay(false);
+			}
+				
+		}
+		else if(daysSinceLastPlay > 1){
+			PlayerPrefs.SetInt("consecutiveDays",0);
+			Debug.Log("Haven't played in over a day");
+		}
+		
+		consecDays.text = consecutiveDays.ToString();
+		if(consecutiveDays == 0) consecDaysSlider.value = 0;
+		else consecDaysSlider.value = 1f/(7f - (float)consecutiveDays);
+		mathSkillSlider.value = PlayerPrefs.GetFloat("totalDaily",0);
+	}
+
+	void ToggleCanPlay(bool b){
+		startDaily.SetActive(b);
+		alreadyPlayed.SetActive(!b);
+	}
+
 }
