@@ -154,12 +154,12 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 	}
 
 	void ResetDiceNumbers(){
-		dice.transform.Find ("TextUp").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
-		dice.transform.Find ("TextLeft").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
-		dice.transform.Find ("TextForward").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
-		dice.transform.Find ("TextDown").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
-		dice.transform.Find ("TextRight").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
-		dice.transform.Find ("TextBackward").GetComponent<TextMesh> ().text = "" + Random.Range(1,5);
+		dice.transform.Find ("TextUp").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
+		dice.transform.Find ("TextLeft").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
+		dice.transform.Find ("TextForward").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
+		dice.transform.Find ("TextDown").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
+		dice.transform.Find ("TextRight").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
+		dice.transform.Find ("TextBackward").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
 	}
 
     public void hintPressed()
@@ -854,7 +854,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		DailyBlock block = aux.GetComponent<DailyBlock>();
 		currentBlock.currentNumbers = dice.faceNumbers();
 		Dice.Operation operation = dice.currentOperation;
-		if(currentBlock.currentNumbers[0] > 150 || currentBlock.currentNumbers[0] == 0 && operation == Dice.Operation.Div){
+		if(currentBlock.currentNumbers[0] > 150 || currentBlock.currentNumbers[0] == 0 || Mathf.Abs(currentBlock.currentNumbers[0]) > 10 && (Mathf.Abs(currentBlock.currentNumbers[1]) > 10 || Mathf.Abs(currentBlock.currentNumbers[2]) > 10)){
 			ResetDiceNumbers();
 			currentBlock.currentNumbers = dice.faceNumbers();
 		}
