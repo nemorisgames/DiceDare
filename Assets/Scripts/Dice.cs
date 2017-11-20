@@ -71,7 +71,7 @@ public class Dice : MonoBehaviour {
 			ToggleSwipe (false);
 		}
 
-		inGame.currentBlock.currentNumbers = faceNumbers();
+		if(inGame.daily) inGame.currentBlock.currentNumbers = faceNumbers();
 	}
 
 	IEnumerator applyRootMotion(){
