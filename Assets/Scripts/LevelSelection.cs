@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
 
 public class LevelSelection : MonoBehaviour {
-	
+	public bool testing = true;
 	public UIButton[] recordButtons;
 	public UIPanel panel;
 	public GameObject loading;
@@ -141,7 +141,7 @@ public class LevelSelection : MonoBehaviour {
 			}
 			else{
 				Debug.Log("Already played today");
-				ToggleCanPlay(false);
+				if(!testing) ToggleCanPlay(false);
 			}
 				
 		}
