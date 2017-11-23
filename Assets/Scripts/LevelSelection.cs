@@ -149,11 +149,18 @@ public class LevelSelection : MonoBehaviour {
 			PlayerPrefs.SetInt("consecutiveDays",0);
 			Debug.Log("Haven't played in over a day");
 		}
-		
+		float penalization = 0;
 		consecDays.text = consecutiveDays.ToString();
-		if(consecutiveDays == 0) consecDaysSlider.value = 0;
-		else consecDaysSlider.value = 1f/(7f - (float)consecutiveDays);
-		mathSkillSlider.value = PlayerPrefs.GetFloat("totalDaily",0);
+		if(consecutiveDays == 0){
+			consecDaysSlider.value = 0;
+			penalization = -0.01f;
+		}
+		else{
+			consecDaysSlider.value = 1f/(7f - Mathf.Clamp((float)consecutiveDays,0f,7f));
+		}
+		PlayerPrefs.SetFloat("totalDaily",PlayerPrefs.GetFloat("totalDaily")+penalization);
+		Debug.Log(LevelSkillTotal() + " | "+PlayerPrefs.GetFloat("totalDaily",0)/2f);
+		mathSkillSlider.value = LevelSkillTotal() + PlayerPrefs.GetFloat("totalDaily",0)/2f;
 	}
 
 	void ToggleCanPlay(bool b){
@@ -161,4 +168,20 @@ public class LevelSelection : MonoBehaviour {
 		alreadyPlayed.SetActive(!b);
 	}
 
+	public static float LevelSkillTotal(){
+		float total = 0;
+		for(int i=1;i<=20;i++){
+			float percentage = 0;
+			if(i <= 5)
+				percentage = 0.01f;
+			else if(i > 5 && i <= 10)
+				percentage = 0.02f;
+			else if(i > 10 && i <= 15)
+				percentage = 0.03f;
+			else if(i > 15 && i <= 20)
+				percentage = 0.04f;
+			total += percentage*(float)PlayerPrefs.GetInt("unlockedScene"+i,0);
+		}
+		return Mathf.Round(total*10)/10f;
+	}
 }

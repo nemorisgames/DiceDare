@@ -154,12 +154,12 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 	}
 
 	void ResetDiceNumbers(){
-		dice.transform.Find ("TextUp").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
-		dice.transform.Find ("TextLeft").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
-		dice.transform.Find ("TextForward").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
-		dice.transform.Find ("TextDown").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
-		dice.transform.Find ("TextRight").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
-		dice.transform.Find ("TextBackward").GetComponent<TextMesh> ().text = "" + Random.Range(1,6);
+		dice.transform.Find ("TextUp").GetComponent<TextMesh> ().text = "" + Random.Range(2,7);
+		dice.transform.Find ("TextLeft").GetComponent<TextMesh> ().text = "" + Random.Range(1,7);
+		dice.transform.Find ("TextForward").GetComponent<TextMesh> ().text = "" + Random.Range(1,7);
+		dice.transform.Find ("TextDown").GetComponent<TextMesh> ().text = "" + Random.Range(2,7);
+		dice.transform.Find ("TextRight").GetComponent<TextMesh> ().text = "" + Random.Range(2,7);
+		dice.transform.Find ("TextBackward").GetComponent<TextMesh> ().text = "" + Random.Range(1,7);
 	}
 
     public void hintPressed()
@@ -776,6 +776,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			if(!finished) clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 		}
 		if(!pause && daily){
+			Debug.Log("counting");
 			int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime) / 60);
 			int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime) % 60);
 			//int dec = (int)(((1 - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((1 - Time.timeSinceLevelLoad) % 60) * 10));
@@ -842,10 +843,14 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 	}
 
 	void UpdateConsecutiveDays(){
-		int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays");
-		consecutiveDays = Mathf.Clamp(consecutiveDays + 1,0,7);
-		PlayerPrefs.SetString("lastPlayedDate",System.DateTime.Now.Date.ToString());
-		PlayerPrefs.SetInt("consecutiveDays",consecutiveDays);
+		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",System.DateTime.Now.Date.ToString()));
+		int daysSinceLastPlay = (int)(System.DateTime.Now - lastPlayedDate).TotalDays;
+		if(daysSinceLastPlay != 0){
+			int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays");
+			consecutiveDays = Mathf.Clamp(consecutiveDays + 1,0,7);
+			PlayerPrefs.SetString("lastPlayedDate",System.DateTime.Now.Date.ToString());
+			PlayerPrefs.SetInt("consecutiveDays",consecutiveDays);
+		}
 	}
 
 	void componerEscena_Daily(){
@@ -854,12 +859,14 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		DailyBlock block = aux.GetComponent<DailyBlock>();
 		currentBlock.currentNumbers = dice.faceNumbers();
 		Dice.Operation operation = dice.currentOperation;
-		if(currentBlock.currentNumbers[0] > 150 || currentBlock.currentNumbers[0] == 0 || Mathf.Abs(currentBlock.currentNumbers[0]) > 10 && (Mathf.Abs(currentBlock.currentNumbers[1]) > 10 || Mathf.Abs(currentBlock.currentNumbers[2]) > 10)){
+		if(currentBlock.currentNumbers[0] > 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[1] >= 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[2]  >= 100 || currentBlock.currentNumbers[0] == 0 || Mathf.Abs(currentBlock.currentNumbers[0]) > 10 && (Mathf.Abs(currentBlock.currentNumbers[1]) > 10 || Mathf.Abs(currentBlock.currentNumbers[2]) > 10)){
 			ResetDiceNumbers();
 			currentBlock.currentNumbers = dice.faceNumbers();
 		}
+
+		int switchOp = Random.Range(1,4);
 		
-		if(((dailyCorrect + dailyWrong) % 3 == 0) || dice.currentOperation == Dice.Operation.Div){
+		if(((dailyCorrect + dailyWrong) % switchOp == 0) || dice.currentOperation == Dice.Operation.Div){
 			operation = (Dice.Operation)(Random.Range(0,4));
 			while(operation == dice.currentOperation){
 				operation = (Dice.Operation)(Random.Range(0,4));
@@ -884,7 +891,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			dailyWrong++;
 	}
 
-	float dailyOptimo = 60;
+	float dailyOptimo = 25;
 	float dailyPercentage;
 	public UILabel dailyCorrectLabel;
 	public UILabel dailyPercentageLabel;
@@ -894,16 +901,43 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		dailyCorrectLabel.text = dailyCorrect+"/"+(dailyCorrect+dailyWrong);
 		dailyPercentage = dailyCorrect/(float)(dailyCorrect+dailyWrong);
 		float result = ((dailyPercentage * dailyCorrect)/dailyOptimo);
-		dailyPercentageLabel.text = result*100f+"%";
+		result = Mathf.Clamp01(result);
+		//dailyPercentageLabel.text = Mathf.Round(result*10000f)/100f+"%";
+
+		StartCoroutine(raiseNumber(dailyPercentageLabel, result));
 		float totalPercentage = PlayerPrefs.GetFloat("totalDaily",0);
 		
+		float consec = Mathf.Clamp((float)PlayerPrefs.GetInt("consecutiveDays"),0f,7f);
+		totalPercentage = Mathf.Clamp01(totalPercentage * (1 + consec/150f));
+
+		Debug.Log(result + ", "+ totalPercentage);
 		if(result > totalPercentage)
 			totalPercentage = (totalPercentage + result * 1.1f)/2f;
 		else if(result < totalPercentage)
-			totalPercentage = (totalPercentage - result * 0.05f);
-		PlayerPrefs.SetFloat("totalDaily",totalPercentage);
+			totalPercentage = (totalPercentage - (1 - result) * 0.05f);
+		
+		PlayerPrefs.SetFloat("totalDaily",Mathf.Clamp01(totalPercentage));
 
-		dailySlider.value = totalPercentage;
+		//dailySlider.value = LevelSelection.LevelSkillTotal() + totalPercentage/2f;
+		StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + totalPercentage/2f));
 
+	}
+
+	public static IEnumerator moveSlider(UISlider slider, float target){
+		for(float f = 0; f < target; f+=0.01f){
+			slider.value = f;
+			yield return new WaitForSeconds(Time.deltaTime);
+		}
+	}
+
+	public static IEnumerator raiseNumber(UILabel label, float target){
+		for(float f = 0; f < target; f+=0.01f){
+			label.text = Mathf.Round(f*10000f)/100f+"%";
+			yield return new WaitForSeconds(Time.deltaTime);
+			if(f > target){
+				label.text = Mathf.Round(f*10000f)/100f+"%";
+				yield break;
+			}
+		}
 	}
 }

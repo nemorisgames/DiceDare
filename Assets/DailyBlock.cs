@@ -109,4 +109,9 @@ public class DailyBlock : MonoBehaviour {
 			}
 		}
 	}
+
+	IEnumerator destroyAfterSeconds(float f){
+		yield return new WaitForSeconds(2f);
+		Destroy(this.gameObject);
+	}
 }
