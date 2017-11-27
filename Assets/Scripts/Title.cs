@@ -13,6 +13,7 @@ public class Title : MonoBehaviour {
     bool _isAuthenticated = false;
     string message = "";
     void Start () {
+		PlayerPrefs.SetInt("lvlSelectDaily",0);
         /*_isAvailable = NPBinding.GameServices.IsAvailable();
         if (_isAvailable)
         {
@@ -40,9 +41,15 @@ public class Title : MonoBehaviour {
             PlayerPrefs.SetInt ("PlayedGame", 1);
 			PlayerPrefs.SetString ("scene", "Scene" + 1);
 			SceneManager.LoadScene ("InGame");
+			PlayerPrefs.SetInt("lvlSelectDaily",0);
 		} else {
 			SceneManager.LoadScene ("LevelSelection");
 		}
+	}
+
+	public void daily(){
+		SceneManager.LoadScene ("LevelSelection");
+		PlayerPrefs.SetInt("lvlSelectDaily",1);
 	}
 	
 	// Update is called once per frame

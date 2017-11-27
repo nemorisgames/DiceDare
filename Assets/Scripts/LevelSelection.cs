@@ -14,6 +14,7 @@ public class LevelSelection : MonoBehaviour {
 	public UISlider mathSkillSlider;
 	public UISlider consecDaysSlider;
 	public UILabel consecDays;
+	public UIPanel dailyPanel;
 	public GameObject startDaily;
 	public GameObject alreadyPlayed;
 	// Use this for initialization
@@ -58,6 +59,12 @@ public class LevelSelection : MonoBehaviour {
 				recordButtons[i].transform.Find("record").GetComponent<UILabel>().text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 			}
 		}
+
+		if(PlayerPrefs.GetInt("lvlSelectDaily",0) == 1){
+			dailyPanel.GetComponent<TweenAlpha>().PlayForward();
+			GetConsecutiveDays();
+		}
+			
 	}
 
 	public void launchLevel(string texto){
@@ -148,6 +155,7 @@ public class LevelSelection : MonoBehaviour {
 		else if(daysSinceLastPlay > 1){
 			PlayerPrefs.SetInt("consecutiveDays",0);
 			Debug.Log("Haven't played in over a day");
+			consecDaysSlider.value = 0;
 		}
 		float penalization = 0;
 		consecDays.text = consecutiveDays.ToString();
@@ -158,9 +166,14 @@ public class LevelSelection : MonoBehaviour {
 		else{
 			consecDaysSlider.value = 1f/(7f - Mathf.Clamp((float)consecutiveDays,0f,7f));
 		}
+		if(System.DateTime.Now.Date.ToString() == PlayerPrefs.GetString("lastLoadedDaily","")){
+			penalization = 0;
+		}
+		PlayerPrefs.SetString("lastLoadedDaily",System.DateTime.Now.Date.ToString());
 		PlayerPrefs.SetFloat("totalDaily",PlayerPrefs.GetFloat("totalDaily")+penalization);
 		Debug.Log(LevelSkillTotal() + " | "+PlayerPrefs.GetFloat("totalDaily",0)/2f);
 		mathSkillSlider.value = LevelSkillTotal() + PlayerPrefs.GetFloat("totalDaily",0)/2f;
+		PlayerPrefs.SetInt("lvlSelectDaily",0);
 	}
 
 	void ToggleCanPlay(bool b){

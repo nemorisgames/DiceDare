@@ -292,6 +292,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		case "Scene18":completo = GlobalVariables.Scene18;break;
 		case "Scene19":completo = GlobalVariables.Scene19;break;
 		case "Scene20":completo = GlobalVariables.Scene20;break;
+		//case "Scene21":completo = GlobalVariables.Scene21;break;
 		}
 		string[] aux = completo.Split(new char[1]{'$'});
 		string[] info = aux[0].Split(new char[1]{'|'});
@@ -332,6 +333,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		case "Scene18":completoNumbers = GlobalVariables.Scene18Numbers;break;
 		case "Scene19":completoNumbers = GlobalVariables.Scene19Numbers;break;
 		case "Scene20":completoNumbers = GlobalVariables.Scene20Numbers;break;
+		//case "Scene21":completoNumbers = GlobalVariables.Scene21Numbers;break;
 		}
 		string completoPath = "";
 		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
@@ -355,6 +357,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		case "Scene18":completoPath = GlobalVariables.Scene18Path;break;
 		case "Scene19":completoPath = GlobalVariables.Scene19Path;break;
 		case "Scene20":completoPath = GlobalVariables.Scene20Path;break;
+		//case "Scene21":completoPath = GlobalVariables.Scene21Path;break;
 		}
 		string [] auxPath = completoPath.Split (new char[1]{ '|' });
 		string[] auxCoord = new string[2];
