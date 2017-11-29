@@ -140,7 +140,7 @@ public class LevelSelection : MonoBehaviour {
 		//load last played date
 		int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays",-1);
 		System.DateTime date = System.DateTime.Now.Date;
-		date = System.DateTime.Parse("11/30/2017 12:00:00 AM");
+		//date = System.DateTime.Parse("11/30/2017 12:00:00 AM");
 		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",date.ToString()));
 		int daysSinceLastPlay = (int)(date - lastPlayedDate).TotalDays;
 		if(daysSinceLastPlay == 0){
