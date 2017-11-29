@@ -80,6 +80,8 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
     
 	int dailyCorrect;
 	int dailyWrong;
+	[HideInInspector]
+	public int currentScene;
 
     string mensaje = "";
 
@@ -99,6 +101,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
         string texto = PlayerPrefs.GetString("scene", "Scene1");
         string num = texto.Split(new char[1] { 'e' })[2];
         int level = (int.Parse(num));
+		currentScene = level;
         levelNum.text = "LEVEL " + level.ToString();
 
         timesDied = PlayerPrefs.GetInt("timesDied", 0);
@@ -292,7 +295,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		case "Scene18":completo = GlobalVariables.Scene18;break;
 		case "Scene19":completo = GlobalVariables.Scene19;break;
 		case "Scene20":completo = GlobalVariables.Scene20;break;
-		//case "Scene21":completo = GlobalVariables.Scene21;break;
+		case "Scene21":completo = GlobalVariables.Scene21;break;
 		}
 		string[] aux = completo.Split(new char[1]{'$'});
 		string[] info = aux[0].Split(new char[1]{'|'});
@@ -333,7 +336,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		case "Scene18":completoNumbers = GlobalVariables.Scene18Numbers;break;
 		case "Scene19":completoNumbers = GlobalVariables.Scene19Numbers;break;
 		case "Scene20":completoNumbers = GlobalVariables.Scene20Numbers;break;
-		//case "Scene21":completoNumbers = GlobalVariables.Scene21Numbers;break;
+		case "Scene21":completoNumbers = GlobalVariables.Scene21Numbers;break;
 		}
 		string completoPath = "";
 		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
@@ -357,7 +360,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		case "Scene18":completoPath = GlobalVariables.Scene18Path;break;
 		case "Scene19":completoPath = GlobalVariables.Scene19Path;break;
 		case "Scene20":completoPath = GlobalVariables.Scene20Path;break;
-		//case "Scene21":completoPath = GlobalVariables.Scene21Path;break;
+		case "Scene21":completoPath = GlobalVariables.Scene21Path;break;
 		}
 		string [] auxPath = completoPath.Split (new char[1]{ '|' });
 		string[] auxCoord = new string[2];
@@ -913,6 +916,11 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		float consec = Mathf.Clamp((float)PlayerPrefs.GetInt("consecutiveDays"),0f,7f);
 		totalPercentage = Mathf.Clamp01(totalPercentage * (1 + consec/150f));
 
+		if(consec == -1)
+			PlayerPrefs.SetInt("consecutiveDays",1);
+		else
+			PlayerPrefs.SetInt("consecutiveDays",(int)consec+1);
+
 		Debug.Log(result + ", "+ totalPercentage);
 		if(result > totalPercentage)
 			totalPercentage = (totalPercentage + result * 1.1f)/2f;
@@ -920,7 +928,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			totalPercentage = (totalPercentage - (1 - result) * 0.05f);
 		
 		PlayerPrefs.SetFloat("totalDaily",Mathf.Clamp01(totalPercentage));
-
+		PlayerPrefs.SetString("lastPlayedDate",System.DateTime.Now.Date.ToString());
 		//dailySlider.value = LevelSelection.LevelSkillTotal() + totalPercentage/2f;
 		StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + totalPercentage/2f));
 

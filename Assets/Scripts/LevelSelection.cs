@@ -139,14 +139,16 @@ public class LevelSelection : MonoBehaviour {
 		ToggleCanPlay(true);
 		//load last played date
 		int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays",-1);
-		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",System.DateTime.Now.Date.ToString()));
-		int daysSinceLastPlay = (int)(System.DateTime.Now - lastPlayedDate).TotalDays;
+		System.DateTime date = System.DateTime.Now.Date;
+		date = System.DateTime.Parse("11/30/2017 12:00:00 AM");
+		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",date.ToString()));
+		int daysSinceLastPlay = (int)(date - lastPlayedDate).TotalDays;
 		if(daysSinceLastPlay == 0){
 			if(consecutiveDays == -1){
 				Debug.Log("First stage played");
-				//PlayerPrefs.SetInt("consecutiveDays",1);
 			}
 			else{
+				Debug.Log(date);
 				Debug.Log("Already played today");
 				if(!testing) ToggleCanPlay(false);
 			}
@@ -156,6 +158,7 @@ public class LevelSelection : MonoBehaviour {
 			PlayerPrefs.SetInt("consecutiveDays",0);
 			Debug.Log("Haven't played in over a day");
 			consecDaysSlider.value = 0;
+			consecutiveDays = 0;
 		}
 		float penalization = 0;
 		consecDays.text = consecutiveDays.ToString();
@@ -163,8 +166,13 @@ public class LevelSelection : MonoBehaviour {
 			consecDaysSlider.value = 0;
 			penalization = -0.01f;
 		}
+		else if(consecutiveDays == -1){
+			consecDaysSlider.value = 0;
+			consecDays.text = 0.ToString();
+		}
 		else{
-			consecDaysSlider.value = 1f/(7f - Mathf.Clamp((float)consecutiveDays,0f,7f));
+			float aux = consecutiveDays;
+			consecDaysSlider.value = Mathf.Clamp(aux,0f,7f) * (1f/7f);
 		}
 		if(System.DateTime.Now.Date.ToString() == PlayerPrefs.GetString("lastLoadedDaily","")){
 			penalization = 0;

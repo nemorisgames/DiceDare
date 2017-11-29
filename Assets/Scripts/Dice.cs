@@ -72,6 +72,22 @@ public class Dice : MonoBehaviour {
 		}
 
 		if(inGame.daily) inGame.currentBlock.currentNumbers = faceNumbers();
+		hintTime = 5 + getHintTime();
+	}
+
+	int getHintTime(){
+		if(inGame.currentScene <= 5)
+			return 5;
+		if(inGame.currentScene > 5 && inGame.currentScene <= 10)
+			return 10;
+		if(inGame.currentScene > 10 && inGame.currentScene <= 15)
+			return 15;
+		if(inGame.currentScene > 15 && inGame.currentScene <= 20)
+			return 20;
+		if(inGame.currentScene > 20)
+			return 25;
+		else
+			return 5;
 	}
 
 	IEnumerator applyRootMotion(){
@@ -459,7 +475,7 @@ public class Dice : MonoBehaviour {
 		if(!inGame.daily && timeLastMove <= Time.timeSinceLevelLoad - inGame.pauseTime - hintTime){
 			StartCoroutine (inGame.lightPath (0));
 			//fix
-			hintTime += 5f;
+			hintTime += getHintTime();
 		}
 		if (Input.GetKeyDown (KeyCode.W)) { if(!inGame.daily) StartCoroutine(turn (Direction.Up)); }
 		if (Input.GetKeyDown (KeyCode.S)) { StartCoroutine(turn (Direction.Down)); }
