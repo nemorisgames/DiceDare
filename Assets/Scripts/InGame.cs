@@ -82,6 +82,8 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 	int dailyWrong;
 	[HideInInspector]
 	public int currentScene;
+	public GameObject medals_GO;
+	public UISprite [] medals;
 
     string mensaje = "";
 
@@ -137,14 +139,35 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		//GetConsecutiveDays();
 		dice.EnableTutorialSign(false);
 
+		InitMedals();
+
 		if(daily){
 			DailyInit();
+			
 		}
         
 		Appodeal.setBannerCallbacks(this);
 		Appodeal.setInterstitialCallbacks(this);
 		Appodeal.setRewardedVideoCallbacks(this);
     }
+
+	void InitMedals(){
+		if(medals_GO != null){
+			medals = new UISprite[4];
+			for(int i=0;i<4;i++){
+				medals[i] = medals_GO.transform.Find("M"+i.ToString()).GetComponent<UISprite>();
+				medals[i].enabled = false;
+			}
+		}
+	}
+	void SetMedals(){
+		int [] unlockedMedals = new int[4];
+		for(int i=0;i<4;i++){
+			unlockedMedals[i] = PlayerPrefs.GetInt("Medal"+i.ToString(),0);
+			if(unlockedMedals[i] == 1)
+				medals[i].enabled = true;
+		}
+	}
 
 	void DailyInit(){
 		ResetDiceNumbers();
@@ -616,6 +639,18 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			UpdateConsecutiveDays();
 			StartCoroutine(finishDaily());
 		}
+		else{
+			Debug.Log("skill");
+			string texto = PlayerPrefs.GetString ("scene", "Scene1");
+			string num = texto.Split (new char[1]{ 'e' }) [2];
+			int level = (int.Parse (num) + 1);
+			if(level < GlobalVariables.nLevels)
+				PlayerPrefs.SetInt ("unlockedScene" + level, 1);
+			Debug.Log(LevelSelection.LevelSkillTotal());
+			StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + PlayerPrefs.GetFloat("totalDaily",0)/2f));
+		}
+		
+		CalculateMedals();
 			
 	}
 
@@ -721,11 +756,11 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 	public void exit()
     {
         Appodeal.hide(Appodeal.BANNER_BOTTOM);
-        string texto = PlayerPrefs.GetString ("scene", "Scene1");
+        /*string texto = PlayerPrefs.GetString ("scene", "Scene1");
 		string num = texto.Split (new char[1]{ 'e' }) [2];
 		int level = (int.Parse (num) + 1);
 		if(level < GlobalVariables.nLevels)
-			PlayerPrefs.SetInt ("unlockedScene" + level, 1);
+			PlayerPrefs.SetInt ("unlockedScene" + level, 1);*/
 		Destroy (bgm.gameObject);
 		SceneManager.LoadScene ("LevelSelection");
 	}
@@ -750,7 +785,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			exit ();
 		else {
 			PlayerPrefs.SetInt ("timesDied", 0);
-			PlayerPrefs.SetInt ("unlockedScene" + level, 1);
+			//PlayerPrefs.SetInt ("unlockedScene" + level, 1);
 			PlayerPrefs.SetString ("scene", "Scene" + level);
 			SceneManager.LoadScene ("InGame");
 		}
@@ -783,12 +818,12 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		}
 		if(!pause && daily){
 			Debug.Log("counting");
-			int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime) / 60);
-			int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime) % 60);
+			int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) / 60);
+			int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) % 60);
 			//int dec = (int)(((1 - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((1 - Time.timeSinceLevelLoad) % 60) * 10));
 			if(!finished && seconds >= 0) clockShow.text = (seconds < 10 ? "0" : "") + seconds;
 
-			if(!finished && 60 - (Time.timeSinceLevelLoad - pauseTime) <= 0)
+			if(!finished && 60 + extraSeconds - (Time.timeSinceLevelLoad - pauseTime) <= 0)
 				finishGame();
 		}
 
@@ -890,11 +925,23 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		
 	}
 
+	int dailyConsec = 0;
+	float extraSeconds = 0;
+	float dailySPA = 2.4f;
+
 	public void DailyAnswer(bool b){
-		if(b)
+		if(b){
 			dailyCorrect++;
-		else
+			dailyConsec++;
+			if(dailyConsec == 3){
+				extraSeconds = Mathf.Clamp(extraSeconds += 5f,0f,25f);
+				dailyConsec = 0;
+			}
+		}
+		else{
 			dailyWrong++;
+			dailyConsec = 0;
+		}
 	}
 
 	float dailyOptimo = 25;
@@ -904,6 +951,8 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 	public UISlider dailySlider;
 
 	void CalculateDailyResult(){
+		float auxOptimo = dailyOptimo + Mathf.Floor(extraSeconds/2.4f);
+		dailyOptimo = auxOptimo;
 		dailyCorrectLabel.text = dailyCorrect+"/"+(dailyCorrect+dailyWrong);
 		dailyPercentage = dailyCorrect/(float)(dailyCorrect+dailyWrong);
 		float result = ((dailyPercentage * dailyCorrect)/dailyOptimo);
@@ -930,8 +979,23 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		PlayerPrefs.SetFloat("totalDaily",Mathf.Clamp01(totalPercentage));
 		PlayerPrefs.SetString("lastPlayedDate",System.DateTime.Now.Date.ToString());
 		//dailySlider.value = LevelSelection.LevelSkillTotal() + totalPercentage/2f;
+		
 		StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + totalPercentage/2f));
+	}
 
+	void CalculateMedals(){
+		float totalSkill = LevelSelection.LevelSkillTotal() + PlayerPrefs.GetFloat("totalDaily")/2f;
+		
+		if(totalSkill >= 0.1f && PlayerPrefs.GetInt("Medal0",0) == 0)
+			PlayerPrefs.SetInt("Medal0",1);
+		if(totalSkill >= 0.25f && PlayerPrefs.GetInt("Medal1",0) == 0)
+			PlayerPrefs.SetInt("Medal1",1);
+		if(totalSkill >= 0.5f && PlayerPrefs.GetInt("Medal2",0) == 0)
+			PlayerPrefs.SetInt("Medal2",1);
+		if(totalSkill == 1f && PlayerPrefs.GetInt("Medal3",0) == 0)
+			PlayerPrefs.SetInt("Medal3",1);
+
+		SetMedals();
 	}
 
 	public static IEnumerator moveSlider(UISlider slider, float target){
@@ -939,6 +1003,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			slider.value = f;
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
+		slider.value = target;
 	}
 
 	public static IEnumerator raiseNumber(UILabel label, float target){

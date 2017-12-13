@@ -372,6 +372,8 @@ public class Dice : MonoBehaviour {
 					}
 					audio.PlayOneShot(audioCubeChange);
 				}
+				else
+					if(inGame.daily) EnableTutorialSign(false);
 			}
 			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.EndCell) {
 				c.GetComponent<Cell> ().stateCell = Cell.StateCell.Passed;
@@ -430,7 +432,11 @@ public class Dice : MonoBehaviour {
 					GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 ((int)(255 * 0.1621972f), (int)(255 * 0.2146223f), (int)(255 * 0.3676471f), (int)(255 * 0.3676471f)));	
 					break;
 			}
+			currentOperation = op;
+			if(inGame.daily)
+				EnableTutorialSign(true);
 		}
+		
 	}
 					
 

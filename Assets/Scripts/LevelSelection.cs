@@ -13,12 +13,16 @@ public class LevelSelection : MonoBehaviour {
 	public UISprite controlButton;
 	public UISlider mathSkillSlider;
 	public UISlider consecDaysSlider;
+	public GameObject medals_GO;
+	public UISprite [] medals;
 	public UILabel consecDays;
 	public UIPanel dailyPanel;
 	public GameObject startDaily;
 	public GameObject alreadyPlayed;
 	// Use this for initialization
 	void Start () {
+		InitMedals();
+		
 		PlayerPrefs.SetInt ("continueBGM", 0);
 		if (PlayerPrefs.GetInt ("unlockedScene1") != 1) {
 			PlayerPrefs.SetInt ("unlockedScene1", 1);
@@ -65,6 +69,24 @@ public class LevelSelection : MonoBehaviour {
 			GetConsecutiveDays();
 		}
 			
+	}
+
+	void InitMedals(){
+		if(medals_GO != null){
+			medals = new UISprite[4];
+			for(int i=0;i<4;i++){
+				medals[i] = medals_GO.transform.Find("M"+i.ToString()).GetComponent<UISprite>();
+				medals[i].enabled = false;
+			}
+		}
+	}
+	void SetMedals(){
+		int [] unlockedMedals = new int[4];
+		for(int i=0;i<4;i++){
+			unlockedMedals[i] = PlayerPrefs.GetInt("Medal"+i.ToString(),0);
+			if(unlockedMedals[i] == 1)
+				medals[i].enabled = true;
+		}
 	}
 
 	public void launchLevel(string texto){
@@ -177,6 +199,7 @@ public class LevelSelection : MonoBehaviour {
 		if(System.DateTime.Now.Date.ToString() == PlayerPrefs.GetString("lastLoadedDaily","")){
 			penalization = 0;
 		}
+		SetMedals();
 		PlayerPrefs.SetString("lastLoadedDaily",System.DateTime.Now.Date.ToString());
 		PlayerPrefs.SetFloat("totalDaily",PlayerPrefs.GetFloat("totalDaily")+penalization);
 		Debug.Log(LevelSkillTotal() + " | "+PlayerPrefs.GetFloat("totalDaily",0)/2f);
@@ -201,8 +224,12 @@ public class LevelSelection : MonoBehaviour {
 				percentage = 0.03f;
 			else if(i > 15 && i <= 20)
 				percentage = 0.04f;
-			total += percentage*(float)PlayerPrefs.GetInt("unlockedScene"+i,0);
+			//total += percentage*(float)(PlayerPrefs.GetFloat("recordScene"+i,0));
+			if(PlayerPrefs.GetFloat("recordScene"+i,0) != 0)
+				total += percentage;
+			//Debug.Log("Scene "+i+": "+PlayerPrefs.GetFloat("recordScene"+i,0));
 		}
-		return Mathf.Round(total*10)/10f;
+		Debug.Log(total);
+		return Mathf.Round(total*100f)/100f;
 	}
 }
