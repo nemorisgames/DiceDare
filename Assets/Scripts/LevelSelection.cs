@@ -153,6 +153,17 @@ public class LevelSelection : MonoBehaviour {
 		}
 	}
 
+	public void TutorialButton(){
+		if(PlayerPrefs.GetInt("tutorialsDisabled") == 0){
+			//set sprite
+			PlayerPrefs.SetInt("tutorialsDisabled",1);
+		}
+		else{
+			//set sprite
+			PlayerPrefs.SetInt("tutorialsDisabled",0);
+		}
+	}
+
 	public void LaunchDaily(){
 		SceneManager.LoadScene("InGame_daily");
 	}

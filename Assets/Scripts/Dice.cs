@@ -95,9 +95,11 @@ public class Dice : MonoBehaviour {
 		transform.rotation = Quaternion.identity;
 		GetComponent<Animator> ().applyRootMotion = true;
 		inGame.UnPause();
+		if(inGame.daily) EnableTutorialSign(true);
 	}
 
 	public IEnumerator turn(Direction d){
+		EnableTutorialSign(false);
 		onMovement = true;
 		calculated = false;
 		int nStemps = 10;
@@ -372,8 +374,6 @@ public class Dice : MonoBehaviour {
 					}
 					audio.PlayOneShot(audioCubeChange);
 				}
-				else
-					if(inGame.daily) EnableTutorialSign(false);
 			}
 			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.EndCell) {
 				c.GetComponent<Cell> ().stateCell = Cell.StateCell.Passed;
@@ -432,11 +432,13 @@ public class Dice : MonoBehaviour {
 					GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 ((int)(255 * 0.1621972f), (int)(255 * 0.2146223f), (int)(255 * 0.3676471f), (int)(255 * 0.3676471f)));	
 					break;
 			}
-			currentOperation = op;
-			if(inGame.daily)
+			if(currentOperation != op){
+				currentOperation = op;
 				EnableTutorialSign(true);
+			}
+			else
+				EnableTutorialSign(false);
 		}
-		
 	}
 					
 
@@ -538,6 +540,10 @@ public class Dice : MonoBehaviour {
 	}
 
 	public void EnableTutorialSign(bool b){
+		if(PlayerPrefs.GetInt("tutorialsDisabled",0) == 1){
+			inGame.tutorialv2.gameObject.SetActive(false);
+			return;
+		}
 		inGame.tutorialv2.gameObject.SetActive(b);
 		if(b)
 			UpdateTutorialSign(currentOperation);
