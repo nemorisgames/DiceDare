@@ -985,17 +985,32 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 
 	void CalculateMedals(){
 		float totalSkill = LevelSelection.LevelSkillTotal() + PlayerPrefs.GetFloat("totalDaily")/2f;
-		
-		if(totalSkill >= 0.1f && PlayerPrefs.GetInt("Medal0",0) == 0)
-			PlayerPrefs.SetInt("Medal0",1);
-		if(totalSkill >= 0.25f && PlayerPrefs.GetInt("Medal1",0) == 0)
-			PlayerPrefs.SetInt("Medal1",1);
-		if(totalSkill >= 0.5f && PlayerPrefs.GetInt("Medal2",0) == 0)
-			PlayerPrefs.SetInt("Medal2",1);
-		if(totalSkill == 1f && PlayerPrefs.GetInt("Medal3",0) == 0)
-			PlayerPrefs.SetInt("Medal3",1);
-
 		SetMedals();
+
+		if(totalSkill >= 0.1f && PlayerPrefs.GetInt("Medal0",0) == 0){
+			TweenMedal(0);
+		}
+			
+		if(totalSkill >= 0.25f && PlayerPrefs.GetInt("Medal1",0) == 0){
+			TweenMedal(1);
+		}
+			
+		if(totalSkill >= 0.5f && PlayerPrefs.GetInt("Medal2",0) == 0){
+			TweenMedal(2);
+		}
+			
+		if(totalSkill == 1f && PlayerPrefs.GetInt("Medal3",0) == 0){
+			TweenMedal(3);
+		}
+	}
+
+	void TweenMedal(int index){
+		TweenAlpha medal = medals[index].GetComponent<TweenAlpha>();
+		medals[index].enabled = true;
+		medal.value = 0;
+		audio.PlayOneShot(audioGoodMove);
+		medal.PlayForward();
+		PlayerPrefs.SetInt("Medal"+index.ToString(),1);
 	}
 
 	public static IEnumerator moveSlider(UISlider slider, float target){
