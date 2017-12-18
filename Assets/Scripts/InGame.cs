@@ -1004,12 +1004,17 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		}
 	}
 
+	IEnumerator medalDelay(TweenAlpha medal){
+		yield return new WaitForSeconds(1.5f);
+		medal.PlayForward();
+	}
+
 	void TweenMedal(int index){
 		TweenAlpha medal = medals[index].GetComponent<TweenAlpha>();
 		medals[index].enabled = true;
 		medal.value = 0;
 		audio.PlayOneShot(audioGoodMove);
-		medal.PlayForward();
+		StartCoroutine(medalDelay(medal));
 		PlayerPrefs.SetInt("Medal"+index.ToString(),1);
 	}
 
