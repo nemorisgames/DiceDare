@@ -146,10 +146,10 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 			
 		}
         
-		/*Appodeal.setBannerCallbacks(this);
+		Appodeal.setBannerCallbacks(this);
 		Appodeal.setInterstitialCallbacks(this);
 		Appodeal.setRewardedVideoCallbacks(this);
-        */
+        
         showBanner();
     }
 
@@ -496,13 +496,23 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});
 #endif
-        print("badMove");
-		dice.enabled = false;
-		StartCoroutine (reloadScene ());
-		audio.pitch = 1f;
-		audio.PlayOneShot(audioBadMove);
-		dice.GetComponent<Animator> ().SetTrigger ("BadMove");
+        if (Random.Range(0, 100) < 30)
+        {
+            showInterstitial();
+        }
+        //else
+            continueBadMove();
 	}
+
+    void continueBadMove()
+    {
+        print("badMove");
+        dice.enabled = false;
+        StartCoroutine(reloadScene());
+        audio.pitch = 1f;
+        audio.PlayOneShot(audioBadMove);
+        dice.GetComponent<Animator>().SetTrigger("BadMove");
+    }
 
 	IEnumerator reloadScene(){
 		yield return new WaitForSeconds (1f);

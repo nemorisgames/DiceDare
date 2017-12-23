@@ -4,7 +4,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
 
-public class LevelSelection : MonoBehaviour {
+//using VoxelBusters.NativePlugins;
+using AppodealAds.Unity.Api;
+using AppodealAds.Unity.Common;
+
+public class LevelSelection : MonoBehaviour, IBannerAdListener
+{
 	public bool testing = true;
 	public UIButton[] recordButtons;
 	public UIPanel panel;
@@ -89,10 +94,26 @@ public class LevelSelection : MonoBehaviour {
             }
 
         }
+        Appodeal.setBannerCallbacks(this);
 
+        showBanner();
     }
 
-	void InitMedals(){
+    #region Banner callback handlers
+
+    public void onBannerLoaded() { Debug.Log("Banner loaded"); }
+    public void onBannerFailedToLoad() { Debug.Log("Banner failed"); }
+    public void onBannerShown() { Debug.Log("Banner opened"); }
+    public void onBannerClicked() { Debug.Log("banner clicked"); }
+
+    #endregion
+
+    public void showBanner()
+    {
+        Appodeal.show(Appodeal.BANNER_TOP);
+    }
+
+    void InitMedals(){
 		if(medals_GO != null){
 			medals = new UISprite[4];
 			for(int i=0;i<4;i++){
