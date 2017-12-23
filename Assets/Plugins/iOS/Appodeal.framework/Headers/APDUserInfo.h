@@ -2,7 +2,7 @@
 //  APDUserInfo.h
 //  Appodeal
 //
-//  AppodealSDK version 2.1.1-Release
+//  AppodealSDK version 2.0.0-All
 //
 //  Copyright © 2017 Appodeal, Inc. All rights reserved.
 //
@@ -22,12 +22,12 @@
 @property (copy, nonatomic) NSString *email;
 
 /**
- *  Set user ID
+ *  Set user id
  */
 @property (copy, nonatomic) NSString *userId;
 
 /**
- *  Array of user interests in string
+ *  Array of user intersets in string
  * @code userInfo.interests = @[@"music", @"sport"];
  */
 @property (copy, nonatomic) NSArray *interests;

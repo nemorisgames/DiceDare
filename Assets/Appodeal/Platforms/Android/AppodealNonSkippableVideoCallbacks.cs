@@ -31,7 +31,7 @@ namespace AppodealAds.Unity.Android
 		}
 		
 		void onNonSkippableVideoClosed(bool finished) {
-			listener.onNonSkippableVideoClosed(finished);
+			listener.onNonSkippableVideoClosed();
 		}
 	}
 #else

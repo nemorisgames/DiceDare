@@ -46,8 +46,8 @@ public class Dice : MonoBehaviour {
 		numbers.Add(transform.Find("TextBackward").GetComponent<TextMesh>());
 
 		currentNumbers = numbers;
-		
-	}
+
+    }
 	void Start () {
 		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
 		line = GetComponent<LineRenderer> ();
@@ -95,7 +95,8 @@ public class Dice : MonoBehaviour {
 		transform.rotation = Quaternion.identity;
 		GetComponent<Animator> ().applyRootMotion = true;
 		inGame.UnPause();
-		if(inGame.daily) EnableTutorialSign(true);
+		//if(inGame.daily)
+            EnableTutorialSign(true);
 	}
 
 	public IEnumerator turn(Direction d){
@@ -405,7 +406,7 @@ public class Dice : MonoBehaviour {
 		nextOperation = op;
 		UpdateTutorialSign(op);
 		EnableTutorialSign(false);
-		if(inGame.daily){
+		//if(inGame.daily){
 			switch(op){
 				case Dice.Operation.Sum:
 					backgroundTexture.color = new Color (226f/255f, 54f/255f, 78f/255f, 255f/255f);
@@ -432,13 +433,18 @@ public class Dice : MonoBehaviour {
 					GetComponent<Renderer> ().material.SetColor ("_EmissionColor", new Color32 ((int)(255 * 0.1621972f), (int)(255 * 0.2146223f), (int)(255 * 0.3676471f), (int)(255 * 0.3676471f)));	
 					break;
 			}
-			if(currentOperation != op){
-				currentOperation = op;
-				EnableTutorialSign(true);
-			}
-			else
-				EnableTutorialSign(false);
-		}
+            if (currentOperation != op)
+            {
+                currentOperation = op;
+                EnableTutorialSign(true);
+                print("adentro");
+            }
+            else
+            {
+                EnableTutorialSign(false);
+                print("afuera");
+            }
+		//}
 	}
 					
 

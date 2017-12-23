@@ -22,7 +22,7 @@ public class Appodeal_nemoris : MonoBehaviour
         Init();
 
         Appodeal.setTesting(true);
-        Appodeal.show(Appodeal.INTERSTITIAL);
+        //Appodeal.show(Appodeal.INTERSTITIAL);
     }
 
     public void Init()

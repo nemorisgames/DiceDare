@@ -20,23 +20,22 @@
     }
 }
 
+
+-(void) nonSkippableVideoDidClick { }
+
 -(void) nonSkippableVideoDidFinish {
     if(self.nonSkippableVideoDidFinishCallback) {
-        _isFinishedVideo = true;
         self.nonSkippableVideoDidFinishCallback();
     }
 }
 
 -(void) nonSkippableVideoDidPresent {
-    if(self.nonSkippableVideoDidPresentCallback) {
-        _isFinishedVideo = false;
-        self.nonSkippableVideoDidPresentCallback();
-    }
+
 }
 
 -(void) nonSkippableVideoWillDismiss {
     if(self.nonSkippableVideoWillDismissCallback) {
-        self.nonSkippableVideoWillDismissCallback(_isFinishedVideo);
+        self.nonSkippableVideoWillDismissCallback();
     }
 }
 

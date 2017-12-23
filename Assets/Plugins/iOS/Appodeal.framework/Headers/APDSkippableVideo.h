@@ -2,7 +2,7 @@
 //  APDSkippableVideo.h
 //  Appodeal
 //
-//  AppodealSDK version 2.1.1-Release
+//  AppodealSDK version 2.0.0-All
 //
 //  Copyright © 2017 Appodeal, Inc. All rights reserved.
 //
@@ -23,55 +23,55 @@
 @optional
 
 /*!
- *  Method called when skippable video loads
+ *  Method called when skippable video did load
  *
  *  @param skippableVideo Ready to show skippable video
  */
 - (void)skippableVideoDidLoad:(APDSkippableVideo *)skippableVideo;
 
 /*!
- *  Method called if skippable video mediation failed
+ *  Method called if skippable video mediation was failed
  *
  *  @param skippableVideo Failed skippable video
  */
 - (void)skippableVideo:(APDSkippableVideo *)skippableVideo didFailToLoadWithError:(NSError *)error;
 
 /*!
- *  Method called if skippable video adapter becomes unavailable
- *  This case can occur only for singleton ad networks: AdColony, Vungle, Unity
+ *  Method called if skippable video adapter become unavailable
+ *  This case can occure only for singleton ad networks: AdColony, Vungle, Unity
  *
  *  @param skippableVideo Failed skippable video
  */
 - (void)skippableVideoDidBecomeUnavailable:(APDSkippableVideo *)skippableVideo;
 
 /*!
- *  Method called after skippable video shows
+ *  Method called after skippable video did show
  *
  *  @param skippableVideo Shown skippable video
  */
 - (void)skippableVideoDidAppear:(APDSkippableVideo *)skippableVideo;
 
 /*!
- *  Method called after skippable video completed
- *  @warning Not all video ad networks provide this callback,
- *  therefore this callback may not be called even if the video was  completed
+ *  Method called after skippable video did finish
+ *  @warning Not all video ad networks provides this callback
+ *  therefore this callback may not called even video was fully watched
  *
  *  @param skippableVideo Shown skippable video
  */
 - (void)skippableVideoDidFinish:(APDSkippableVideo *)skippableVideo;
 
 /*!
- *  Method called after skippable video is dismissed from screen
+ *  Method called after skippable video did dismiss from screen
  *
  *  @param skippableVideo Shown skippable video
  */
 - (void)skippableVideoDidDisappear:(APDSkippableVideo *)skippableVideo;
 
 /*!
- *  Method called if error occurs while presenting skippable video adapter
+ *  Method called if skippable video adapter occure some error while presenting
  *
  *  @param skippableVideo Failed skippable video
- *  @param error          Error occurred
+ *  @param error          Occured error
  */
 - (void)skippableVideo:(APDSkippableVideo *)skippableVideo didFailToPresentWithError:(NSError *)error;
 
@@ -79,14 +79,14 @@
 
 
 /*!
- *  You should have strong reference on loading skippable video instance
+ *  You should have strong refrence on loading skippable video instance
  *  Instance of skippable video ad can try to load ad only once!
  *  Create new skippable video before any call -loadAd!
  *  @code - (void) loadSkippableVideo {
-            self.skippableVideo = [APDSkippableVideo new];
-            self.skippableVideo.delegate = self;
-            [self.skippableVideo loadAd]
-        }
+    self.skippableVideo = [APDSkippableVideo new];
+    self.skippableVideo.delegate = self;
+    [self.skippableVideo loadAd]
+ }
  */
 @interface APDSkippableVideo : NSObject
 
@@ -96,22 +96,22 @@
 @property (weak, nonatomic) id<APDSkippableVideoDelegate> delegate;
 
 /*!
- *  Set custom placement name, that you create in Appodeal Dashboard
+ *  Set custom placement name, that you create in Appodeal Dashbord
  */
 @property (copy, nonatomic) NSString *placement;
 
 /*!
- *  Set custom SDK
+ *  Set custom sdk
  */
 @property (weak, nonatomic) APDSdk *customSdk;
 
 /*!
- *  Get skippable video availability
+ *  Getter skippable video availability
  */
 @property (assign, nonatomic, readonly, getter=isReady) BOOL ready;
 
 /*!
- *  Start loading skippable video
+ *  Start skippable video loading
  */
 - (void)loadAd __attribute__((deprecated("As of version 1.4.0 skippable video contains in interstitial ad")));
 

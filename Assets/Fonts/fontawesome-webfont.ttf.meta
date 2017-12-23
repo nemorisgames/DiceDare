@@ -14,7 +14,7 @@ TrueTypeFontImporter:
   - FontAwesome
   fallbackFontReferences: []
   customCharacters: 
-  fontRenderingMode: 3
+  fontRenderingMode: 2
   ascentCalculationMode: 1
   userData: 
   assetBundleName: 

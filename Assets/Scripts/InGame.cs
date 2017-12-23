@@ -10,7 +10,7 @@ using UnityEngine.Advertisements;
 using AppodealAds.Unity.Api;
 using AppodealAds.Unity.Common;
 
-public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener, IInterstitialAdListener
+public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener, IRewardedVideoAdListener//, IRewardedVideoAdListener, IBannerAdListener, IInterstitialAdListener
 {
 	public bool daily = false;
 	public Dice dice;
@@ -146,9 +146,11 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			
 		}
         
-		Appodeal.setBannerCallbacks(this);
+		/*Appodeal.setBannerCallbacks(this);
 		Appodeal.setInterstitialCallbacks(this);
 		Appodeal.setRewardedVideoCallbacks(this);
+        */
+        showBanner();
     }
 
 	void InitMedals(){
@@ -203,7 +205,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 
     private void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 400, 200), mensaje);
+        //GUI.Label(new Rect(10, 10, 400, 200), mensaje);
     }
 
     public void hint(){
@@ -247,25 +249,25 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
     public void onRewardedVideoLoaded() { mensaje += ("Video loaded"); }
     public void onRewardedVideoFailedToLoad() { mensaje += ("Video failed"); }
     public void onRewardedVideoShown() { mensaje += ("Video shown"); }
-    public void onRewardedVideoClosed(bool r) { mensaje += ("Video closed" + r); HandleShowResult(ShowResult.Finished); }
+    public void onRewardedVideoClosed() { mensaje += ("Video closed"); HandleShowResult(ShowResult.Finished); }
     public void onRewardedVideoFinished(int amount, string name) { mensaje += ("Reward: " + amount + " " + name); }
     #endregion
 
     #region Banner callback handlers
-    public void onBannerLoaded(bool r) { mensaje += ("banner loaded" + r); }
+    public void onBannerLoaded() { mensaje += ("banner loaded"); }
     public void onBannerFailedToLoad() { mensaje += ("banner failed"); }
     public void onBannerShown() { mensaje += ("banner opened"); }
     public void onBannerClicked() { mensaje += ("banner clicked"); }
     #endregion
 
     #region Interstitial callback handlers
-    public void onInterstitialLoaded(bool r) { mensaje += ("Interstitial loaded" + r); }
+    public void onInterstitialLoaded() { mensaje += ("Interstitial loaded"); }
     public void onInterstitialFailedToLoad() { mensaje += ("Interstitial failed"); }
     public void onInterstitialShown() { mensaje += ("Interstitial opened"); }
     public void onInterstitialClosed() { mensaje += ("Interstitial closed"); }
     public void onInterstitialClicked() { mensaje += ("Interstitial clicked"); }
     #endregion
-
+   
     private void HandleShowResult(ShowResult result)
 	{
 		switch (result)
@@ -724,7 +726,6 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 		yield return new WaitForSeconds (1.4f);
 		finishedSign.SetActive (true);
 		finishedSign.SendMessage ("PlayForward");
-		showBanner();
 	}
 
 	IEnumerator disableCell(Cell c){
@@ -1036,4 +1037,7 @@ public class InGame : MonoBehaviour, IRewardedVideoAdListener, IBannerAdListener
 			}
 		}
 	}
+
+    
+    
 }

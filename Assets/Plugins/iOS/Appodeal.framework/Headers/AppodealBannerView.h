@@ -2,7 +2,7 @@
 //  AppodealBannerView.h
 //  Appodeal
 //
-//  AppodealSDK version 2.1.1-Release
+//  AppodealSDK version 2.0.0-All
 //
 //  Copyright © 2017 Appodeal, Inc. All rights reserved.
 //
@@ -22,38 +22,38 @@
 @optional
 
 /**
- *  Method called when banner loads first, after refresh this method not call
+ *  Method called when banner did load firstly, after refresh this method not call
  *
- *  @param bannerView Non-null, ready to show banner
+ *  @param bannerView Nonnul, ready to show banner
  */
 - (void)bannerViewDidLoadAd:(APDBannerView *)bannerView;
 
 /**
  *  Method called in case that banner mediation failed
  *
- *  @param bannerView Non-null failed banner view
- *  @param error      Error occurred during mediation
+ *  @param bannerView Nonnul failed banner view
+ *  @param error      Error occured while mediation
  */
 - (void)bannerView:(APDBannerView *)bannerView didFailToLoadAdWithError:(NSError *)error;
 
 /**
- *  Method called when user taps on banner
+ *  Method called when user tap on banner
  *
- *  @param bannerView Non-null banner view
+ *  @param bannerView Nonnul banner view
  */
 - (void)bannerViewDidInteract:(APDBannerView *)bannerView;
 
 /*!
- *  Method called after any banner was shown or refreshed
+ *  Method called after any banner was show
  *
  *  @param bannerView On screen banner view
  */
 - (void)bannerViewDidShow:(APDBannerView *)bannerView;
 
 /**
- *  Method called after banner view reloaded content automatically
+ *  Method called after banner view reload content automatically
  *
- *  @param bannerView Non-null banner view
+ *  @param bannerView Nonnul banner view
  */
 - (void)bannerViewDidRefresh:(APDBannerView *)bannerView __attribute__((deprecated("Use -bannerViewDidShow: instead")));
 
@@ -61,49 +61,49 @@
 
 /*!
  *  Alias on APDBannerView.
- *  Needed only for backward compatibility with Appodeal SDK version 0.10.8 and lower
- *  @warning If you integrate Appodeal for the first time, we highly recommend using APDBannerView
+ *  Need only for backward compatibility with Appodeal sdk version 0.10.8 and lower
+ *  @warning If your integrate Appodeal at first time, we highly recomeded to use APDBannerView
  */
 @interface AppodealBannerView : APDBannerView
 
 /**
- *  Gets banner availability
+ *  Getter of banner availability
  */
 @property (assign, nonatomic, readonly, getter=isReady) BOOL ready;
 
 /**
- *  Set delegate to receive callbacks declared in AppodealBannerViewDelegate protocol
+ *  Set delegate to recive callbacks declared in AppodealBannerViewDelegate protocol
  *
  *  @param delegate Nullable delegate
  */
 - (void)setDelegate:(id<AppodealBannerViewDelegate>)delegate;
 
 /**
- *  Gets object that you set by -setDelegate:
+ *  Getter of object that you set by -setDelegate:
  *
  *  @return Nullable belegate
  */
 - (id<AppodealBannerViewDelegate>)delegate;
 
 /**
- *  Initializer
+ *  @brief Initializer
  *
- *  @discussion Objective-C
+ *  @brief Objective-C
  *  @code [[AppodealBannerView alloc] initWithSize:kAPDAdSize320x50 rootViewController:self]; @endcode
  *
- *  @discussion Swift
+ *  @brief Swift
  *  @code AppodealBannerView.init(size: kAPDAdSize320x50, rootViewController: self) @endcode
  *
  *
  *  @param size               Appodeal valid size
- *  @param rootViewController Non-null view controller
+ *  @param rootViewController Nonnul view controller
  *
  *  @return Instance of Appodeal banner view class
  */
 - (instancetype)initWithSize:(CGSize)size rootViewController:(UIViewController *)rootViewController;
 
 /**
- *  Start banner mediation
+ *  Start banner mediaition
  */
 - (void)loadAd;
 
@@ -113,16 +113,16 @@
 @interface AppodealMRECView : APDMRECView
 
 /**
- *  Set delegate to receive callbacks declared in AppodealBannerViewDelegate protocol
+ *  Set delegate to recive callbacks declared in AppodealBannerViewDelegate protocol
  *
  *  @param delegate Nullable delegate
  */
 - (void)setDelegate:(id<AppodealBannerViewDelegate>)delegate;
 
 /**
- *  Gets object that you set by -setDelegate:
+ *  Getter of object that you set by -setDelegate:
  *
- *  @return Nullable delegate
+ *  @return Nullable belegate
  */
 - (id<AppodealBannerViewDelegate>)delegate;
 
@@ -130,13 +130,13 @@
  *  Initializer
  *
  *
- *  @discussion Objective-C
+ *  @brief Objective-C
  *  @code [[AppodealMRECView alloc] initWithRootViewController:self]; @endcode
  *
- *  @discussion Swift
+ *  @brief Swift
  *  @code AppodealMRECView.init(rootViewController: self) @endcode
  *
- *  @param rootViewController Non-null view controller
+ *  @param rootViewController Nonnul view controller
  *
  *  @return Instance of Appodeal mrec view class of size 300 x 250
  */

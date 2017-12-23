@@ -17,7 +17,8 @@ public class LevelSelection : MonoBehaviour {
 	public UISprite [] medals;
 	public UILabel consecDays;
 	public UIPanel dailyPanel;
-	public GameObject startDaily;
+    public GameObject dailyButton;
+    public GameObject startDaily;
 	public GameObject alreadyPlayed;
 	// Use this for initialization
 	void Start () {
@@ -68,8 +69,28 @@ public class LevelSelection : MonoBehaviour {
 			dailyPanel.GetComponent<TweenAlpha>().PlayForward();
 			GetConsecutiveDays();
 		}
-			
-	}
+
+
+        int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays", -1);
+        System.DateTime date = System.DateTime.Now.Date;
+        System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate", date.ToString()));
+        int daysSinceLastPlay = (int)(date - lastPlayedDate).TotalDays;
+        if (daysSinceLastPlay == 0)
+        {
+            if (consecutiveDays == -1)
+            {
+                Debug.Log("First stage played");
+            }
+            else
+            {
+                Debug.Log(date);
+                Debug.Log("Already played today");
+                dailyButton.gameObject.SetActive(false);
+            }
+
+        }
+
+    }
 
 	void InitMedals(){
 		if(medals_GO != null){

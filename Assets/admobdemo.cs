@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿/*using UnityEngine;
 using System.Collections;
 using admob;
 public class admobdemo : MonoBehaviour {
@@ -100,4 +100,4 @@ public class admobdemo : MonoBehaviour {
     {
         Debug.Log("handler onAdmobNativeBannerEvent---" + eventName + "   " + msg);
     }
-}
+}*/

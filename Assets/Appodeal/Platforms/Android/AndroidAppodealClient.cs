@@ -6,10 +6,10 @@ using AppodealAds.Unity.Api;
 using AppodealAds.Unity.Common;
 
 #if UNITY_ANDROID
-namespace AppodealAds.Unity.Android {
-	
-	public class AndroidAppodealClient : IAppodealAdsClient {
-		
+namespace AppodealAds.Unity.Android
+{
+	public class AndroidAppodealClient : IAppodealAdsClient 
+	{
         private bool isShow;
 		AndroidJavaClass appodealClass;
 		AndroidJavaClass appodealBannerClass;
@@ -41,142 +41,192 @@ namespace AppodealAds.Unity.Android {
 			return activity;
 		}
 
-		public void initialize(string appKey, int adTypes)  {
-			getAppodealClass().CallStatic("setFramework", "unity", Appodeal.getPluginVersion(), false, false);
-			#if UNITY_5_6_0 || UNITY_5_6_1
-				getAppodealClass().CallStatic("setFramework", "unity", Appodeal.getPluginVersion(), true, false);
+		public void initialize(string appKey, int adTypes) 
+		{
+			getAppodealClass().CallStatic("setFramework", "unity", "2.7.5");
+#if UNITY_5_6_OR_NEWER
 				getAppodealClass().CallStatic("disableNetwork", getActivity(), "amazon_ads", Appodeal.BANNER);
-			#endif
+#endif
 
 			if((adTypes & Appodeal.BANNER_VIEW) > 0) {
 				getAppodealClass().CallStatic("disableNetwork", getActivity(), "amazon_ads", Appodeal.BANNER);
 			}
+
 			getAppodealClass().CallStatic("initialize", getActivity(), appKey, adTypes);
 		}
 
-		public bool show(int adTypes) {
-			return getAppodealClass().CallStatic<bool>("show", getActivity(), adTypes);
+
+		public void setInterstitialCallbacks(IInterstitialAdListener listener) 
+		{
+			getAppodealClass().CallStatic("setInterstitialCallbacks", new AppodealInterstitialCallbacks(listener));
+		}
+		
+		public void setNonSkippableVideoCallbacks(INonSkippableVideoAdListener listener)
+		{
+			getAppodealClass().CallStatic("setNonSkippableVideoCallbacks", new AppodealNonSkippableVideoCallbacks(listener));
 		}
 
-		public bool show(int adTypes, string placement) {
-			return getAppodealClass().CallStatic<bool>("show", getActivity(), adTypes, placement);
+		public void setRewardedVideoCallbacks(IRewardedVideoAdListener listener)
+		{
+			getAppodealClass().CallStatic("setRewardedVideoCallbacks", new AppodealRewardedVideoCallbacks(listener));
+		}
+		
+		public void setBannerCallbacks(IBannerAdListener listener)
+		{
+			getAppodealClass().CallStatic("setBannerCallbacks", new AppodealBannerCallbacks(listener));
 		}
 
-		public bool showBannerView(int YAxis, int XAxis, string Placement) {
-			return getAppodealBannerInstance().Call<bool>("showBannerView", getActivity(), XAxis, YAxis, Placement);
-		}
-
-		public bool isLoaded(int adTypes) {
-			return getAppodealClass().CallStatic<bool>("isLoaded", adTypes);
-		}
-
-		public void cache(int adTypes) {
+		public void cache(int adTypes)
+		{
 			getAppodealClass().CallStatic("cache", getActivity(), adTypes);
 		}
 		
-		public void hide(int adTypes) {
+		public bool isLoaded(int adTypes) 
+		{
+			return getAppodealClass().CallStatic<Boolean>("isLoaded", adTypes);
+		}
+		
+		public bool isPrecache(int adTypes) 
+		{
+			return getAppodealClass().CallStatic<Boolean>("isPrecache", adTypes);
+		}
+		
+		public bool show(int adTypes)
+		{
+            isShow = false;
+            getActivity().Call("runOnUiThread", new AndroidJavaRunnable(() =>
+            {
+#if UNITY_5_6_OR_NEWER
+                if ((adTypes & Appodeal.BANNER_TOP) > 0)
+                {
+                    isShow = showBannerView(Appodeal.BANNER_TOP, Appodeal.BANNER_HORIZONTAL_SMART, "default");
+                }
+                else if ((adTypes & Appodeal.BANNER_BOTTOM) > 0)
+                {
+                    isShow = showBannerView(Appodeal.BANNER_BOTTOM, Appodeal.BANNER_HORIZONTAL_SMART, "default");
+                }
+                else if ((adTypes & Appodeal.BANNER) > 0)
+                {
+                    isShow = showBannerView(Appodeal.BANNER_BOTTOM, Appodeal.BANNER_HORIZONTAL_SMART, "default");
+                }
+                else {
+                    isShow =  getAppodealClass().CallStatic<Boolean>("show", getActivity(), adTypes);
+                }
+#elif UNITY_ANDROID
+			    ret = getAppodealClass().CallStatic<Boolean>("show", getActivity(), adTypes);
+#endif
+            }));
+            return isShow;
+        }
+
+		public bool show(int adTypes, string placement)
+		{
+#if UNITY_5_6_OR_NEWER
+			if((adTypes & Appodeal.BANNER_TOP) > 0) {
+				return showBannerView(Appodeal.BANNER_TOP, Appodeal.BANNER_HORIZONTAL_SMART, placement);
+			} else if((adTypes & Appodeal.BANNER_BOTTOM) > 0) {
+				return showBannerView(Appodeal.BANNER_BOTTOM, Appodeal.BANNER_HORIZONTAL_SMART, placement);
+			} else if((adTypes & Appodeal.BANNER) > 0) {
+				return showBannerView(Appodeal.BANNER_BOTTOM, Appodeal.BANNER_HORIZONTAL_SMART, placement);
+			} else {
+				return getAppodealClass().CallStatic<bool>("show", getActivity(), adTypes, placement);
+			}
+#elif UNITY_ANDROID
+			return getAppodealClass().CallStatic<Boolean>("show", getActivity(), adTypes, placement);
+#endif
+		}
+
+		public bool showBannerView(int YAxis, int XAxis, string Placement) {
+			bool show = false;
+			getActivity().Call("runOnUiThread", new AndroidJavaRunnable(() => {
+				show = getAppodealBannerInstance().Call<bool>("showBannerView", getActivity(), XAxis, YAxis, Placement);	
+			}));
+			return show;
+		}
+
+		public void hide(int adTypes)
+		{
 			getAppodealClass().CallStatic("hide", getActivity(), adTypes);
+#if UNITY_5_6_OR_NEWER
+			getActivity().Call("runOnUiThread", new AndroidJavaRunnable(() => {
+				getAppodealBannerInstance().Call("hideBannerView", getActivity());	
+			}));
+#endif
 		}
 
-		public void hideBannerView() {
-			getAppodealBannerInstance().Call("hideBannerView", getActivity());	
+		public void hideBannerView()
+		{
+			getAppodealClass().CallStatic("hide", getActivity(), Appodeal.BANNER);
+			getActivity().Call("runOnUiThread", new AndroidJavaRunnable(() => {
+				getAppodealBannerInstance().Call("hideBannerView", getActivity());	
+			}));
 		}
-
-		public bool isPrecache(int adTypes) {
-			return getAppodealClass().CallStatic<bool>("isPrecache", adTypes);
-		}
-
-		public void setAutoCache(int adTypes, bool autoCache)  {
+		
+		public void setAutoCache(int adTypes, Boolean autoCache) 
+		{
 			getAppodealClass().CallStatic("setAutoCache", adTypes, autoCache);	
 		}
-
-		public void onResume() {
-			getAppodealClass().CallStatic("onResume", getActivity(), Appodeal.BANNER);
-		}
-
-		public void setSmartBanners(bool value) {
-			getAppodealClass().CallStatic("setSmartBanners", value);
-			getAppodealBannerInstance().Call("setSmartBanners", value);
-		}
-
-		public void setBannerAnimation(bool value) {
-			getAppodealClass().CallStatic("setBannerAnimation", value);
-		}
-
-		public void setBannerBackground(bool value) {
-			Debug.LogWarning("Not Supported by Android SDK");
-		}
-
-		public void setTabletBanners(bool value) {
-			getAppodealClass().CallStatic("set728x90Banners", value);
-		}
-
-		public void setTesting(bool test) {
-			getAppodealClass().CallStatic("setTesting", test);
-		}
-
-		public void setLogLevel(Appodeal.LogLevel logging) {
-			switch(logging)  {
-				case Appodeal.LogLevel.None: {
-					getAppodealClass().CallStatic("setLogLevel", new AndroidJavaClass("com.appodeal.ads.utils.Log$LogLevel").GetStatic<AndroidJavaObject>("none"));
-					break;
-				}
-				case Appodeal.LogLevel.Debug: {
-					getAppodealClass().CallStatic("setLogLevel", new AndroidJavaClass("com.appodeal.ads.utils.Log$LogLevel").GetStatic<AndroidJavaObject>("debug"));
-					break;
-				}
-				case Appodeal.LogLevel.Verbose: {
-					getAppodealClass().CallStatic("setLogLevel", new AndroidJavaClass("com.appodeal.ads.utils.Log$LogLevel").GetStatic<AndroidJavaObject>("verbose"));
-					break;
-				}
-			}
-		}
-
-		public void setChildDirectedTreatment(bool value) {
-			getAppodealClass().CallStatic("setChildDirectedTreatment", value);
-		}
-
-		public void disableNetwork(string network) {
-			getAppodealClass().CallStatic("disableNetwork", getActivity(), network);
-		}
-
-		public void disableNetwork(string network, int adTypes) {
-			getAppodealClass().CallStatic("disableNetwork", getActivity(), network, adTypes);
-		}
-
-		public void disableLocationPermissionCheck()  {
-			getAppodealClass().CallStatic("disableLocationPermissionCheck");
-		}
-
-		public void disableWriteExternalStoragePermissionCheck() {
-			getAppodealClass().CallStatic("disableWriteExternalStoragePermissionCheck");
-		}
-
-		public void setTriggerOnLoadedOnPrecache(int adTypes, bool onLoadedTriggerBoth)  {
+		
+		public void setTriggerOnLoadedOnPrecache(int adTypes, Boolean onLoadedTriggerBoth) 
+		{
 			getAppodealClass().CallStatic("setTriggerOnLoadedOnPrecache", adTypes, onLoadedTriggerBoth);
 		}
 
-		public void muteVideosIfCallsMuted(bool value) {
-			getAppodealClass().CallStatic("muteVideosIfCallsMuted", value);
+		public void disableNetwork(String network) 
+		{
+			getAppodealClass().CallStatic("disableNetwork", getActivity(), network);
 		}
 
-		public void showTestScreen()  {
-			getAppodealClass().CallStatic("startTestActivity", getActivity());
+		public void disableNetwork(String network, int adTypes) 
+		{
+			getAppodealClass().CallStatic("disableNetwork", getActivity(), network, adTypes);
+		}
+		
+		public void disableLocationPermissionCheck() 
+		{
+			getAppodealClass().CallStatic("disableLocationPermissionCheck");
 		}
 
-		public string getVersion() {
+		public void disableWriteExternalStoragePermissionCheck() 
+		{
+			getAppodealClass().CallStatic("disableWriteExternalStoragePermissionCheck");
+		}
+
+		public void requestAndroidMPermissions(IPermissionGrantedListener listener) 
+		{
+			getAppodealClass().CallStatic("requestAndroidMPermissions", getActivity(), new AppodealPermissionCallbacks(listener));
+		}
+		
+		public void orientationChange()
+		{
+			getAppodealClass().CallStatic("orientationChange");
+		}
+
+		public void setTesting(Boolean test)
+		{
+			getAppodealClass().CallStatic("setTesting", test);
+		}
+
+		public void setLogging(Boolean logging)
+		{
+			if(logging) {
+				getAppodealClass().CallStatic("setLogLevel", new AndroidJavaClass("com.appodeal.ads.utils.Log$LogLevel").GetStatic<AndroidJavaObject>("verbose"));
+			} else {
+				getAppodealClass().CallStatic("setLogLevel", new AndroidJavaClass("com.appodeal.ads.utils.Log$LogLevel").GetStatic<AndroidJavaObject>("none"));
+			}
+		}
+		
+		public string getVersion()
+		{
 			return getAppodealClass().CallStatic<string>("getVersion");
 		}
 
-		public bool canShow(int adTypes) {
-			return getAppodealClass().CallStatic<bool>("canShow", adTypes);
+		public void trackInAppPurchase(double amount, string currency)
+		{
+			getAppodealClass().CallStatic("trackInAppPurchase", getActivity(), amount, currency);
 		}
 
-		public bool canShow(int adTypes, string placement) {
-			return getAppodealClass().CallStatic<bool>("canShow", adTypes, placement);
-		}
-		
-		public void setCustomRule(string name, bool value) {
+		public void setCustomRule(string name, Boolean value) {
 			getAppodealClass().CallStatic("setCustomRule", name, value);
 		}
 
@@ -191,82 +241,52 @@ namespace AppodealAds.Unity.Android {
 		public void setCustomRule(string name, string value) {
 			getAppodealClass().CallStatic("setCustomRule", name, value);
 		}
-		
-		public void trackInAppPurchase(double amount, string currency) {
-			getAppodealClass().CallStatic("trackInAppPurchase", getActivity(), amount, currency);
+
+		public void setSmartBanners(Boolean value) {
+			getAppodealClass().CallStatic("setSmartBanners", value);
+            getAppodealBannerInstance().Call<bool>("setSmartBanners", value);
 		}
 
-		public string getRewardCurrency(string placement) {
-			AndroidJavaObject reward = getAppodealClass().CallStatic<AndroidJavaObject>("getRewardParameters", placement);
-			return reward.Get<string>("second");
+		public void setBannerAnimation(bool value) {
+			getAppodealClass().CallStatic("setBannerAnimation", value);
 		}
 
-		public int getRewardAmount(string placement) {
-			AndroidJavaObject reward = getAppodealClass().CallStatic<AndroidJavaObject>("getRewardParameters", placement);
-			AndroidJavaObject integerValue = reward.Get<AndroidJavaObject>("first");
-			return integerValue.Call<int>("intValue");
-		}
-
-		public string getRewardCurrency() {
-			AndroidJavaObject reward = getAppodealClass().CallStatic<AndroidJavaObject>("getRewardParameters");
-			return reward.Get<string>("second");
-		}
-
-		public int getRewardAmount() {
-			AndroidJavaObject reward = getAppodealClass().CallStatic<AndroidJavaObject>("getRewardParameters");
-			AndroidJavaObject integerValue = reward.Get<AndroidJavaObject>("first");
-			return integerValue.Call<int>("intValue");
+		public void setBannerBackground(bool value) {
+			//getAppodealClass().CallStatic("setBannerBackground", value);
 		}
 
 		//User Settings
 
-		public void getUserSettings()  {
+		public void getUserSettings() 
+		{
 			userSettings = getAppodealClass().CallStatic<AndroidJavaObject>("getUserSettings", getActivity());
 		}
 
-        public void setUserId(string id)  {
-			userSettings.Call<AndroidJavaObject>("setUserId", id);
-		}
-
-		public void setAge(int age)  {
+		public void setAge(int age) 
+		{
 			userSettings.Call<AndroidJavaObject>("setAge", age);
 		}
 
-		public void setGender(UserSettings.Gender gender) {
-			switch(gender)  {
-				case UserSettings.Gender.OTHER: {
+		public void setGender(int gender)
+		{
+			switch(gender) 
+			{
+				case 1:
+				{
 					userSettings.Call<AndroidJavaObject> ("setGender", new AndroidJavaClass("com.appodeal.ads.UserSettings$Gender").GetStatic<AndroidJavaObject>("OTHER"));	
 					break;
 				} 
-				case UserSettings.Gender.MALE: {
+				case 2:
+				{
 					userSettings.Call<AndroidJavaObject> ("setGender", new AndroidJavaClass("com.appodeal.ads.UserSettings$Gender").GetStatic<AndroidJavaObject>("MALE"));
 					break;
 				} 
-				case UserSettings.Gender.FEMALE: {
+				case 3:
+				{
 					userSettings.Call<AndroidJavaObject> ("setGender", new AndroidJavaClass("com.appodeal.ads.UserSettings$Gender").GetStatic<AndroidJavaObject>("FEMALE"));
 					break;
 				}
 			}
-		}
-
-		public void setInterstitialCallbacks(IInterstitialAdListener listener)  {
-			getAppodealClass().CallStatic("setInterstitialCallbacks", new AppodealInterstitialCallbacks(listener));
-		}
-
-		public void setNonSkippableVideoCallbacks(INonSkippableVideoAdListener listener) {
-			getAppodealClass().CallStatic("setNonSkippableVideoCallbacks", new AppodealNonSkippableVideoCallbacks(listener));
-		}
-
-		public void setRewardedVideoCallbacks(IRewardedVideoAdListener listener) {
-			getAppodealClass().CallStatic("setRewardedVideoCallbacks", new AppodealRewardedVideoCallbacks(listener));
-		}
-
-		public void setBannerCallbacks(IBannerAdListener listener) {
-			getAppodealClass().CallStatic("setBannerCallbacks", new AppodealBannerCallbacks(listener));
-		}
-
-		public void requestAndroidMPermissions(IPermissionGrantedListener listener)  {
-			getAppodealClass().CallStatic("requestAndroidMPermissions", getActivity(), new AppodealPermissionCallbacks(listener));
 		}
 
 	}

@@ -12,7 +12,7 @@ PluginImporter:
   platformData:
     data:
       first:
-        '': data
+        Any: 
       second:
         enabled: 0
         settings: {}

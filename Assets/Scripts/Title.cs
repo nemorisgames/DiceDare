@@ -12,6 +12,7 @@ public class Title : MonoBehaviour {
     bool _isAvailable = false;
     bool _isAuthenticated = false;
     string message = "";
+    public GameObject dailyPanel;
     void Start () {
 		PlayerPrefs.SetInt("lvlSelectDaily",0);
         /*_isAvailable = NPBinding.GameServices.IsAvailable();
@@ -33,6 +34,24 @@ public class Title : MonoBehaviour {
                 });
             }
         }*/
+        int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays", -1);
+        System.DateTime date = System.DateTime.Now.Date;
+        System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate", date.ToString()));
+        int daysSinceLastPlay = (int)(date - lastPlayedDate).TotalDays;
+        if (daysSinceLastPlay == 0)
+        {
+            if (consecutiveDays == -1)
+            {
+                Debug.Log("First stage played");
+            }
+            else
+            {
+                Debug.Log(date);
+                Debug.Log("Already played today");
+                dailyPanel.SetActive(false);
+            }
+
+        }
     }
 
 	public void play(){
