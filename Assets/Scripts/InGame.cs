@@ -17,6 +17,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 	public TweenAlpha [] tutorialv3;
 	[HideInInspector]
 	public int tutorialIndex = -1;
+	public UIPanel tutorialPanel;
 	public Dice dice;
 	Transform cells;
 	GameObject [,] cellArray;
@@ -93,6 +94,9 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 
     // Use this for initialization
     void Start () {
+		if(PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
+			tutorialPanel.gameObject.SetActive(true);
+
 		if (bgm == null) {
 			bgm = bgm_go;
 			DontDestroyOnLoad (bgm);
@@ -404,6 +408,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		case "Scene20":completoNumbers = GlobalVariables.Scene20Numbers;break;
 		case "Scene21":completoNumbers = GlobalVariables.Scene21Numbers;break;
 		}
+		if(tutorial)
+			completoNumbers = GlobalVariables.Scene1Numbers;
 		string completoPath = "";
 		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
 		case "Scene1":completoPath = GlobalVariables.Scene1Path;break;
@@ -428,6 +434,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		case "Scene20":completoPath = GlobalVariables.Scene20Path;break;
 		case "Scene21":completoPath = GlobalVariables.Scene21Path;break;
 		}
+		if(tutorial)
+			completoPath = GlobalVariables.Scene1Path;
 		string [] auxPath = completoPath.Split (new char[1]{ '|' });
 		string[] auxCoord = new string[2];
 		for (int i = 0; i < auxPath.Length; i++) {
@@ -809,6 +817,16 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
         SceneManager.LoadScene (SceneManager.GetActiveScene().name);
 	}
 
+	public void skipTutorial(){
+		PlayerPrefs.SetInt("SeenTutorial",1);
+		playAgain();
+	}
+
+	public void playTutorial(){
+		Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        SceneManager.LoadScene ("InGame_tutorial");
+	}
+
 	public void exit()
     {
         Appodeal.hide(Appodeal.BANNER_BOTTOM);
@@ -817,6 +835,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		int level = (int.Parse (num) + 1);
 		if(level < GlobalVariables.nLevels)
 			PlayerPrefs.SetInt ("unlockedScene" + level, 1);*/
+		if(tutorial && PlayerPrefs.GetInt("SeenTutorial",0) == 0)
+			PlayerPrefs.SetInt("SeenTutorial",1);
 		Destroy (bgm.gameObject);
 		SceneManager.LoadScene ("LevelSelection");
 	}
@@ -840,6 +860,9 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 
 		if(!tutorial)
 			level += 1;
+		else
+			if(PlayerPrefs.GetInt("SeenTutorial",0) == 0)
+				PlayerPrefs.SetInt("SeenTutorial",1);
 
 		if (level > GlobalVariables.nLevels)
 			exit ();

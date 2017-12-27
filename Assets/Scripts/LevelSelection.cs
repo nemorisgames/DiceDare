@@ -25,6 +25,9 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
     public GameObject dailyButton;
     public GameObject startDaily;
 	public GameObject alreadyPlayed;
+	public TweenAlpha swipeIcon;
+	public UIScrollView dragLevels;
+	bool dragged;
 	// Use this for initialization
 	void Start () {
 		InitMedals();
@@ -97,7 +100,14 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
         Appodeal.setBannerCallbacks(this);
 
         showBanner();
+		StartCoroutine(showSwipe());
     }
+
+	IEnumerator showSwipe(){
+		yield return new WaitForSeconds(5f);
+		if(!dragged)
+			EnableSwipe();
+	}
 
     #region Banner callback handlers
 
@@ -160,6 +170,16 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
 			}
 			SceneManager.LoadScene ("LevelSelection");
 		}
+		Debug.Log(dragged);
+
+		if(dragLevels.isDragging)
+			dragged = true;
+
+		if(dragLevels.isDragging && swipeIcon.gameObject.activeSelf){
+			swipeIcon.PlayReverse();
+		}
+			
+
 	}
 
 	void Mute(){
@@ -285,4 +305,13 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
 		Debug.Log(total);
 		return Mathf.Round(total*100f)/100f;
 	}
+
+	void EnableSwipe(){
+		if(PlayerPrefs.GetInt("unlockedScene3") == 1){
+			swipeIcon.gameObject.SetActive(true);
+		}
+	}
+
+	
+	
 }
