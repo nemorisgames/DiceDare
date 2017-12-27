@@ -95,7 +95,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
     // Use this for initialization
     void Start () {
 		if(PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
-			tutorialPanel.gameObject.SetActive(true);
+			//tutorialPanel.gameObject.SetActive(true);
+			playTutorial();
 
 		if (bgm == null) {
 			bgm = bgm_go;
