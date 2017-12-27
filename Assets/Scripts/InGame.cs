@@ -13,6 +13,10 @@ using AppodealAds.Unity.Common;
 public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener, IRewardedVideoAdListener//, IRewardedVideoAdListener, IBannerAdListener, IInterstitialAdListener
 {
 	public bool daily = false;
+	public bool tutorial = false;
+	public TweenAlpha [] tutorialv3;
+	[HideInInspector]
+	public int tutorialIndex = -1;
 	public Dice dice;
 	Transform cells;
 	GameObject [,] cellArray;
@@ -143,8 +147,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 
 		if(daily){
 			DailyInit();
-			
 		}
+		
         
 		Appodeal.setBannerCallbacks(this);
 		Appodeal.setInterstitialCallbacks(this);
@@ -152,6 +156,41 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
         
         showBanner();
     }
+
+	public void NextTutorial(bool b){
+		if(tutorialIndex == 5)
+			return;
+		if(tutorialIndex >= 0){
+			if(tutorialIndex != 4)
+				tutorialv3[tutorialIndex].PlayReverse();
+			tutorialv3[tutorialIndex].gameObject.SetActive(false);
+		}
+		tutorialIndex++;
+		if(tutorialv3.Length <= tutorialIndex)
+			return;
+		tutorialv3[tutorialIndex].gameObject.SetActive(true);
+		if(tutorialIndex != 5)
+			tutorialv3[tutorialIndex].PlayForward();
+		else
+			tutorialv3[tutorialIndex].value = 1;
+		Pause();
+		if(tutorialIndex == 2)
+			b = true;
+		StartCoroutine(tutorialPause(b));
+	}
+
+	IEnumerator tutorialPause(bool b){
+		float pause = 0f;
+		if(tutorialIndex % 2 == 0)
+			pause = 3f;
+		else
+			pause = 0.5f;
+		yield return new WaitForSeconds(pause);
+		if(b)
+			NextTutorial(false);
+		else
+			UnPause();
+	}
 
 	void InitMedals(){
 		if(medals_GO != null){
@@ -322,6 +361,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		case "Scene20":completo = GlobalVariables.Scene20;break;
 		case "Scene21":completo = GlobalVariables.Scene21;break;
 		}
+		if(tutorial)
+			completo = GlobalVariables.Scene1;
 		string[] aux = completo.Split(new char[1]{'$'});
 		string[] info = aux[0].Split(new char[1]{'|'});
 		string[] arreglo = aux[1].Split(new char[1]{'|'});
@@ -619,6 +660,10 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		//tutorialVideo.ToggleOff ();
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioFinish);
+
+		if(tutorial)
+			return;
+
         if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
         {
             PlayerPrefs.SetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
@@ -791,7 +836,11 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("enteringLevel" + num);
 		#endif
-		int level = (int.Parse (num) + 1);
+		int level = (int.Parse (num));
+
+		if(!tutorial)
+			level += 1;
+
 		if (level > GlobalVariables.nLevels)
 			exit ();
 		else {
@@ -821,22 +870,25 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 			int dec = (int)(((secondsAvailable - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((secondsAvailable - Time.timeSinceLevelLoad) % 60) * 10));
 			clock.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
 		}*/
-		if (!pause && !daily) {
-			int minutes = (int)((Time.timeSinceLevelLoad - pauseTime) / 60);
-			int seconds = (int)((Time.timeSinceLevelLoad - pauseTime) % 60);
-			//int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 10f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 10));
-			if(!finished) clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-		}
-		if(!pause && daily){
-			Debug.Log("counting");
-			int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) / 60);
-			int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) % 60);
-			//int dec = (int)(((1 - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((1 - Time.timeSinceLevelLoad) % 60) * 10));
-			if(!finished && seconds >= 0) clockShow.text = (seconds < 10 ? "0" : "") + seconds;
+		if(!tutorial){
+			if (!pause && !daily) {
+				int minutes = (int)((Time.timeSinceLevelLoad - pauseTime) / 60);
+				int seconds = (int)((Time.timeSinceLevelLoad - pauseTime) % 60);
+				//int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 10f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 10));
+				if(!finished) clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+			}
+			if(!pause && daily){
+				Debug.Log("counting");
+				int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) / 60);
+				int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) % 60);
+				//int dec = (int)(((1 - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((1 - Time.timeSinceLevelLoad) % 60) * 10));
+				if(!finished && seconds >= 0) clockShow.text = (seconds < 10 ? "0" : "") + seconds;
 
-			if(!finished && 60 + extraSeconds - (Time.timeSinceLevelLoad - pauseTime) <= 0)
-				finishGame();
+				if(!finished && 60 + extraSeconds - (Time.timeSinceLevelLoad - pauseTime) <= 0)
+					finishGame();
+			}
 		}
+		
 
 		//test
 		if (testing) {

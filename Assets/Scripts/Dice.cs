@@ -97,9 +97,17 @@ public class Dice : MonoBehaviour {
 		inGame.UnPause();
 		//if(inGame.daily)
             EnableTutorialSign(true);
+		if(inGame.tutorial)
+			inGame.NextTutorial(true);
 	}
 
 	public IEnumerator turn(Direction d){
+		if(inGame.tutorial){
+			if(inGame.tutorialIndex == 1 && d != Direction.Left || inGame.tutorialIndex == 3 && d != Direction.Down || inGame.tutorialIndex == 4 && d != Direction.Down || inGame.tutorialIndex == 5 && d != Direction.Left)
+				yield break;
+			else
+				inGame.NextTutorial(false);
+		}
 		EnableTutorialSign(false);
 		onMovement = true;
 		calculated = false;
