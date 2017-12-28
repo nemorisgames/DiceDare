@@ -48,7 +48,12 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
 
 		if (PlayerPrefs.GetString ("scene") != "") {
 			string texto = PlayerPrefs.GetString ("scene", "Scene1");
-			string num = texto.Split (new char[1]{ 'e' }) [2];
+            string num = "1";
+            if (texto != "InGame_tutorial")
+            {
+                print(texto);
+                num = texto.Split(new char[1] { 'e' })[2];
+            }
 			int level = (int.Parse (num) - 1);
 			panel.transform.localPosition = new Vector3 (-400 * level, panel.transform.position.y, panel.transform.position.z);
 			panel.clipOffset = new Vector2 (400 * level, panel.clipOffset.y);
@@ -141,15 +146,28 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
 		}
 	}
 
-	public void launchLevel(string texto){
-		string num = texto.Split (new char[1]{ 'L' }) [2];
-		#if !UNITY_EDITOR
-		Analytics.CustomEvent ("enteringLevel" + num);
-		#endif
-		PlayerPrefs.SetString ("scene", "Scene" + num);
-		if(loading != null)
-			loading.SetActive (true);
-		SceneManager.LoadScene ("InGame");
+    public void launchLevel(string texto)
+    {
+        if (texto == "TUTORIAL")
+        {
+#if !UNITY_EDITOR
+		    Analytics.CustomEvent ("enteringTutorial" + num);
+#endif
+            PlayerPrefs.SetString("scene", "InGame_tutorial");
+            if (loading != null)
+                loading.SetActive(true);
+            SceneManager.LoadScene("InGame_tutorial");
+        }
+        else { 
+            string num = texto.Split(new char[1] { 'L' })[2];
+            #if !UNITY_EDITOR
+		            Analytics.CustomEvent ("enteringLevel" + num);
+            #endif
+            PlayerPrefs.SetString("scene", "Scene" + num);
+            if (loading != null)
+                loading.SetActive(true);
+            SceneManager.LoadScene("InGame");
+        }
 	}
 	
 	// Update is called once per frame

@@ -110,11 +110,13 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
         else
             bgm.mute = false;
         string texto = PlayerPrefs.GetString("scene", "Scene1");
-        string num = texto.Split(new char[1] { 'e' })[2];
-        int level = (int.Parse(num));
-		currentScene = level;
-        levelNum.text = "LEVEL " + level.ToString();
-
+        if (texto == "TUTORIAL")
+        {
+            string num = texto.Split(new char[1] { 'e' })[2];
+            int level = (int.Parse(num));
+            currentScene = level;
+            levelNum.text = "LEVEL " + level.ToString();
+        }
         timesDied = PlayerPrefs.GetInt("timesDied", 0);
         dice = GameObject.FindGameObjectWithTag("Dice").GetComponent<Dice>();
 		if(!daily)
@@ -853,7 +855,9 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
     {
         Appodeal.hide(Appodeal.BANNER_BOTTOM);
         string texto = PlayerPrefs.GetString ("scene", "Scene1");
-		string num = texto.Split (new char[1]{ 'e' }) [2];
+        string num = "1";
+        if(texto != "InGame_tutorial")
+            num = texto.Split (new char[1]{ 'e' }) [2];
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("enteringLevel" + num);
 		#endif
