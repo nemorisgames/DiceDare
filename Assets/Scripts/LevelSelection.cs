@@ -301,13 +301,15 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
 		//load last played date
 		int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays",-1);
 		System.DateTime date = System.DateTime.Now.Date;
-		//date = System.DateTime.Parse("11/30/2017 12:00:00 AM");
+		//date = System.DateTime.Parse("12/28/2017 12:00:00 AM");
 		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",date.ToString()));
 		int daysSinceLastPlay = (int)(date - lastPlayedDate).TotalDays;
 		if(daysSinceLastPlay > 0){
 			PlayerPrefs.SetInt("triesLeft",1);
 		}
 		int triesLeft = PlayerPrefs.GetInt("triesLeft",1);
+		if(triesLeft == 0)
+			if(!testing) ToggleCanPlay(false);
 		triesNumber.text = triesLeft.ToString();
 		if(daysSinceLastPlay == 0){
 			if(consecutiveDays == -1){
@@ -316,7 +318,6 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
 			else{
 				Debug.Log(date);
 				Debug.Log("Already played today");
-				if(!testing) ToggleCanPlay(false);
 			}
 		}
 		else if(daysSinceLastPlay > 1){
