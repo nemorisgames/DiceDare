@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
+using UnityEngine.Advertisements;
 
 //using VoxelBusters.NativePlugins;
 using AppodealAds.Unity.Api;
 using AppodealAds.Unity.Common;
 
-public class LevelSelection : MonoBehaviour, IBannerAdListener
+public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAdListener
 {
 	public bool testing = true;
 	public UIButton[] recordButtons;
@@ -18,6 +19,8 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
 	public UISprite controlButton;
 	public UISlider mathSkillSlider;
 	public UISlider consecDaysSlider;
+	public UILabel triesNumber;
+	public TweenAlpha rewardsPanel;
 	public GameObject medals_GO;
 	public UISprite [] medals;
 	public UILabel consecDays;
@@ -98,11 +101,12 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
             {
                 Debug.Log(date);
                 Debug.Log("Already played today");
-                dailyButton.gameObject.SetActive(false);
+                //dailyButton.gameObject.SetActive(false);
             }
 
         }
         Appodeal.setBannerCallbacks(this);
+		Appodeal.setRewardedVideoCallbacks(this);
 
         showBanner();
 		StartCoroutine(showSwipe());
@@ -114,6 +118,12 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
 			EnableSwipe();
 	}
 
+	public void showVideo(){
+        Appodeal.show(Appodeal.REWARDED_VIDEO);
+		#if !UNITY_EDITOR
+				Analytics.CustomEvent ("showVideo");
+		#endif
+    }
     #region Banner callback handlers
 
     public void onBannerLoaded() { Debug.Log("Banner loaded"); }
@@ -123,10 +133,48 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
 
     #endregion
 
+	string mensaje;
+
+	#region Rewarded Video callback handlers
+    public void onRewardedVideoLoaded() { mensaje += ("Video loaded"); }
+    public void onRewardedVideoFailedToLoad() { mensaje += ("Video failed"); }
+    public void onRewardedVideoShown() { mensaje += ("Video shown"); }
+    public void onRewardedVideoClosed() { mensaje += ("Video closed"); HandleShowResult(ShowResult.Finished); }
+    public void onRewardedVideoFinished(int amount, string name) { mensaje += ("Reward: " + amount + " " + name); }
+    #endregion
+
+	private void HandleShowResult(ShowResult result)
+	{
+		int tries = 0;
+		switch (result)
+		{
+		case ShowResult.Finished:
+			    tries += 2;
+				triesNumber.text = tries.ToString();
+			    PlayerPrefs.SetInt ("triesLeft", tries);
+			    closeRewardScreen ();
+                mensaje += "Ad succesful";
+                break;
+		case ShowResult.Skipped:
+			    Debug.Log("The ad was skipped before reaching the end.");
+                mensaje += "The ad was skipped before reaching the end.";
+                closeRewardScreen();
+            break;
+		case ShowResult.Failed:
+			    Debug.LogError("The ad failed to be shown.");
+                mensaje += "The ad failed to be shown.";
+                closeRewardScreen();
+                break;
+		}
+	}
     public void showBanner()
     {
         Appodeal.show(Appodeal.BANNER_TOP);
     }
+
+	public void closeRewardScreen(){
+		rewardsPanel.PlayReverse();
+	}
 
     void InitMedals(){
 		if(medals_GO != null){
@@ -256,6 +304,11 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
 		//date = System.DateTime.Parse("11/30/2017 12:00:00 AM");
 		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",date.ToString()));
 		int daysSinceLastPlay = (int)(date - lastPlayedDate).TotalDays;
+		if(daysSinceLastPlay > 0){
+			PlayerPrefs.SetInt("triesLeft",1);
+		}
+		int triesLeft = PlayerPrefs.GetInt("triesLeft",1);
+		triesNumber.text = triesLeft.ToString();
 		if(daysSinceLastPlay == 0){
 			if(consecutiveDays == -1){
 				Debug.Log("First stage played");
@@ -265,7 +318,6 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener
 				Debug.Log("Already played today");
 				if(!testing) ToggleCanPlay(false);
 			}
-				
 		}
 		else if(daysSinceLastPlay > 1){
 			PlayerPrefs.SetInt("consecutiveDays",0);

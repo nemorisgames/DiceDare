@@ -1070,6 +1070,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		PlayerPrefs.SetFloat("totalDaily",Mathf.Clamp01(totalPercentage));
 		PlayerPrefs.SetString("lastPlayedDate",System.DateTime.Now.Date.ToString());
 		//dailySlider.value = LevelSelection.LevelSkillTotal() + totalPercentage/2f;
+		PlayerPrefs.SetInt("triesLeft",Mathf.Clamp(PlayerPrefs.GetInt("triesLeft") - 1,0,int.MaxValue));
 		
 		StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + totalPercentage/2f));
 	}
