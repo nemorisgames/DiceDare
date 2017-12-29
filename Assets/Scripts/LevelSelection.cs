@@ -199,7 +199,7 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
         if (texto == "TUTORIAL")
         {
 #if !UNITY_EDITOR
-		    Analytics.CustomEvent ("enteringTutorial" + num);
+		    Analytics.CustomEvent ("enteringTutorial");
 #endif
             PlayerPrefs.SetString("scene", "InGame_tutorial");
             if (loading != null)
