@@ -89,6 +89,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 	public int currentScene;
 	public GameObject medals_GO;
 	public UISprite [] medals;
+	public UILabel triesLabel;
 
     string mensaje = "";
 
@@ -287,9 +288,9 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 
 	public void showVideo(){
         Appodeal.show(Appodeal.REWARDED_VIDEO);
-#if !UNITY_EDITOR
-		Analytics.CustomEvent ("showVideo");
-#endif
+		#if !UNITY_EDITOR
+				Analytics.CustomEvent ("showVideo");
+		#endif
     }
     #region Rewarded Video callback handlers
     public void onRewardedVideoLoaded() { mensaje += ("Video loaded"); }
@@ -319,10 +320,16 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		switch (result)
 		{
 		case ShowResult.Finished:
-			    hintsAvailable += 2;
-			    PlayerPrefs.SetInt ("hints", hintsAvailable);
-			    hintIndicator.text = "" + hintsAvailable;
-			    closeHintScreen ();
+				if(daily){
+					PlayerPrefs.SetInt("triesLeft",PlayerPrefs.GetInt("triesLeft") + 2);
+					triesLabel.text = PlayerPrefs.GetInt("triesLeft",0).ToString();
+				}
+				else{
+					hintsAvailable += 2;
+					PlayerPrefs.SetInt ("hints", hintsAvailable);
+					hintIndicator.text = "" + hintsAvailable;
+				}
+				closeHintScreen ();
                 mensaje += "Ad succesful";
                 break;
 		case ShowResult.Skipped:
@@ -660,6 +667,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		foreach (Transform t in adjacentCells)
 			t.GetComponent<AdjacentCellFinder> ().EnableCell (false);
 		//for (int i = 0; i < tutorialClips.Length; i++)
+		if(tutorialv2.gameObject.activeSelf)
+			dice.EnableTutorialSign(false);
 
 		if(!daily) StartCoroutine (dropCells ());
 		dice.enabled = false;
@@ -1071,6 +1080,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		PlayerPrefs.SetString("lastPlayedDate",System.DateTime.Now.Date.ToString());
 		//dailySlider.value = LevelSelection.LevelSkillTotal() + totalPercentage/2f;
 		PlayerPrefs.SetInt("triesLeft",Mathf.Clamp(PlayerPrefs.GetInt("triesLeft") - 1,0,int.MaxValue));
+		if(triesLabel != null) triesLabel.text = PlayerPrefs.GetInt("triesLeft",0).ToString();
 		
 		StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + totalPercentage/2f));
 	}
@@ -1129,6 +1139,15 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		}
 	}
 
-    
+    public void playAgainDaily(){
+		int tries = PlayerPrefs.GetInt("triesLeft",0);
+		if(tries > 0){
+			Debug.Log("again");
+		}
+		else{
+			Debug.Log("showing video");
+		}
+			
+	}
     
 }
