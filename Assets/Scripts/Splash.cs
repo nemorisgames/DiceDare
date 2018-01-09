@@ -8,7 +8,7 @@ public class Splash : MonoBehaviour {
 	public float timeLimit = 7f;
 	// Use this for initialization
 	void Start () {
-		
+        PlayerPrefs.DeleteAll();
 	}
 	
 	// Update is called once per frame

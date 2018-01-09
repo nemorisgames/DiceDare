@@ -19,19 +19,23 @@ public class AppodealDemo : MonoBehaviour, IInterstitialAdListener, IBannerAdLis
 	#endif
 
 	public Toggle LoggingToggle, TestingToggle;
+    GameObject callback;
 
 	void Awake ()
 	{
+        DontDestroyOnLoad(gameObject);
 		Appodeal.requestAndroidMPermissions(this);
-	}
+
+    }
 
 	public void Init() {
 		//Example for UserSettings usage
 		UserSettings settings = new UserSettings ();
 		settings.setAge(25).setGender(UserSettings.Gender.OTHER);
-		
-		if (LoggingToggle.isOn) Appodeal.setLogging(true);
-		if (TestingToggle.isOn) Appodeal.setTesting(true);
+
+        //if (LoggingToggle.isOn) Appodeal.setLogging(true);
+        //if (TestingToggle.isOn) 
+        Appodeal.setTesting(true);
 
 		//Appodeal.setSmartBanners(false);
 		Appodeal.setBannerAnimation(false);
@@ -53,13 +57,14 @@ public class AppodealDemo : MonoBehaviour, IInterstitialAdListener, IBannerAdLis
 		Appodeal.show (Appodeal.INTERSTITIAL, "interstitial_button_click");
 	}
 
-	public void showRewardedVideo() {
+	public void showRewardedVideo(GameObject handler) {
 		Appodeal.show (Appodeal.REWARDED_VIDEO);
+        callback = handler;
 	}
 
-	public void showBanner() {
-		//Appodeal.show (Appodeal.BANNER_BOTTOM, "banner_button_click");
-		Appodeal.showBannerView(Screen.currentResolution.height - 300, Appodeal.BANNER_HORIZONTAL_CENTER, "banner_view");
+	public void showBanner(int gravity) {
+		Appodeal.show (gravity, "banner_button_click");
+		//Appodeal.showBannerView(Screen.height - 50, gravity, "banner_view");
 	}
 
 
@@ -98,10 +103,10 @@ public class AppodealDemo : MonoBehaviour, IInterstitialAdListener, IBannerAdLis
 
 	#region Rewarded Video callback handlers
 	public void onRewardedVideoLoaded() { Debug.Log("Rewarded Video loaded"); }
-	public void onRewardedVideoFailedToLoad() { Debug.Log("Rewarded Video failed to load"); }
+	public void onRewardedVideoFailedToLoad() { Debug.Log("Rewarded Video failed to load"); callback.SendMessage("HandleShowResult", 0); }
 	public void onRewardedVideoShown() { Debug.Log("Rewarded Video opened"); }
 	public void onRewardedVideoClosed() { Debug.Log("Rewarded Video closed"); }
-	public void onRewardedVideoFinished(int amount, string name) { Debug.Log("Rewarded Video Reward: " + amount + " " + name); }
+	public void onRewardedVideoFinished(int amount, string name) { Debug.Log("Rewarded Video Reward: " + amount + " " + name); callback.SendMessage("HandleShowResult", 2); }
 	#endregion
 
 	#region Permission Grant callback handlers

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 using UnityEngine.Analytics;
 using UnityEngine.Advertisements;
 
@@ -9,7 +10,8 @@ using UnityEngine.Advertisements;
 using AppodealAds.Unity.Api;
 using AppodealAds.Unity.Common;
 
-public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAdListener
+
+public class LevelSelection : MonoBehaviour
 {
 	public bool testing = true;
 	public UIButton[] recordButtons;
@@ -31,9 +33,13 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
 	public TweenAlpha swipeIcon;
 	public UIScrollView dragLevels;
 	bool dragged;
-	// Use this for initialization
-	void Start () {
-		InitMedals();
+
+    AppodealDemo appodealDemo;
+    // Use this for initialization
+    void Start () {
+        appodealDemo = GameObject.Find("AppoDeal").GetComponent<AppodealDemo>();
+
+        InitMedals();
 		
 		PlayerPrefs.SetInt ("continueBGM", 0);
 		if (PlayerPrefs.GetInt ("unlockedScene1") != 1) {
@@ -105,8 +111,6 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
             }
 
         }
-        Appodeal.setBannerCallbacks(this);
-		Appodeal.setRewardedVideoCallbacks(this);
 
         showBanner();
 		StartCoroutine(showSwipe());
@@ -119,29 +123,16 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
 	}
 
 	public void showVideo(){
-        Appodeal.show(Appodeal.REWARDED_VIDEO);
-		#if !UNITY_EDITOR
+
+        if (appodealDemo != null)
+            appodealDemo.showRewardedVideo(gameObject);
+#if !UNITY_EDITOR
 				Analytics.CustomEvent ("showVideo");
-		#endif
+#endif
     }
-    #region Banner callback handlers
-
-    public void onBannerLoaded() { Debug.Log("Banner loaded"); }
-    public void onBannerFailedToLoad() { Debug.Log("Banner failed"); }
-    public void onBannerShown() { Debug.Log("Banner opened"); }
-    public void onBannerClicked() { Debug.Log("banner clicked"); }
-
-    #endregion
 
 	string mensaje;
-
-	#region Rewarded Video callback handlers
-    public void onRewardedVideoLoaded() { mensaje += ("Video loaded"); }
-    public void onRewardedVideoFailedToLoad() { mensaje += ("Video failed"); }
-    public void onRewardedVideoShown() { mensaje += ("Video shown"); }
-    public void onRewardedVideoClosed() { mensaje += ("Video closed"); HandleShowResult(ShowResult.Finished); }
-    public void onRewardedVideoFinished(int amount, string name) { mensaje += ("Reward: " + amount + " " + name); }
-    #endregion
+    
 
 	private void HandleShowResult(ShowResult result)
 	{
@@ -169,7 +160,8 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
 	}
     public void showBanner()
     {
-        Appodeal.show(Appodeal.BANNER_TOP);
+        if (appodealDemo != null)
+            appodealDemo.showBanner(Appodeal.BANNER_TOP);
     }
 
 	public void closeRewardScreen(){
@@ -236,7 +228,7 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
 			}
 			SceneManager.LoadScene ("LevelSelection");
 		}
-		Debug.Log(dragged);
+		//Debug.Log(dragged);
 
 		if(dragLevels.isDragging)
 			dragged = true;

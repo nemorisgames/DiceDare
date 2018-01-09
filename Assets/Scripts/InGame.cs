@@ -10,7 +10,7 @@ using UnityEngine.Advertisements;
 using AppodealAds.Unity.Api;
 using AppodealAds.Unity.Common;
 
-public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener, IRewardedVideoAdListener//, IRewardedVideoAdListener, IBannerAdListener, IInterstitialAdListener
+public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListener, IInterstitialAdListener
 {
 	public bool daily = false;
 	public bool tutorial = false;
@@ -92,10 +92,12 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 	public UILabel triesLabel;
 
     string mensaje = "";
+    AppodealDemo appodealDemo;
 
     // Use this for initialization
     void Start () {
-		if(PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
+        appodealDemo = GameObject.Find("AppoDeal").GetComponent<AppodealDemo>();
+        if (PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
 			//tutorialPanel.gameObject.SetActive(true);
 			playTutorial();
 
@@ -156,13 +158,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		if(daily){
 			DailyInit();
 		}
-		
-        
-		Appodeal.setBannerCallbacks(this);
-		Appodeal.setInterstitialCallbacks(this);
-		Appodeal.setRewardedVideoCallbacks(this);
-        
-        showBanner();
+        if(appodealDemo != null)
+            appodealDemo.showBanner(Appodeal.BANNER_BOTTOM);
     }
 
 	public void NextTutorial(bool b){
@@ -236,7 +233,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		dice.transform.Find ("TextRight").GetComponent<TextMesh> ().text = "" + Random.Range(2,7);
 		dice.transform.Find ("TextBackward").GetComponent<TextMesh> ().text = "" + Random.Range(1,7);
 	}
-
+    
     public void hintPressed()
     {
         if (hintPressedNumber <= 0)
@@ -259,7 +256,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		if (!pause && path.Count > 0)
         {
             if (hintsAvailable <= 0) {
-                showVideo();
+                if (appodealDemo != null)
+                    appodealDemo.showRewardedVideo(gameObject);
                 
                 //hintScreen.SendMessage ("PlayForward");
 				Pause ();
@@ -275,46 +273,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 			#endif
 		}
 	}
-
-    public void showBanner()
-    {
-        Appodeal.show(Appodeal.BANNER_BOTTOM);
-    }
-
-	public void showInterstitial()
-	{
-		Appodeal.show(Appodeal.INTERSTITIAL);
-    }
-
-	public void showVideo(){
-        Appodeal.show(Appodeal.REWARDED_VIDEO);
-		#if !UNITY_EDITOR
-				Analytics.CustomEvent ("showVideo");
-		#endif
-    }
-    #region Rewarded Video callback handlers
-    public void onRewardedVideoLoaded() { mensaje += ("Video loaded"); }
-    public void onRewardedVideoFailedToLoad() { mensaje += ("Video failed"); }
-    public void onRewardedVideoShown() { mensaje += ("Video shown"); }
-    public void onRewardedVideoClosed() { mensaje += ("Video closed"); HandleShowResult(ShowResult.Finished); }
-    public void onRewardedVideoFinished(int amount, string name) { mensaje += ("Reward: " + amount + " " + name); }
-    #endregion
-
-    #region Banner callback handlers
-    public void onBannerLoaded() { mensaje += ("banner loaded"); }
-    public void onBannerFailedToLoad() { mensaje += ("banner failed"); }
-    public void onBannerShown() { mensaje += ("banner opened"); }
-    public void onBannerClicked() { mensaje += ("banner clicked"); }
-    #endregion
-
-    #region Interstitial callback handlers
-    public void onInterstitialLoaded() { mensaje += ("Interstitial loaded"); }
-    public void onInterstitialFailedToLoad() { mensaje += ("Interstitial failed"); }
-    public void onInterstitialShown() { mensaje += ("Interstitial opened"); }
-    public void onInterstitialClosed() { mensaje += ("Interstitial closed"); }
-    public void onInterstitialClicked() { mensaje += ("Interstitial clicked"); }
-    #endregion
-   
+    
     private void HandleShowResult(ShowResult result)
 	{
 		switch (result)
@@ -557,7 +516,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 #endif
         if (Random.Range(0, 100) < 30)
         {
-            showInterstitial();
+            if (appodealDemo != null)
+                appodealDemo.showInterstitial();
         }
         //else
             continueBadMove();
@@ -790,7 +750,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 					yield return new WaitForSeconds (1.4f);
 					finishedSign.SetActive (true);
 					finishedSign.SendMessage ("PlayForward");
-                    showBanner();
+                    if (appodealDemo != null)
+                        appodealDemo.showBanner(Appodeal.BANNER_BOTTOM);
                 }
 			}
 		}
@@ -825,7 +786,9 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 	}
 
 	public void playAgain(){
-        Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        //Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        if (appodealDemo != null)
+            appodealDemo.hideBanner();
         SceneManager.LoadScene (SceneManager.GetActiveScene().name);
 	}
 
@@ -835,19 +798,23 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 	}
 
 	public void playTutorial(){
-		Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        //Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        if (appodealDemo != null)
+            appodealDemo.hideBanner();
         SceneManager.LoadScene ("InGame_tutorial");
 	}
 
 	public void exit()
     {
-        Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        //Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        if (appodealDemo != null)
+            appodealDemo.hideBanner();
         /*string texto = PlayerPrefs.GetString ("scene", "Scene1");
 		string num = texto.Split (new char[1]{ 'e' }) [2];
 		int level = (int.Parse (num) + 1);
 		if(level < GlobalVariables.nLevels)
 			PlayerPrefs.SetInt ("unlockedScene" + level, 1);*/
-		if(tutorial && PlayerPrefs.GetInt("SeenTutorial",0) == 0)
+        if (tutorial && PlayerPrefs.GetInt("SeenTutorial",0) == 0)
 			PlayerPrefs.SetInt("SeenTutorial",1);
 		Destroy (bgm.gameObject);
 		SceneManager.LoadScene ("LevelSelection");
@@ -855,14 +822,18 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 
     public void exitGame()
     {
-        Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        //Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        if (appodealDemo != null)
+            appodealDemo.hideBanner();
         Application.Quit();
     }
 
 
 	public void next()
     {
-        Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        //Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        if (appodealDemo != null)
+            appodealDemo.hideBanner();
         string texto = PlayerPrefs.GetString ("scene", "Scene1");
         string num = "1";
         if(texto != "InGame_tutorial")
@@ -892,7 +863,9 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			Destroy (bgm.gameObject);
-            Appodeal.hide(Appodeal.BANNER_BOTTOM);
+            //Appodeal.hide(Appodeal.BANNER_BOTTOM);
+            if (appodealDemo != null)
+                appodealDemo.hideBanner();
             SceneManager.LoadScene ("LevelSelection");
 		}
 		if (finishedSign.activeSelf) {
@@ -915,7 +888,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 				if(!finished) clockShow.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 			}
 			if(!pause && daily){
-				Debug.Log("counting");
+				//Debug.Log("counting");
 				int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) / 60);
 				int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) % 60);
 				//int dec = (int)(((1 - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((1 - Time.timeSinceLevelLoad) % 60) * 10));
@@ -1144,8 +1117,11 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		if(tries > 0){
 			Debug.Log("again");
 		}
-		else{
-			Debug.Log("showing video");
+		else
+        {
+            if (appodealDemo != null)
+                appodealDemo.showRewardedVideo(gameObject);
+            Debug.Log("showing video");
 		}
 			
 	}
