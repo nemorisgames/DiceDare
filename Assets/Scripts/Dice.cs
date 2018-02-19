@@ -98,12 +98,12 @@ public class Dice : MonoBehaviour {
 		//if(inGame.daily)
             EnableTutorialSign(true);
 		if(inGame.tutorial)
-			inGame.NextTutorial(true);
+			inGame.NextTutorial(false);
 	}
 
 	public IEnumerator turn(Direction d){
 		if(inGame.tutorial){
-			if(inGame.tutorialIndex == 1 && d != Direction.Left || inGame.tutorialIndex == 3 && d != Direction.Down || inGame.tutorialIndex == 4 && d != Direction.Down || inGame.tutorialIndex == 5 && d != Direction.Left)
+			if(inGame.tutorialIndex == 0 && d != Direction.Left || inGame.tutorialIndex == 1 && d != Direction.Down || inGame.tutorialIndex == 3 && d != Direction.Left)
 				yield break;
 			else
 				inGame.NextTutorial(false);

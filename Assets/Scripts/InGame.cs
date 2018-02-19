@@ -15,7 +15,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 	public bool daily = false;
 	public bool tutorial = false;
 	public TweenAlpha [] tutorialv3;
-	[HideInInspector]
+	//[HideInInspector]
 	public int tutorialIndex = -1;
 	public UIPanel tutorialPanel;
 	public Dice dice;
@@ -92,7 +92,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 	public UILabel triesLabel;
 
     string mensaje = "";
-
+	int tutorialMode;
+	string [] tutorialOps;
     // Use this for initialization
     void Start () {
 		if(PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
@@ -111,7 +112,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
         else
             bgm.mute = false;
         string texto = PlayerPrefs.GetString("scene", "Scene1");
-        if (texto == "TUTORIAL")
+        if (texto != "TUTORIAL")
         {
             string num = texto.Split(new char[1] { 'e' })[2];
             int level = (int.Parse(num));
@@ -120,6 +121,37 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
         }
         timesDied = PlayerPrefs.GetInt("timesDied", 0);
         dice = GameObject.FindGameObjectWithTag("Dice").GetComponent<Dice>();
+
+		if(tutorial){
+			tutorialMode = Mathf.Clamp(PlayerPrefs.GetInt("tutorialMode",1),1,4);
+			PlayerPrefs.SetString ("scene", "Scene" + (int)((tutorialMode - 1) * 5));
+			tutorialOps = new string[2];
+			switch(tutorialMode){
+				case 1:
+				tutorialOps[0] = "1 + 1 = 2";
+				tutorialOps[1] = "2 + 1 = 3";
+				break;
+				case 2:
+				tutorialOps[0] = "1 + 1 = 2";
+				tutorialOps[1] = "2 - 1 = 1";
+				break;
+				case 3:
+				tutorialOps[0] = "2 + 2 = 4";
+				tutorialOps[1] = "4 x 2 = 8";
+				break;
+				case 4:
+				tutorialOps[0] = "5 + 5 = 10";
+				tutorialOps[1] = "10 / 5 = 2";
+				break;
+			}
+
+			tutorialv3[0].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[0];
+			tutorialv3[1].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[1];
+
+			Debug.Log(tutorialMode);
+		}
+
+
 		if(!daily)
         	componerEscena();
 
@@ -157,6 +189,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 			DailyInit();
 		}
 		
+		
         
 		Appodeal.setBannerCallbacks(this);
 		Appodeal.setInterstitialCallbacks(this);
@@ -166,10 +199,16 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
     }
 
 	public void NextTutorial(bool b){
-		if(tutorialIndex == 5)
+
+
+		if(tutorialIndex == 3)
 			return;
 		if(tutorialIndex >= 0){
-			if(tutorialIndex != 4)
+			if(tutorialIndex == 0)
+				//tutorialv3[0].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[0];
+			if(tutorialIndex == 1)
+				//tutorialv3[1].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[1];
+			if(tutorialIndex != 3)
 				tutorialv3[tutorialIndex].PlayReverse();
 			tutorialv3[tutorialIndex].gameObject.SetActive(false);
 		}
@@ -177,20 +216,20 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		if(tutorialv3.Length <= tutorialIndex)
 			return;
 		tutorialv3[tutorialIndex].gameObject.SetActive(true);
-		if(tutorialIndex != 5)
+		if(tutorialIndex != 4)
 			tutorialv3[tutorialIndex].PlayForward();
 		else
 			tutorialv3[tutorialIndex].value = 1;
 		Pause();
-		if(tutorialIndex == 2)
-			b = true;
+		/*if(tutorialIndex == 2)
+			b = true;*/
 		StartCoroutine(tutorialPause(b));
 	}
 
 	IEnumerator tutorialPause(bool b){
 		float pause = 0f;
-		if(tutorialIndex % 2 == 0)
-			pause = 3f;
+		if(tutorialIndex < 2)
+			pause = 2f;
 		else
 			pause = 0.5f;
 		yield return new WaitForSeconds(pause);
@@ -375,8 +414,23 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		case "Scene20":completo = GlobalVariables.Scene20;break;
 		case "Scene21":completo = GlobalVariables.Scene21;break;
 		}
-		if(tutorial)
-			completo = GlobalVariables.Scene1;
+		if(tutorial){
+			switch(tutorialMode){
+				case 1:
+				completo = GlobalVariables.Scene91;
+				break;
+				case 2:
+				completo = GlobalVariables.Scene92;
+				break;
+				case 3:
+				completo = GlobalVariables.Scene93;
+				break;
+				case 4:
+				completo = GlobalVariables.Scene94;
+				break;
+			}
+		}
+			
 		string[] aux = completo.Split(new char[1]{'$'});
 		string[] info = aux[0].Split(new char[1]{'|'});
 		string[] arreglo = aux[1].Split(new char[1]{'|'});
@@ -418,8 +472,23 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		case "Scene20":completoNumbers = GlobalVariables.Scene20Numbers;break;
 		case "Scene21":completoNumbers = GlobalVariables.Scene21Numbers;break;
 		}
-		if(tutorial)
-			completoNumbers = GlobalVariables.Scene1Numbers;
+		if(tutorial){
+			switch(tutorialMode){
+				case 1:
+				completoNumbers = GlobalVariables.Scene91Numbers;
+				break;
+				case 2:
+				completoNumbers = GlobalVariables.Scene92Numbers;
+				break;
+				case 3:
+				completoNumbers = GlobalVariables.Scene93Numbers;
+				break;
+				case 4:
+				completoNumbers = GlobalVariables.Scene94Numbers;
+				break;
+			}
+		}
+
 		string completoPath = "";
 		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
 		case "Scene1":completoPath = GlobalVariables.Scene1Path;break;
@@ -445,7 +514,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		case "Scene21":completoPath = GlobalVariables.Scene21Path;break;
 		}
 		if(tutorial)
-			completoPath = GlobalVariables.Scene1Path;
+			completoPath = GlobalVariables.Scene91Path;
 		string [] auxPath = completoPath.Split (new char[1]{ '|' });
 		string[] auxCoord = new string[2];
 		for (int i = 0; i < auxPath.Length; i++) {
@@ -847,8 +916,8 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		int level = (int.Parse (num) + 1);
 		if(level < GlobalVariables.nLevels)
 			PlayerPrefs.SetInt ("unlockedScene" + level, 1);*/
-		if(tutorial && PlayerPrefs.GetInt("SeenTutorial",0) == 0)
-			PlayerPrefs.SetInt("SeenTutorial",1);
+		/*if(tutorial && PlayerPrefs.GetInt("SeenTutorial",0) == 0)
+			PlayerPrefs.SetInt("SeenTutorial",1);*/
 		Destroy (bgm.gameObject);
 		SceneManager.LoadScene ("LevelSelection");
 	}
@@ -872,19 +941,24 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		#endif
 		int level = (int.Parse (num));
 
-		if(!tutorial)
-			level += 1;
-		else
-			if(PlayerPrefs.GetInt("SeenTutorial",0) == 0)
-				PlayerPrefs.SetInt("SeenTutorial",1);
+		//if(!tutorial)
+		level += 1;
+		//else
+			//if(PlayerPrefs.GetInt("SeenTutorial",0) == 0)
+			//	PlayerPrefs.SetInt("SeenTutorial",1);
 
 		if (level > GlobalVariables.nLevels)
 			exit ();
 		else {
 			PlayerPrefs.SetInt ("timesDied", 0);
 			//PlayerPrefs.SetInt ("unlockedScene" + level, 1);
-			PlayerPrefs.SetString ("scene", "Scene" + level);
-			SceneManager.LoadScene ("InGame");
+			if(!tutorial && level % 5 == 1){
+				LevelSelection.CheckTutorial(level);
+			}
+			else{
+				PlayerPrefs.SetString ("scene", "Scene" + level);
+				SceneManager.LoadScene ("InGame");
+			}
 		}
 	}
 	
@@ -1147,7 +1221,5 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 		else{
 			Debug.Log("showing video");
 		}
-			
 	}
-    
 }

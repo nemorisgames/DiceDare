@@ -201,7 +201,8 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
 #if !UNITY_EDITOR
 		    Analytics.CustomEvent ("enteringTutorial");
 #endif
-            PlayerPrefs.SetString("scene", "InGame_tutorial");
+            PlayerPrefs.SetString("scene", "TUTORIAL");
+			PlayerPrefs.SetInt("tutorialMode",1);
             if (loading != null)
                 loading.SetActive(true);
             SceneManager.LoadScene("InGame_tutorial");
@@ -214,7 +215,10 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
             PlayerPrefs.SetString("scene", "Scene" + num);
             if (loading != null)
                 loading.SetActive(true);
-            SceneManager.LoadScene("InGame");
+			if(int.Parse(num) % 5 == 1)
+				CheckTutorial(int.Parse(num));
+			else
+           		SceneManager.LoadScene("InGame");
         }
 	}
 	
@@ -236,7 +240,7 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
 			}
 			SceneManager.LoadScene ("LevelSelection");
 		}
-		Debug.Log(dragged);
+		//Debug.Log(dragged);
 
 		if(dragLevels.isDragging)
 			dragged = true;
@@ -383,6 +387,9 @@ public class LevelSelection : MonoBehaviour, IBannerAdListener, IRewardedVideoAd
 		}
 	}
 
-	
+	public static void CheckTutorial(int level){
+		PlayerPrefs.SetInt("tutorialMode",Mathf.RoundToInt(level/5) + 1);
+		SceneManager.LoadScene("InGame_tutorial");
+	}
 	
 }
