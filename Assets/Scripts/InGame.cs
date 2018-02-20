@@ -100,7 +100,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     // Use this for initialization
     void Start () {
         appodealDemo = GameObject.Find("AppoDeal").GetComponent<AppodealDemo>();
-        if (PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
+        //if (PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
 			//tutorialPanel.gameObject.SetActive(true);
 			//playTutorial();
 

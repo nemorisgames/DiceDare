@@ -62,7 +62,7 @@ public class Title : MonoBehaviour {
             loading.SetActive(true);
             PlayerPrefs.SetInt ("PlayedGame", 1);
 			PlayerPrefs.SetString ("scene", "Scene" + 1);
-			SceneManager.LoadScene ("InGame");
+			SceneManager.LoadScene ("InGame_tutorial");
 			PlayerPrefs.SetInt("lvlSelectDaily",0);
 		} else {
 			SceneManager.LoadScene ("LevelSelection");
