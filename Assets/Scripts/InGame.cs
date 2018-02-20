@@ -96,9 +96,9 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 	string [] tutorialOps;
     // Use this for initialization
     void Start () {
-		if(PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
+		//if(PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
 			//tutorialPanel.gameObject.SetActive(true);
-			playTutorial();
+			//playTutorial();
 
 		if (bgm == null) {
 			bgm = bgm_go;
@@ -148,7 +148,7 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
 			tutorialv3[0].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[0];
 			tutorialv3[1].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[1];
 
-			Debug.Log(tutorialMode);
+			//Debug.Log(tutorialMode);
 		}
 
 
@@ -934,13 +934,13 @@ public class InGame : MonoBehaviour, IInterstitialAdListener, IBannerAdListener,
         Appodeal.hide(Appodeal.BANNER_BOTTOM);
         string texto = PlayerPrefs.GetString ("scene", "Scene1");
         string num = "1";
-        if(texto != "InGame_tutorial")
+        if(texto != "InGame_tutorial" && texto != "TUTORIAL")
             num = texto.Split (new char[1]{ 'e' }) [2];
 		#if !UNITY_EDITOR
 		Analytics.CustomEvent ("enteringLevel" + num);
 		#endif
 		int level = (int.Parse (num));
-
+		//Debug.Log()
 		//if(!tutorial)
 		level += 1;
 		//else
