@@ -14,7 +14,10 @@ public class Title : MonoBehaviour {
     string message = "";
     public GameObject dailyPanel;
     void Start () {
-		PlayerPrefs.SetInt("lvlSelectDaily",0);
+        if(GameObject.Find("AppoDeal") != null)
+            GameObject.Find("AppoDeal").GetComponent<AppodealDemo>().Init();
+
+        PlayerPrefs.SetInt("lvlSelectDaily",0);
         /*_isAvailable = NPBinding.GameServices.IsAvailable();
         if (_isAvailable)
         {
