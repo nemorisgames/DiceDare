@@ -111,6 +111,7 @@ public class Dice : MonoBehaviour {
 		EnableTutorialSign(false);
 		onMovement = true;
 		calculated = false;
+		inGame.Pause();
 		int nStemps = 10;
 		//define el numero en la cara escondida
 		switch(d){
@@ -289,6 +290,8 @@ public class Dice : MonoBehaviour {
 			if (onMovement || calculated)
 				return;
 			//print (c.GetComponent<Cell> ().stateCell);
+			if(!inGame.daily && !inGame.tutorial && inGame.pause)
+				inGame.UnPause();
 			//comprueba que el calculo este bien
 			//acepto para up y right, en ese caso comprueba que la celda haya sido pisada
 			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.Normal) {
@@ -492,6 +495,7 @@ public class Dice : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		inGame.tutorialv2.position = transform.position;
 		if (onMovement || inGame.rotating || Time.timeSinceLevelLoad < 2f || inGame.pause)
 			return;
 		if(!inGame.daily && timeLastMove <= Time.timeSinceLevelLoad - inGame.pauseTime - hintTime){
@@ -530,7 +534,7 @@ public class Dice : MonoBehaviour {
 				}
 			}
 		}
-		inGame.tutorialv2.position = transform.position;
+		
 	}
 
 	void UpdateTutorialSign(Operation op){
@@ -554,12 +558,17 @@ public class Dice : MonoBehaviour {
 	}
 
 	public void EnableTutorialSign(bool b){
+		/*if(inGame.pause)
+			return;*/
+		Debug.Log("enable "+b);
 		if(PlayerPrefs.GetInt("tutorialsDisabled",0) == 1){
 			inGame.tutorialv2.gameObject.SetActive(false);
 			return;
 		}
-		inGame.tutorialv2.gameObject.SetActive(b);
+		
 		if(b)
 			UpdateTutorialSign(currentOperation);
+		
+		inGame.tutorialv2.gameObject.SetActive(b);
 	}
 }

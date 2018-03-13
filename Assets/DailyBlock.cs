@@ -79,6 +79,8 @@ public class DailyBlock : MonoBehaviour {
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
 		cell.transform.position = new Vector3(cell.transform.position.x, aux, cell.transform.position.z);
+		if(inGame.pause)
+			inGame.UnPause();
 	}
 
 	Cell instantiateCell(int sum, GameObject go, Transform pos){
