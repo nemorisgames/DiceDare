@@ -964,8 +964,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			}
 			if(!pause && daily){
 				//Debug.Log("counting");
-				int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) / 60);
-				int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) % 60);
+				
+				//int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) / 60);
+				int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds));
+				//Debug.Log(seconds);
 				//int dec = (int)(((1 - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((1 - Time.timeSinceLevelLoad) % 60) * 10));
 				if(!finished && seconds >= 0) clockShow.text = (seconds < 10 ? "0" : "") + seconds;
 
