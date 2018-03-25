@@ -14,8 +14,6 @@ public class Title : MonoBehaviour {
     string message = "";
     public GameObject dailyPanel;
     void Start () {
-        if(GameObject.Find("AppoDeal") != null)
-            GameObject.Find("AppoDeal").GetComponent<AppodealDemo>().Init();
 
         PlayerPrefs.SetInt("lvlSelectDaily",0);
         /*_isAvailable = NPBinding.GameServices.IsAvailable();
@@ -51,14 +49,18 @@ public class Title : MonoBehaviour {
             {
                 Debug.Log(date);
                 Debug.Log("Already played today");
-                dailyPanel.SetActive(false);
+                //dailyPanel.SetActive(false);
             }
 
         }
     }
 
 	public void play(){
-		if (PlayerPrefs.GetInt ("PlayedGame", 0) == 0) {
+
+        if (GameObject.Find("AppoDeal") != null)
+            GameObject.Find("AppoDeal").GetComponent<AppodealDemo>().Init();
+
+        if (PlayerPrefs.GetInt ("PlayedGame", 0) == 0) {
             loading.SetActive(true);
             PlayerPrefs.SetInt ("PlayedGame", 1);
 			PlayerPrefs.SetString ("scene", "Scene" + 1);
@@ -70,7 +72,11 @@ public class Title : MonoBehaviour {
 	}
 
 	public void daily(){
-		SceneManager.LoadScene ("LevelSelection");
+
+        if (GameObject.Find("AppoDeal") != null)
+            GameObject.Find("AppoDeal").GetComponent<AppodealDemo>().Init();
+
+        SceneManager.LoadScene ("LevelSelection");
 		PlayerPrefs.SetInt("lvlSelectDaily",1);
 	}
 	

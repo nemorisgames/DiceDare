@@ -106,7 +106,10 @@ public class AppodealDemo : MonoBehaviour, IInterstitialAdListener, IBannerAdLis
 	public void onRewardedVideoFailedToLoad() { Debug.Log("Rewarded Video failed to load"); callback.SendMessage("HandleShowResult", 0); }
 	public void onRewardedVideoShown() { Debug.Log("Rewarded Video opened"); }
 	public void onRewardedVideoClosed() { Debug.Log("Rewarded Video closed"); }
-	public void onRewardedVideoFinished(int amount, string name) { Debug.Log("Rewarded Video Reward: " + amount + " " + name); callback.SendMessage("HandleShowResult", 2); }
+	public void onRewardedVideoFinished(int amount, string name) {
+        Debug.Log("Rewarded Video Reward: " + amount + " " + name);
+        if(callback != null) callback.SendMessage("HandleShowResult", 2);
+    }
 	#endregion
 
 	#region Permission Grant callback handlers

@@ -23,16 +23,18 @@ public class LevelSelection : MonoBehaviour
 	public UISlider consecDaysSlider;
 	public UILabel triesNumber;
 	public TweenAlpha rewardsPanel;
-	public GameObject medals_GO;
+    public TweenAlpha calendarPanel;
+    public GameObject medals_GO;
 	public UISprite [] medals;
 	public UILabel consecDays;
 	public UIPanel dailyPanel;
     public GameObject dailyButton;
     public GameObject startDaily;
-	public GameObject alreadyPlayed;
 	public TweenAlpha swipeIcon;
 	public UIScrollView dragLevels;
 	bool dragged;
+
+    public GameObject connectionProblem;
 
     AppodealDemo appodealDemo;
     // Use this for initialization
@@ -40,8 +42,8 @@ public class LevelSelection : MonoBehaviour
         appodealDemo = GameObject.Find("AppoDeal").GetComponent<AppodealDemo>();
 
         InitMedals();
-		
-		PlayerPrefs.SetInt ("continueBGM", 0);
+
+        PlayerPrefs.SetInt ("continueBGM", 0);
 		if (PlayerPrefs.GetInt ("unlockedScene1") != 1) {
 			PlayerPrefs.SetInt ("unlockedScene1", 1);
 		}
@@ -87,13 +89,90 @@ public class LevelSelection : MonoBehaviour
 			}
 		}
 
-		if(PlayerPrefs.GetInt("lvlSelectDaily",0) == 1){
-			dailyPanel.GetComponent<TweenAlpha>().PlayForward();
-			GetConsecutiveDays();
+        //////////////////cortado desde getconsecutivedays()//////////////////
+        int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays", 0);
+        System.DateTime date = System.DateTime.Now.Date;
+        //date = System.DateTime.Parse("12/28/2017 12:00:00 AM");
+        System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate", date.ToString()));
+        int daysSinceLastPlay = (int)(date - lastPlayedDate).TotalDays;
+        print(lastPlayedDate + " " + date + " " + daysSinceLastPlay + " " + consecutiveDays);
+        if (daysSinceLastPlay > 0)
+        {
+            PlayerPrefs.SetInt("triesLeft", 1);
+        }
+        if (daysSinceLastPlay == 0)
+        {
+            if (consecutiveDays == -1)
+            {
+                Debug.Log("First stage played");
+            }
+            else
+            {
+                Debug.Log(date);
+                Debug.Log("Already played today");
+            }
+        }
+        else
+        {
+            if (daysSinceLastPlay == 1)
+            {
+                PlayerPrefs.SetFloat("totalDaily", 0);
+                print("aumentando consecutive days");
+                //if (consecutiveDays < 0) consecutiveDays = 0;
+                consecutiveDays++;
+                PlayerPrefs.SetInt("consecutiveDays", consecutiveDays);
+            }
+            else
+            {
+                if (daysSinceLastPlay > 1)
+                {
+                    PlayerPrefs.SetFloat("totalDaily", 0);
+                    PlayerPrefs.SetInt("consecutiveDays", 0);
+                    Debug.Log("Haven't played in over a day");
+                    consecDaysSlider.value = 0;
+                    consecutiveDays = 0;
+                }
+            }
+        }
+        PlayerPrefs.SetString("lastPlayedDate", date.ToString());
+
+        float penalization = 0;
+        consecDays.text = consecutiveDays.ToString();
+        if (consecutiveDays == 0)
+        {
+            consecDaysSlider.value = 0;
+            penalization = -0.01f;
+        }
+        else if (consecutiveDays == -1)
+        {
+            consecDaysSlider.value = 0;
+            consecDays.text = 0.ToString();
+        }
+        else
+        {
+            float aux = consecutiveDays;
+            consecDaysSlider.value = Mathf.Clamp(aux, 0f, 7f) * (1f / 7f);
+        }
+        if (System.DateTime.Now.Date.ToString() == PlayerPrefs.GetString("lastLoadedDaily", ""))
+        {
+            penalization = 0;
+        }
+
+        PlayerPrefs.SetFloat("totalDaily", PlayerPrefs.GetFloat("totalDaily") + penalization);
+        /////////////////////////////////////////////
+
+        if (PlayerPrefs.GetInt("lvlSelectDaily",0) == 1){
+            dailyPanel.GetComponent<TweenAlpha>().PlayForward();
+            GetConsecutiveDays();
 		}
+        if (PlayerPrefs.GetInt("lvlSelectDaily", 0) == 2)
+        {
+            connectionProblem.SetActive(false);
+            rewardsPanel.GetComponent<TweenAlpha>().PlayForward();
+            GetConsecutiveDays();
+        }
 
-
-        int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays", -1);
+        /*int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays", -1);
         System.DateTime date = System.DateTime.Now.Date;
         System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate", date.ToString()));
         int daysSinceLastPlay = (int)(date - lastPlayedDate).TotalDays;
@@ -110,8 +189,9 @@ public class LevelSelection : MonoBehaviour
                 //dailyButton.gameObject.SetActive(false);
             }
 
-        }
-
+        }*/
+        GameObject bgm = GameObject.Find("BGM");
+        if (bgm != null) Destroy(bgm);
         showBanner();
 		StartCoroutine(showSwipe());
     }
@@ -128,6 +208,8 @@ public class LevelSelection : MonoBehaviour
             appodealDemo.showRewardedVideo(gameObject);
 #if !UNITY_EDITOR
 				Analytics.CustomEvent ("showVideo");
+#else
+        HandleShowResult(ShowResult.Finished);
 #endif
     }
 
@@ -154,6 +236,7 @@ public class LevelSelection : MonoBehaviour
 		case ShowResult.Failed:
 			    Debug.LogError("The ad failed to be shown.");
                 mensaje += "The ad failed to be shown.";
+                connectionProblem.SetActive(true);
                 closeRewardScreen();
                 break;
 		}
@@ -166,7 +249,9 @@ public class LevelSelection : MonoBehaviour
 
 	public void closeRewardScreen(){
 		rewardsPanel.PlayReverse();
-	}
+        calendarPanel.PlayForward();
+        GetConsecutiveDays();
+    }
 
     void InitMedals(){
 		if(medals_GO != null){
@@ -188,6 +273,7 @@ public class LevelSelection : MonoBehaviour
 
     public void launchLevel(string texto)
     {
+        print(texto);
         if (texto == "TUTORIAL")
         {
 #if !UNITY_EDITOR
@@ -209,8 +295,7 @@ public class LevelSelection : MonoBehaviour
                 loading.SetActive(true);
 			if(int.Parse(num) % 5 == 1)
 				CheckTutorial(int.Parse(num));
-			else
-           		SceneManager.LoadScene("InGame");
+            SceneManager.LoadScene("InGame");
         }
 	}
 	
@@ -293,13 +378,22 @@ public class LevelSelection : MonoBehaviour
 	}
 
 	public void GetConsecutiveDays(){
-		ToggleCanPlay(true);
-		//load last played date
-		int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays",-1);
+        ToggleCanPlay(true);
+        ///codigo nuevo
+        ///
+        int triesLeft = PlayerPrefs.GetInt("triesLeft", 1);
+        if (triesLeft == 0)
+            if (!testing) ToggleCanPlay(false);
+        triesNumber.text = triesLeft.ToString();
+        ////hasta aqui
+
+        //load last played date
+        /*int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays",-1);
 		System.DateTime date = System.DateTime.Now.Date;
 		//date = System.DateTime.Parse("12/28/2017 12:00:00 AM");
 		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",date.ToString()));
 		int daysSinceLastPlay = (int)(date - lastPlayedDate).TotalDays;
+        print(lastPlayedDate + " " + date + " " + daysSinceLastPlay + " " + consecutiveDays);
 		if(daysSinceLastPlay > 0){
 			PlayerPrefs.SetInt("triesLeft",1);
 		}
@@ -307,49 +401,60 @@ public class LevelSelection : MonoBehaviour
 		if(triesLeft == 0)
 			if(!testing) ToggleCanPlay(false);
 		triesNumber.text = triesLeft.ToString();
-		if(daysSinceLastPlay == 0){
-			if(consecutiveDays == -1){
-				Debug.Log("First stage played");
-			}
-			else{
-				Debug.Log(date);
-				Debug.Log("Already played today");
-			}
-		}
-		else if(daysSinceLastPlay > 1){
-			PlayerPrefs.SetInt("consecutiveDays",0);
-			Debug.Log("Haven't played in over a day");
-			consecDaysSlider.value = 0;
-			consecutiveDays = 0;
-		}
-		float penalization = 0;
-		consecDays.text = consecutiveDays.ToString();
-		if(consecutiveDays == 0){
-			consecDaysSlider.value = 0;
-			penalization = -0.01f;
-		}
-		else if(consecutiveDays == -1){
-			consecDaysSlider.value = 0;
-			consecDays.text = 0.ToString();
-		}
-		else{
-			float aux = consecutiveDays;
-			consecDaysSlider.value = Mathf.Clamp(aux,0f,7f) * (1f/7f);
-		}
-		if(System.DateTime.Now.Date.ToString() == PlayerPrefs.GetString("lastLoadedDaily","")){
-			penalization = 0;
-		}
-		SetMedals();
+        if (daysSinceLastPlay == 0)
+        {
+            if (consecutiveDays == -1)
+            {
+                Debug.Log("First stage played");
+            }
+            else
+            {
+                Debug.Log(date);
+                Debug.Log("Already played today");
+            }
+        }
+        else
+        {
+            if (daysSinceLastPlay == 1)
+            {
+                print("aumentando consecutive days");
+                if (consecutiveDays < 0) consecutiveDays = 0;
+                consecutiveDays++;
+                PlayerPrefs.SetInt("consecutiveDays", consecutiveDays);
+            }
+            else
+            {
+                if (daysSinceLastPlay > 1)
+                {
+                    PlayerPrefs.SetInt("consecutiveDays", 0);
+                    Debug.Log("Haven't played in over a day");
+                    consecDaysSlider.value = 0;
+                    consecutiveDays = 0;
+                }
+            }
+        }
+        PlayerPrefs.SetString("lastPlayedDate", date.ToString());*/
+
+        SetMedals();
 		PlayerPrefs.SetString("lastLoadedDaily",System.DateTime.Now.Date.ToString());
-		PlayerPrefs.SetFloat("totalDaily",PlayerPrefs.GetFloat("totalDaily")+penalization);
 		Debug.Log(LevelSkillTotal() + " | "+PlayerPrefs.GetFloat("totalDaily",0)/2f);
 		mathSkillSlider.value = LevelSkillTotal() + PlayerPrefs.GetFloat("totalDaily",0)/2f;
 		PlayerPrefs.SetInt("lvlSelectDaily",0);
 	}
 
 	void ToggleCanPlay(bool b){
-		startDaily.SetActive(b);
-		alreadyPlayed.SetActive(!b);
+        if (!b)
+        {
+            connectionProblem.SetActive(false);
+            rewardsPanel.PlayForward();
+            calendarPanel.PlayReverse();
+        }
+        else
+        {
+            rewardsPanel.PlayReverse();
+            calendarPanel.PlayForward();
+        }
+        startDaily.SetActive(b);
 	}
 
 	public static float LevelSkillTotal(){
@@ -380,6 +485,7 @@ public class LevelSelection : MonoBehaviour
 	}
 
 	public static void CheckTutorial(int level){
+        if (PlayerPrefs.GetInt("tutorialMode", 0) == Mathf.RoundToInt(level / 5) + 1) return;
 		PlayerPrefs.SetInt("tutorialMode",Mathf.RoundToInt(level/5) + 1);
 		SceneManager.LoadScene("InGame_tutorial");
 	}

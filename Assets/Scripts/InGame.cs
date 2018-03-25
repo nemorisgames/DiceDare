@@ -97,14 +97,18 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     // Use this for initialization
     AppodealDemo appodealDemo;
 
+    public GameObject connectionProblem;
+
     // Use this for initialization
     void Start () {
         appodealDemo = GameObject.Find("AppoDeal").GetComponent<AppodealDemo>();
         //if (PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
-			//tutorialPanel.gameObject.SetActive(true);
-			//playTutorial();
+        //tutorialPanel.gameObject.SetActive(true);
+        //playTutorial();
 
-		if (bgm == null) {
+
+
+        if (bgm == null) {
 			bgm = bgm_go;
 			DontDestroyOnLoad (bgm);
 			bgm.Play ();
@@ -276,6 +280,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     
     public void hintPressed()
     {
+        connectionProblem.SetActive(false);
         if (hintPressedNumber <= 0)
         {
             hintMessage.PlayForward();
@@ -322,13 +327,15 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				if(daily){
 					PlayerPrefs.SetInt("triesLeft",PlayerPrefs.GetInt("triesLeft") + 2);
 					triesLabel.text = PlayerPrefs.GetInt("triesLeft",0).ToString();
+                    playAgainDaily();
 				}
 				else{
 					hintsAvailable += 2;
 					PlayerPrefs.SetInt ("hints", hintsAvailable);
 					hintIndicator.text = "" + hintsAvailable;
-				}
-				closeHintScreen ();
+                    closeHintScreen();
+                }
+
                 mensaje += "Ad succesful";
                 break;
 		case ShowResult.Skipped:
@@ -339,6 +346,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		case ShowResult.Failed:
 			    Debug.LogError("The ad failed to be shown.");
                 mensaje += "The ad failed to be shown.";
+                connectionProblem.SetActive(true);
                 closeHintScreen();
                 break;
 		}
@@ -548,7 +556,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public void UnPause(){
 		if (pause) {
 			pause = false;
-			pauseTime += Time.timeSinceLevelLoad - pauseAux;
+            if(!daily)
+			    pauseTime += Time.timeSinceLevelLoad - pauseAux;
 			pauseAux = 0;
 		}
 	}
@@ -710,6 +719,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		//tutorialVideo.ToggleOff ();
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioFinish);
+        if (daily)
+        {
+            PlayerPrefs.SetInt("lvlSelectDaily", 0);
+        }
 
 		if(tutorial)
 			return;
@@ -864,8 +877,11 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 	public void skipTutorial(){
 		PlayerPrefs.SetInt("SeenTutorial",1);
-		playAgain();
-	}
+        //playAgain();
+        if (appodealDemo != null)
+            appodealDemo.hideBanner();
+        SceneManager.LoadScene("LevelSelection");
+    }
 
 	public void playTutorial(){
         //Appodeal.hide(Appodeal.BANNER_BOTTOM);
@@ -884,7 +900,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		int level = (int.Parse (num) + 1);
 		if(level < GlobalVariables.nLevels)
 			PlayerPrefs.SetInt ("unlockedScene" + level, 1);*/
-		/*if(tutorial && PlayerPrefs.GetInt("SeenTutorial",0) == 0)
+        /*if(tutorial && PlayerPrefs.GetInt("SeenTutorial",0) == 0)
 			PlayerPrefs.SetInt("SeenTutorial",1);*/
 		Destroy (bgm.gameObject);
 		SceneManager.LoadScene ("LevelSelection");
@@ -966,12 +982,12 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				//Debug.Log("counting");
 				
 				//int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) / 60);
-				int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds));
+				int seconds = (int)((15 - Time.timeSinceLevelLoad + pauseTime + extraSeconds));
 				//Debug.Log(seconds);
 				//int dec = (int)(((1 - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((1 - Time.timeSinceLevelLoad) % 60) * 10));
 				if(!finished && seconds >= 0) clockShow.text = (seconds < 10 ? "0" : "") + seconds;
 
-				if(!finished && 60 + extraSeconds - (Time.timeSinceLevelLoad - pauseTime) <= 0)
+				if(!finished && 15 + extraSeconds - (Time.timeSinceLevelLoad - pauseTime) <= 0)
 					finishGame();
 			}
 		}
@@ -1014,15 +1030,19 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",System.DateTime.Now.Date.ToString()));
 		int daysSinceLastPlay = (int)(System.DateTime.Now - lastPlayedDate).TotalDays;
 		if(daysSinceLastPlay == 0){
-			if(consecutiveDays == -1){
-				Debug.Log("First stage played");
-				PlayerPrefs.SetInt("consecutiveDays",1);
-			}
-			else
-				Debug.Log("Already played today");
+            if (consecutiveDays == -1)
+            {
+                Debug.Log("First stage played");
+                PlayerPrefs.SetInt("consecutiveDays", 1);
+            }
+            else
+            {
+                Debug.Log("Already played today");
+            }
 		}
 		if(daysSinceLastPlay == 1){
-			PlayerPrefs.SetInt("consecutiveDays",consecutiveDays + 1);
+            print("sumando dias 2");
+            PlayerPrefs.SetInt("consecutiveDays",consecutiveDays + 1);
 		}
 		else if(daysSinceLastPlay > 1){
 			PlayerPrefs.SetInt("consecutiveDays",0);
@@ -1034,14 +1054,17 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	void UpdateConsecutiveDays(){
+        /*
 		System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate",System.DateTime.Now.Date.ToString()));
 		int daysSinceLastPlay = (int)(System.DateTime.Now - lastPlayedDate).TotalDays;
-		if(daysSinceLastPlay != 0){
+		if(daysSinceLastPlay == 1){
 			int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays");
 			consecutiveDays = Mathf.Clamp(consecutiveDays + 1,0,7);
 			PlayerPrefs.SetString("lastPlayedDate",System.DateTime.Now.Date.ToString());
 			PlayerPrefs.SetInt("consecutiveDays",consecutiveDays);
-		}
+            print("sumando dias " + consecutiveDays);
+        }
+        */
 	}
 
 	void componerEscena_Daily(){
@@ -1088,8 +1111,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				dailyConsec = 0;
 			}
 		}
-		else{
-			dailyWrong++;
+		else
+        {
+            //extraSeconds = Mathf.Clamp(extraSeconds -= 5f, -10f, 25f);
+            dailyWrong++;
 			dailyConsec = 0;
 		}
 	}
@@ -1115,24 +1140,32 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		float consec = Mathf.Clamp((float)PlayerPrefs.GetInt("consecutiveDays"),0f,7f);
 		totalPercentage = Mathf.Clamp01(totalPercentage * (1 + consec/150f));
 
-		if(consec == -1)
-			PlayerPrefs.SetInt("consecutiveDays",1);
-		else
-			PlayerPrefs.SetInt("consecutiveDays",(int)consec+1);
+        if (consec == -1)
+            PlayerPrefs.SetInt("consecutiveDays", 0);
+        else
+        {
+            //print("sumando dias 3");
+            //PlayerPrefs.SetInt("consecutiveDays", (int)consec + 1);
+        }
 
 		Debug.Log(result + ", "+ totalPercentage);
 		if(result > totalPercentage)
 			totalPercentage = (totalPercentage + result * 1.1f)/2f;
 		else if(result < totalPercentage)
 			totalPercentage = (totalPercentage - (1 - result) * 0.05f);
-		
-		PlayerPrefs.SetFloat("totalDaily",Mathf.Clamp01(totalPercentage));
+
+        //completa el dia correspondiente en el calendario
+        print(totalPercentage + " " + (int)(Mathf.Clamp01(totalPercentage) * 100f));
+       
+
+        PlayerPrefs.SetFloat("totalDaily",Mathf.Clamp01(totalPercentage));
 		PlayerPrefs.SetString("lastPlayedDate",System.DateTime.Now.Date.ToString());
 		//dailySlider.value = LevelSelection.LevelSkillTotal() + totalPercentage/2f;
 		PlayerPrefs.SetInt("triesLeft",Mathf.Clamp(PlayerPrefs.GetInt("triesLeft") - 1,0,int.MaxValue));
 		if(triesLabel != null) triesLabel.text = PlayerPrefs.GetInt("triesLeft",0).ToString();
-		
-		StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + totalPercentage/2f));
+        print(LevelSelection.LevelSkillTotal() + totalPercentage / 2f);
+        PlayerPrefs.SetInt("dailyScore", (int)(Mathf.Round((LevelSelection.LevelSkillTotal() + totalPercentage / 2f) * 100f)));
+        StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + totalPercentage/2f));
 	}
 
 	void CalculateMedals(){
@@ -1193,12 +1226,21 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		int tries = PlayerPrefs.GetInt("triesLeft",0);
 		if(tries > 0){
 			Debug.Log("again");
-		}
+            SceneManager.LoadScene("LevelSelection");
+            PlayerPrefs.SetInt("lvlSelectDaily", 1);
+        }
 		else
         {
+            SceneManager.LoadScene("LevelSelection");
+            PlayerPrefs.SetInt("lvlSelectDaily", 2);
+            /*
+#if !UNITY_EDITOR
             if (appodealDemo != null)
                 appodealDemo.showRewardedVideo(gameObject);
-            Debug.Log("showing video");
-		}
-	}
+#else
+            HandleShowResult(ShowResult.Finished);
+#endif
+            Debug.Log("showing video");*/
+        }
+    }
 }
