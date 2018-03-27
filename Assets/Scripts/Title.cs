@@ -55,7 +55,14 @@ public class Title : MonoBehaviour {
         }
     }
 
-	public void play(){
+    void loadNextScene(string s)
+    {
+        print("escene " + s);
+        VariablesGlobales.nextScene = s;
+        GameObject.FindWithTag("loading").GetComponent<LoadSceneWait>().enabled = true;
+    }
+
+    public void play(){
 
         if (GameObject.Find("AppoDeal") != null)
             GameObject.Find("AppoDeal").GetComponent<AppodealDemo>().Init();
@@ -64,10 +71,13 @@ public class Title : MonoBehaviour {
             loading.SetActive(true);
             PlayerPrefs.SetInt ("PlayedGame", 1);
 			PlayerPrefs.SetString ("scene", "Scene" + 1);
-			SceneManager.LoadScene ("InGame_tutorial");
+            loadNextScene("InGame_tutorial");
+            //SceneManager.LoadScene ("InGame_tutorial");
 			PlayerPrefs.SetInt("lvlSelectDaily",0);
-		} else {
-			SceneManager.LoadScene ("LevelSelection");
+		} else
+        {
+            loadNextScene("LevelSelection");
+            //SceneManager.LoadScene ("LevelSelection");
 		}
 	}
 
@@ -76,8 +86,9 @@ public class Title : MonoBehaviour {
         if (GameObject.Find("AppoDeal") != null)
             GameObject.Find("AppoDeal").GetComponent<AppodealDemo>().Init();
 
-        SceneManager.LoadScene ("LevelSelection");
-		PlayerPrefs.SetInt("lvlSelectDaily",1);
+        //SceneManager.LoadScene ("LevelSelection");
+        loadNextScene("LevelSelection");
+        PlayerPrefs.SetInt("lvlSelectDaily",1);
 	}
 	
 	// Update is called once per frame

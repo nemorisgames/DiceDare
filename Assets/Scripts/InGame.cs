@@ -98,10 +98,14 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     AppodealDemo appodealDemo;
 
     public GameObject connectionProblem;
+    public GameObject newRecordSign;
+    public UILabel stageTime;
 
     // Use this for initialization
     void Start () {
-        appodealDemo = GameObject.Find("AppoDeal").GetComponent<AppodealDemo>();
+        GameObject g = GameObject.Find("AppoDeal");
+        if(g != null)
+            appodealDemo = g.GetComponent<AppodealDemo>();
         //if (PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
         //tutorialPanel.gameObject.SetActive(true);
         //playTutorial();
@@ -115,10 +119,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		}/* else {
 			DestroyImmediate (bgm_go);
 		}*/
-        if (PlayerPrefs.GetInt("Mute") == 1)
+        /*if (PlayerPrefs.GetInt("Mute") == 1)
             bgm.mute = true;
         else
-            bgm.mute = false;
+            bgm.mute = false;*/
         string texto = PlayerPrefs.GetString("scene", "Scene1");
         if (texto != "TUTORIAL")
         {
@@ -200,7 +204,13 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
             appodealDemo.showBanner(Appodeal.BANNER_BOTTOM);
     }
 
-	public void NextTutorial(bool b){
+    void loadNextScene(string s)
+    {
+        VariablesGlobales.nextScene = s;
+        GameObject.FindWithTag("loading").GetComponent<LoadSceneWait>().enabled = true;
+    }
+
+    public void NextTutorial(bool b){
 
 
 		if(tutorialIndex == 3)
@@ -359,46 +369,55 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 	public void componerEscena(){
 		string completo = "";
-		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
-		case "Scene1":completo = GlobalVariables.Scene1;break;
-		case "Scene2":completo = GlobalVariables.Scene2;break;
-		case "Scene3":completo = GlobalVariables.Scene3;break;
-		case "Scene4":completo = GlobalVariables.Scene4;break;
-		case "Scene5":completo = GlobalVariables.Scene5;break;
-		case "Scene6":completo = GlobalVariables.Scene6;break;
-		case "Scene7":completo = GlobalVariables.Scene7;break;
-		case "Scene8":completo = GlobalVariables.Scene8;break;
-		case "Scene9":completo = GlobalVariables.Scene9;break;
-		case "Scene10":completo = GlobalVariables.Scene10;break;
-		case "Scene11":completo = GlobalVariables.Scene11;break;
-		case "Scene12":completo = GlobalVariables.Scene12;break;
-		case "Scene13":completo = GlobalVariables.Scene13;break;
-		case "Scene14":completo = GlobalVariables.Scene14;break;
-		case "Scene15":completo = GlobalVariables.Scene15;break;
-		case "Scene16":completo = GlobalVariables.Scene16;break;
-		case "Scene17":completo = GlobalVariables.Scene17;break;
-		case "Scene18":completo = GlobalVariables.Scene18;break;
-		case "Scene19":completo = GlobalVariables.Scene19;break;
-		case "Scene20":completo = GlobalVariables.Scene20;break;
-		case "Scene21":completo = GlobalVariables.Scene21;break;
-		}
-		if(tutorial){
-			switch(tutorialMode){
-				case 1:
-				completo = GlobalVariables.Scene91;
-				break;
-				case 2:
-				completo = GlobalVariables.Scene92;
-				break;
-				case 3:
-				completo = GlobalVariables.Scene93;
-				break;
-				case 4:
-				completo = GlobalVariables.Scene94;
-				break;
-			}
-		}
-			
+        if (SceneManager.GetActiveScene().name == "InGameTest")
+        {
+            completo = PlayerPrefs.GetString("SceneTest");
+        }
+        else
+        {
+            switch (PlayerPrefs.GetString("scene", "Scene1"))
+            {
+                case "Scene1": completo = GlobalVariables.Scene1; break;
+                case "Scene2": completo = GlobalVariables.Scene2; break;
+                case "Scene3": completo = GlobalVariables.Scene3; break;
+                case "Scene4": completo = GlobalVariables.Scene4; break;
+                case "Scene5": completo = GlobalVariables.Scene5; break;
+                case "Scene6": completo = GlobalVariables.Scene6; break;
+                case "Scene7": completo = GlobalVariables.Scene7; break;
+                case "Scene8": completo = GlobalVariables.Scene8; break;
+                case "Scene9": completo = GlobalVariables.Scene9; break;
+                case "Scene10": completo = GlobalVariables.Scene10; break;
+                case "Scene11": completo = GlobalVariables.Scene11; break;
+                case "Scene12": completo = GlobalVariables.Scene12; break;
+                case "Scene13": completo = GlobalVariables.Scene13; break;
+                case "Scene14": completo = GlobalVariables.Scene14; break;
+                case "Scene15": completo = GlobalVariables.Scene15; break;
+                case "Scene16": completo = GlobalVariables.Scene16; break;
+                case "Scene17": completo = GlobalVariables.Scene17; break;
+                case "Scene18": completo = GlobalVariables.Scene18; break;
+                case "Scene19": completo = GlobalVariables.Scene19; break;
+                case "Scene20": completo = GlobalVariables.Scene20; break;
+                case "Scene21": completo = GlobalVariables.Scene21; break;
+            }
+            if (tutorial)
+            {
+                switch (tutorialMode)
+                {
+                    case 1:
+                        completo = GlobalVariables.Scene91;
+                        break;
+                    case 2:
+                        completo = GlobalVariables.Scene92;
+                        break;
+                    case 3:
+                        completo = GlobalVariables.Scene93;
+                        break;
+                    case 4:
+                        completo = GlobalVariables.Scene94;
+                        break;
+                }
+            }
+        }
 		string[] aux = completo.Split(new char[1]{'$'});
 		string[] info = aux[0].Split(new char[1]{'|'});
 		string[] arreglo = aux[1].Split(new char[1]{'|'});
@@ -417,72 +436,91 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		}
 		
 		string completoNumbers = "";
-		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
-		case "Scene1":completoNumbers = GlobalVariables.Scene1Numbers;break;
-		case "Scene2":completoNumbers = GlobalVariables.Scene2Numbers;break;
-		case "Scene3":completoNumbers = GlobalVariables.Scene3Numbers;break;
-		case "Scene4":completoNumbers = GlobalVariables.Scene4Numbers;break;
-		case "Scene5":completoNumbers = GlobalVariables.Scene5Numbers;break;
-		case "Scene6":completoNumbers = GlobalVariables.Scene6Numbers;break;
-		case "Scene7":completoNumbers = GlobalVariables.Scene7Numbers;break;
-		case "Scene8":completoNumbers = GlobalVariables.Scene8Numbers;break;
-		case "Scene9":completoNumbers = GlobalVariables.Scene9Numbers;break;
-		case "Scene10":completoNumbers = GlobalVariables.Scene10Numbers;break;
-		case "Scene11":completoNumbers = GlobalVariables.Scene11Numbers;break;
-		case "Scene12":completoNumbers = GlobalVariables.Scene12Numbers;break;
-		case "Scene13":completoNumbers = GlobalVariables.Scene13Numbers;break;
-		case "Scene14":completoNumbers = GlobalVariables.Scene14Numbers;break;
-		case "Scene15":completoNumbers = GlobalVariables.Scene15Numbers;break;
-		case "Scene16":completoNumbers = GlobalVariables.Scene16Numbers;break;
-		case "Scene17":completoNumbers = GlobalVariables.Scene17Numbers;break;
-		case "Scene18":completoNumbers = GlobalVariables.Scene18Numbers;break;
-		case "Scene19":completoNumbers = GlobalVariables.Scene19Numbers;break;
-		case "Scene20":completoNumbers = GlobalVariables.Scene20Numbers;break;
-		case "Scene21":completoNumbers = GlobalVariables.Scene21Numbers;break;
-		}
-		if(tutorial){
-			switch(tutorialMode){
-				case 1:
-				completoNumbers = GlobalVariables.Scene91Numbers;
-				break;
-				case 2:
-				completoNumbers = GlobalVariables.Scene92Numbers;
-				break;
-				case 3:
-				completoNumbers = GlobalVariables.Scene93Numbers;
-				break;
-				case 4:
-				completoNumbers = GlobalVariables.Scene94Numbers;
-				break;
-			}
-		}
 
+        if (SceneManager.GetActiveScene().name == "InGameTest")
+        {
+            completoNumbers = PlayerPrefs.GetString("SceneNumbersTest");
+        }
+        else
+        {
+            switch (PlayerPrefs.GetString("scene", "Scene1"))
+            {
+                case "Scene1": completoNumbers = GlobalVariables.Scene1Numbers; break;
+                case "Scene2": completoNumbers = GlobalVariables.Scene2Numbers; break;
+                case "Scene3": completoNumbers = GlobalVariables.Scene3Numbers; break;
+                case "Scene4": completoNumbers = GlobalVariables.Scene4Numbers; break;
+                case "Scene5": completoNumbers = GlobalVariables.Scene5Numbers; break;
+                case "Scene6": completoNumbers = GlobalVariables.Scene6Numbers; break;
+                case "Scene7": completoNumbers = GlobalVariables.Scene7Numbers; break;
+                case "Scene8": completoNumbers = GlobalVariables.Scene8Numbers; break;
+                case "Scene9": completoNumbers = GlobalVariables.Scene9Numbers; break;
+                case "Scene10": completoNumbers = GlobalVariables.Scene10Numbers; break;
+                case "Scene11": completoNumbers = GlobalVariables.Scene11Numbers; break;
+                case "Scene12": completoNumbers = GlobalVariables.Scene12Numbers; break;
+                case "Scene13": completoNumbers = GlobalVariables.Scene13Numbers; break;
+                case "Scene14": completoNumbers = GlobalVariables.Scene14Numbers; break;
+                case "Scene15": completoNumbers = GlobalVariables.Scene15Numbers; break;
+                case "Scene16": completoNumbers = GlobalVariables.Scene16Numbers; break;
+                case "Scene17": completoNumbers = GlobalVariables.Scene17Numbers; break;
+                case "Scene18": completoNumbers = GlobalVariables.Scene18Numbers; break;
+                case "Scene19": completoNumbers = GlobalVariables.Scene19Numbers; break;
+                case "Scene20": completoNumbers = GlobalVariables.Scene20Numbers; break;
+                case "Scene21": completoNumbers = GlobalVariables.Scene21Numbers; break;
+            }
+            if (tutorial)
+            {
+                switch (tutorialMode)
+                {
+                    case 1:
+                        completoNumbers = GlobalVariables.Scene91Numbers;
+                        break;
+                    case 2:
+                        completoNumbers = GlobalVariables.Scene92Numbers;
+                        break;
+                    case 3:
+                        completoNumbers = GlobalVariables.Scene93Numbers;
+                        break;
+                    case 4:
+                        completoNumbers = GlobalVariables.Scene94Numbers;
+                        break;
+                }
+            }
+        }
 		string completoPath = "";
-		switch (PlayerPrefs.GetString ("scene", "Scene1")) {
-		case "Scene1":completoPath = GlobalVariables.Scene1Path;break;
-		case "Scene2":completoPath = GlobalVariables.Scene2Path;break;
-		case "Scene3":completoPath = GlobalVariables.Scene3Path;break;
-		case "Scene4":completoPath = GlobalVariables.Scene4Path;break;
-		case "Scene5":completoPath = GlobalVariables.Scene5Path;break;
-		case "Scene6":completoPath = GlobalVariables.Scene6Path;break;
-		case "Scene7":completoPath = GlobalVariables.Scene7Path;break;
-		case "Scene8":completoPath = GlobalVariables.Scene8Path;break;
-		case "Scene9":completoPath = GlobalVariables.Scene9Path;break;
-		case "Scene10":completoPath = GlobalVariables.Scene10Path;break;
-		case "Scene11":completoPath = GlobalVariables.Scene11Path;break;
-		case "Scene12":completoPath = GlobalVariables.Scene12Path;break;
-		case "Scene13":completoPath = GlobalVariables.Scene13Path;break;
-		case "Scene14":completoPath = GlobalVariables.Scene14Path;break;
-		case "Scene15":completoPath = GlobalVariables.Scene15Path;break;
-		case "Scene16":completoPath = GlobalVariables.Scene16Path;break;
-		case "Scene17":completoPath = GlobalVariables.Scene17Path;break;
-		case "Scene18":completoPath = GlobalVariables.Scene18Path;break;
-		case "Scene19":completoPath = GlobalVariables.Scene19Path;break;
-		case "Scene20":completoPath = GlobalVariables.Scene20Path;break;
-		case "Scene21":completoPath = GlobalVariables.Scene21Path;break;
-		}
-		if(tutorial)
-			completoPath = GlobalVariables.Scene91Path;
+
+        if (SceneManager.GetActiveScene().name == "InGameTest")
+        {
+            completoPath = PlayerPrefs.GetString("ScenePathTest");
+        }
+        else
+        {
+            switch (PlayerPrefs.GetString("scene", "Scene1"))
+            {
+                case "Scene1": completoPath = GlobalVariables.Scene1Path; break;
+                case "Scene2": completoPath = GlobalVariables.Scene2Path; break;
+                case "Scene3": completoPath = GlobalVariables.Scene3Path; break;
+                case "Scene4": completoPath = GlobalVariables.Scene4Path; break;
+                case "Scene5": completoPath = GlobalVariables.Scene5Path; break;
+                case "Scene6": completoPath = GlobalVariables.Scene6Path; break;
+                case "Scene7": completoPath = GlobalVariables.Scene7Path; break;
+                case "Scene8": completoPath = GlobalVariables.Scene8Path; break;
+                case "Scene9": completoPath = GlobalVariables.Scene9Path; break;
+                case "Scene10": completoPath = GlobalVariables.Scene10Path; break;
+                case "Scene11": completoPath = GlobalVariables.Scene11Path; break;
+                case "Scene12": completoPath = GlobalVariables.Scene12Path; break;
+                case "Scene13": completoPath = GlobalVariables.Scene13Path; break;
+                case "Scene14": completoPath = GlobalVariables.Scene14Path; break;
+                case "Scene15": completoPath = GlobalVariables.Scene15Path; break;
+                case "Scene16": completoPath = GlobalVariables.Scene16Path; break;
+                case "Scene17": completoPath = GlobalVariables.Scene17Path; break;
+                case "Scene18": completoPath = GlobalVariables.Scene18Path; break;
+                case "Scene19": completoPath = GlobalVariables.Scene19Path; break;
+                case "Scene20": completoPath = GlobalVariables.Scene20Path; break;
+                case "Scene21": completoPath = GlobalVariables.Scene21Path; break;
+            }
+            if (tutorial)
+                completoPath = GlobalVariables.Scene91Path;
+        }
 		string [] auxPath = completoPath.Split (new char[1]{ '|' });
 		string[] auxCoord = new string[2];
 		for (int i = 0; i < auxPath.Length; i++) {
@@ -545,6 +583,11 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			}
 		}
 	}
+
+    public void backToCreator()
+    {
+        SceneManager.LoadScene("LevelCreator");
+    }
 
 	public void Pause(){
 		if (!pause) {
@@ -616,7 +659,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		yield return new WaitForSeconds (1f);
 		timesDied++;
 		PlayerPrefs.SetInt ("timesDied", timesDied);
-		SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
+        loadNextScene(SceneManager.GetActiveScene().name);
+        //SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 	}
 
 	//0: adyacente, 1: tres adyacentes, 2: todos
@@ -726,9 +770,11 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 		if(tutorial)
 			return;
-
+        if (stageTime != null)
+            stageTime.text = clockShow.text;
         if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
         {
+            newRecordSign.SetActive(true);
             PlayerPrefs.SetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
             /*if (NPBinding.GameServices.LocalUser.IsAuthenticated)
             {
@@ -872,25 +918,28 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         //Appodeal.hide(Appodeal.BANNER_BOTTOM);
         if (appodealDemo != null)
             appodealDemo.hideBanner();
-        SceneManager.LoadScene (SceneManager.GetActiveScene().name);
-	}
+        loadNextScene(SceneManager.GetActiveScene().name);
+        //SceneManager.LoadScene (SceneManager.GetActiveScene().name);
+    }
 
-	public void skipTutorial(){
-		PlayerPrefs.SetInt("SeenTutorial",1);
+    public void skipTutorial(){
+		//PlayerPrefs.SetInt("SeenTutorial",1);
         //playAgain();
         if (appodealDemo != null)
             appodealDemo.hideBanner();
-        SceneManager.LoadScene("LevelSelection");
+        loadNextScene("LevelSelection");
+        //SceneManager.LoadScene("LevelSelection");
     }
 
-	public void playTutorial(){
+    public void playTutorial(){
         //Appodeal.hide(Appodeal.BANNER_BOTTOM);
         if (appodealDemo != null)
             appodealDemo.hideBanner();
-        SceneManager.LoadScene ("InGame_tutorial");
-	}
+        loadNextScene("InGame_tutorial");
+        //SceneManager.LoadScene ("InGame_tutorial");
+    }
 
-	public void exit()
+    public void exit()
     {
         //Appodeal.hide(Appodeal.BANNER_BOTTOM);
         if (appodealDemo != null)
@@ -902,9 +951,24 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			PlayerPrefs.SetInt ("unlockedScene" + level, 1);*/
         /*if(tutorial && PlayerPrefs.GetInt("SeenTutorial",0) == 0)
 			PlayerPrefs.SetInt("SeenTutorial",1);*/
-		Destroy (bgm.gameObject);
-		SceneManager.LoadScene ("LevelSelection");
-	}
+        string texto = PlayerPrefs.GetString("scene", "Scene1");
+        string num = "1";
+        if (texto != "InGame_tutorial" && texto != "TUTORIAL")
+            num = texto.Split(new char[1] { 'e' })[2];
+#if !UNITY_EDITOR
+		Analytics.CustomEvent ("backToselection" + num);
+#endif
+        int level = Mathf.Clamp((int.Parse(num)), 1, 1000);
+        //Debug.Log()
+        //if(!tutorial)
+        //level += 1;
+        //else
+        //if(PlayerPrefs.GetInt("SeenTutorial",0) == 0)
+        //	PlayerPrefs.SetInt("SeenTutorial",1);
+        PlayerPrefs.SetString("scene", "Scene" + level);
+        loadNextScene("LevelSelection");
+        //SceneManager.LoadScene ("LevelSelection");
+    }
 
     public void exitGame()
     {
@@ -945,9 +1009,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			}
 			else{
 				PlayerPrefs.SetString ("scene", "Scene" + level);
-				SceneManager.LoadScene ("InGame");
-			}
-		}
+                loadNextScene("InGame");
+                //SceneManager.LoadScene ("InGame");
+            }
+        }
 	}
 	
 	// Update is called once per frame
@@ -957,9 +1022,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
             //Appodeal.hide(Appodeal.BANNER_BOTTOM);
             if (appodealDemo != null)
                 appodealDemo.hideBanner();
-            SceneManager.LoadScene ("LevelSelection");
-		}
-		if (finishedSign.activeSelf) {
+            loadNextScene("LevelSelection");
+            //SceneManager.LoadScene ("LevelSelection");
+        }
+        if (finishedSign.activeSelf) {
 			return;
 		}
 		/*if (secondsAvailable - Time.timeSinceLevelLoad <= 0) {
@@ -982,12 +1048,12 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				//Debug.Log("counting");
 				
 				//int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) / 60);
-				int seconds = (int)((15 - Time.timeSinceLevelLoad + pauseTime + extraSeconds));
+				int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds));
 				//Debug.Log(seconds);
 				//int dec = (int)(((1 - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((1 - Time.timeSinceLevelLoad) % 60) * 10));
 				if(!finished && seconds >= 0) clockShow.text = (seconds < 10 ? "0" : "") + seconds;
 
-				if(!finished && 15 + extraSeconds - (Time.timeSinceLevelLoad - pauseTime) <= 0)
+				if(!finished && 60 + extraSeconds - (Time.timeSinceLevelLoad - pauseTime) <= 0)
 					finishGame();
 			}
 		}
@@ -1164,7 +1230,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		PlayerPrefs.SetInt("triesLeft",Mathf.Clamp(PlayerPrefs.GetInt("triesLeft") - 1,0,int.MaxValue));
 		if(triesLabel != null) triesLabel.text = PlayerPrefs.GetInt("triesLeft",0).ToString();
         print(LevelSelection.LevelSkillTotal() + totalPercentage / 2f);
-        PlayerPrefs.SetInt("dailyScore", (int)(Mathf.Round((LevelSelection.LevelSkillTotal() + totalPercentage / 2f) * 100f)));
+        print(PlayerPrefs.GetInt("todayRecord") + " < " + (int)(result * 100f));
+        newRecordSign.SetActive(PlayerPrefs.GetInt("todayRecord") < (int)(result * 100f));
+        PlayerPrefs.SetInt("dailyScore", (int)(result *  100f));
         StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + totalPercentage/2f));
 	}
 
@@ -1226,12 +1294,14 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		int tries = PlayerPrefs.GetInt("triesLeft",0);
 		if(tries > 0){
 			Debug.Log("again");
-            SceneManager.LoadScene("LevelSelection");
+            loadNextScene("LevelSelection");
+            //SceneManager.LoadScene("LevelSelection");
             PlayerPrefs.SetInt("lvlSelectDaily", 1);
         }
 		else
         {
-            SceneManager.LoadScene("LevelSelection");
+            loadNextScene("LevelSelection");
+            //SceneManager.LoadScene("LevelSelection");
             PlayerPrefs.SetInt("lvlSelectDaily", 2);
             /*
 #if !UNITY_EDITOR

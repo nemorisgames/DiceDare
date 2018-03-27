@@ -69,8 +69,8 @@ public class AppodealDemo : MonoBehaviour, IInterstitialAdListener, IBannerAdLis
 
 
 	public void hideBanner() {
-		//Appodeal.hide (Appodeal.BANNER);
-		Appodeal.hideBannerView ();
+		Appodeal.hide (Appodeal.BANNER);
+		//Appodeal.hideBannerView ();
 	}
 
 
@@ -108,7 +108,8 @@ public class AppodealDemo : MonoBehaviour, IInterstitialAdListener, IBannerAdLis
 	public void onRewardedVideoClosed() { Debug.Log("Rewarded Video closed"); }
 	public void onRewardedVideoFinished(int amount, string name) {
         Debug.Log("Rewarded Video Reward: " + amount + " " + name);
-        if(callback != null) callback.SendMessage("HandleShowResult", 2);
+        //Es importante que no se ejecute instantaneo o hará que el juego se reinicie usar waitforendofframe
+        if (callback != null) callback.SendMessage("HandleShowResult", 2);
     }
 	#endregion
 

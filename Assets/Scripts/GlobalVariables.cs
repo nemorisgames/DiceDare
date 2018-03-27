@@ -16,7 +16,7 @@ public static class GlobalVariables {
 	//6: division
 	//7: CW
 	//8: CCW
-	//9: muerte
+	//9: muerte //no es necesario usarlo
 
 	//10X: camino con un numero especifico (X)
 
@@ -53,7 +53,7 @@ public static class GlobalVariables {
 	//1?
 	
 	//filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4     
-	public static string Scene1 = "5|5|3|1|1$   9|   9|   9|   9|   9|" +
+	/*public static string Scene1 = "5|5|3|1|1$   9|   9|   9|   9|   9|" +
 											"   9|   1|   1|  -1|   9|" +
 											"   9|   1|   1|   1|   9|" +
 											"   9|  -2|   1|   1|   9|" +
@@ -66,13 +66,18 @@ public static class GlobalVariables {
 												"   0|   0|   5|   6|   0|" +
 												"   0|   0|   0|   0|   0|";
 
-	public static string Scene1Path = "1,2|2,2|3,2";
-	
+	public static string Scene1Path = "1,2|2,2|3,2";*/
 
-	//2
+    public static string Scene1 = "4|3|1|-1|0$ 1 | 1 | 1 | 1 | -1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |";
 
-	//filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4    5    6  
-	public static string Scene2 = "6|7|5|1|0$	1|   1|   1|   1|   1|   1|   1|" +
+    //dadoUp/dadoLeft/dadoForward				  //0    1    2    3    4    5    6
+    public static string Scene1Numbers = "1|1|1$ 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 3 | 0 |";
+
+    public static string Scene1Path = "0,0|1,0";
+    //2
+
+    //filas|columnas|posxini|posyini|imgtut	  //0    1    2    3    4    5    6  
+    public static string Scene2 = "6|7|5|1|0$	1|   1|   1|   1|   1|   1|   1|" +
 											"   1|   2|   2|   2|   2|  -1|   1|" +
 											"   1|   2|   1|   1|   1|   1|   1|" +
 											"   1|   2|   1|   0|   0|   0|   0|" +

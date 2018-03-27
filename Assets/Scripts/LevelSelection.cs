@@ -65,8 +65,9 @@ public class LevelSelection : MonoBehaviour
                 print(texto);
                 num = texto.Split(new char[1] { 'e' })[2];
             }
-			int level = (int.Parse (num) - 1);
-			panel.transform.localPosition = new Vector3 (-400 * level, panel.transform.position.y, panel.transform.position.z);
+			int level = Mathf.Clamp((int.Parse (num)), 1, 1000);
+            print("levellll " + level);
+            panel.transform.localPosition = new Vector3 (-400 * level, panel.transform.position.y, panel.transform.position.z);
 			panel.clipOffset = new Vector2 (400 * level, panel.clipOffset.y);
 		}
 
@@ -161,6 +162,8 @@ public class LevelSelection : MonoBehaviour
         PlayerPrefs.SetFloat("totalDaily", PlayerPrefs.GetFloat("totalDaily") + penalization);
         /////////////////////////////////////////////
 
+        appodealDemo.Init();
+        showBanner();
         if (PlayerPrefs.GetInt("lvlSelectDaily",0) == 1){
             dailyPanel.GetComponent<TweenAlpha>().PlayForward();
             GetConsecutiveDays();
@@ -192,11 +195,26 @@ public class LevelSelection : MonoBehaviour
         }*/
         GameObject bgm = GameObject.Find("BGM");
         if (bgm != null) Destroy(bgm);
-        showBanner();
-		StartCoroutine(showSwipe());
+        StartCoroutine(showSwipe());
     }
 
-	IEnumerator showSwipe(){
+
+    /*public void test1()
+    {
+
+        print("test1");
+        //if (GameObject.Find("AppoDeal") != null)
+        showBanner();
+        //GameObject.Find("AppoDeal").GetComponent<AppodealDemo>().showBanner(0);
+    }
+
+    public void test2()
+    {
+        print("test2");
+        GameObject.Find("AppoDeal").GetComponent<AppodealDemo>().showRewardedVideo(null);
+    }*/
+
+    IEnumerator showSwipe(){
 		yield return new WaitForSeconds(5f);
 		if(!dragged)
 			EnableSwipe();
@@ -222,10 +240,10 @@ public class LevelSelection : MonoBehaviour
 		switch (result)
 		{
 		case ShowResult.Finished:
-			    tries += 2;
-				triesNumber.text = tries.ToString();
-			    PlayerPrefs.SetInt ("triesLeft", tries);
-			    closeRewardScreen ();
+                tries += 2;
+                //Es importante que no se ejecute instantaneo o hará que el juego se reinicie usar waitforendofframe
+                StartCoroutine(rewardFromVideo(tries));
+                Debug.Log("Rewarded video finished");
                 mensaje += "Ad succesful";
                 break;
 		case ShowResult.Skipped:
@@ -247,10 +265,30 @@ public class LevelSelection : MonoBehaviour
             appodealDemo.showBanner(Appodeal.BANNER_TOP);
     }
 
-	public void closeRewardScreen(){
+    public void hideBanner()
+    {
+        if (appodealDemo != null)
+            appodealDemo.hideBanner();
+    }
+
+    public void closeRewardScreen(){
 		rewardsPanel.PlayReverse();
         calendarPanel.PlayForward();
         GetConsecutiveDays();
+    }
+
+    void loadNextScene(string s)
+    {
+        VariablesGlobales.nextScene = s;
+        GameObject.FindWithTag("loading").GetComponent<LoadSceneWait>().enabled = true;
+    }
+
+    IEnumerator rewardFromVideo(int t)
+    {
+        yield return new WaitForEndOfFrame();
+        triesNumber.text = "" + t;
+        PlayerPrefs.SetInt("triesLeft", t);
+        closeRewardScreen();
     }
 
     void InitMedals(){
@@ -283,7 +321,8 @@ public class LevelSelection : MonoBehaviour
 			PlayerPrefs.SetInt("tutorialMode",1);
             if (loading != null)
                 loading.SetActive(true);
-            SceneManager.LoadScene("InGame_tutorial");
+            loadNextScene("InGame_tutorial");
+            //SceneManager.LoadScene("InGame_tutorial");
         }
         else { 
             string num = texto.Split(new char[1] { 'L' })[2];
@@ -295,9 +334,10 @@ public class LevelSelection : MonoBehaviour
                 loading.SetActive(true);
 			if(int.Parse(num) % 5 == 1)
 				CheckTutorial(int.Parse(num));
-            SceneManager.LoadScene("InGame");
+            loadNextScene("InGame");
+            //SceneManager.LoadScene("InGame");
         }
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -308,18 +348,20 @@ public class LevelSelection : MonoBehaviour
 		if (Input.GetKeyDown (KeyCode.P)) {
 			PlayerPrefs.DeleteAll ();
 			Debug.Log ("delet this");
-			SceneManager.LoadScene ("LevelSelection");
-		}
+            loadNextScene("LevelSelection");
+            //SceneManager.LoadScene ("LevelSelection");
+        }
 
-		if (Input.GetKeyDown (KeyCode.U)) {
+        if (Input.GetKeyDown (KeyCode.U)) {
 			for (int i = 0; i < recordButtons.Length; i++) {
 				PlayerPrefs.SetInt ("unlockedScene" + (i+1), 1);
 			}
-			SceneManager.LoadScene ("LevelSelection");
-		}
-		//Debug.Log(dragged);
+            loadNextScene("LevelSelection");
+            //SceneManager.LoadScene ("LevelSelection");
+        }
+        //Debug.Log(dragged);
 
-		if(dragLevels.isDragging)
+        if (dragLevels.isDragging)
 			dragged = true;
 
 		if(dragLevels.isDragging && swipeIcon.gameObject.activeSelf){
@@ -333,15 +375,17 @@ public class LevelSelection : MonoBehaviour
 		PlayerPrefs.SetInt ("Mute", 1);
 		muteButton.spriteName = "mute2";
 		muteButton.GetComponent<UIButton> ().normalSprite = "mute2";
-		Camera.main.GetComponent<AudioSource> ().mute = true;
+        //Camera.main.GetComponent<AudioSource> ().mute = true;
+        AudioListener.volume = 0f;
 	}
 
 	void UnMute(){
 		PlayerPrefs.SetInt ("Mute", 0);
 		muteButton.spriteName = "mute";
 		muteButton.GetComponent<UIButton> ().normalSprite = "mute";
-		Camera.main.GetComponent<AudioSource> ().mute = false;
-	}
+		//Camera.main.GetComponent<AudioSource> ().mute = false;
+        AudioListener.volume = 1f;
+    }
 
 	public void MuteButton(){
 		if (PlayerPrefs.GetInt ("Mute") == 0)
@@ -374,10 +418,11 @@ public class LevelSelection : MonoBehaviour
 	}
 
 	public void LaunchDaily(){
-		SceneManager.LoadScene("InGame_daily");
-	}
+        loadNextScene("InGame_daily");
+        //SceneManager.LoadScene("InGame_daily");
+    }
 
-	public void GetConsecutiveDays(){
+    public void GetConsecutiveDays(){
         ToggleCanPlay(true);
         ///codigo nuevo
         ///
@@ -485,9 +530,9 @@ public class LevelSelection : MonoBehaviour
 	}
 
 	public static void CheckTutorial(int level){
-        if (PlayerPrefs.GetInt("tutorialMode", 0) == Mathf.RoundToInt(level / 5) + 1) return;
+        if (PlayerPrefs.GetInt("tutorialMode", 0) == Mathf.RoundToInt(level / 5) + 1 || level == 1) return;
 		PlayerPrefs.SetInt("tutorialMode",Mathf.RoundToInt(level/5) + 1);
-		SceneManager.LoadScene("InGame_tutorial");
-	}
-	
+        SceneManager.LoadScene("InGame_tutorial");
+    }
+
 }

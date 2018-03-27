@@ -42,13 +42,21 @@ public class Calendar : MonoBehaviour {
             day = aux;
         }
 
+
         //print("days " + daysPassedSinceBegin);
         updateButtons();
+        int beforeSaving = PlayerPrefs.GetInt("dailyScore");
         if (PlayerPrefs.HasKey("dailyScore"))
         {
             saveScore(PlayerPrefs.GetInt("dailyScore"));
             PlayerPrefs.DeleteKey("dailyScore");
         }
+        print(beforeSaving + " , " + PlayerPrefs.GetInt("todayRecord", 0));
+        int i2 = Mathf.Max(beforeSaving, PlayerPrefs.GetInt("todayRecord", 0));
+        PlayerPrefs.SetInt("todayRecord", i2);
+        print("days " + (System.DateTime.Parse(System.DateTime.Now.ToShortDateString()) - System.DateTime.Parse(PlayerPrefs.GetString("calendarLastPlay"))).Days);
+        if ((System.DateTime.Parse(System.DateTime.Now.ToShortDateString()) - System.DateTime.Parse(PlayerPrefs.GetString("calendarLastPlay"))).Days > 0)
+            PlayerPrefs.DeleteKey("todayRecord");
     }
 
     void updateButtons()
@@ -67,15 +75,21 @@ public class Calendar : MonoBehaviour {
     void saveScore(int score)
     {
         string scores = "";
-        
+
         //condicion para que el puntaje no se reescriba
         //if(day[Mathf.Clamp(daysPassedSinceBegin, 0, 29)] == "")
         //condicion para poner el mejor puntaje
-        if(day[Mathf.Clamp(daysPassedSinceBegin, 0, 29)] == null || day[Mathf.Clamp(daysPassedSinceBegin, 0, 29)] == "")
+        if (day[Mathf.Clamp(daysPassedSinceBegin, 0, 29)] == null || day[Mathf.Clamp(daysPassedSinceBegin, 0, 29)] == "")
+        {
             day[Mathf.Clamp(daysPassedSinceBegin, 0, 29)] = "" + score;
+        }
         else
-            if(int.Parse(day[Mathf.Clamp(daysPassedSinceBegin, 0, 29)]) < score)
+        {
+            if (int.Parse(day[Mathf.Clamp(daysPassedSinceBegin, 0, 29)]) < score)
+            {
                 day[Mathf.Clamp(daysPassedSinceBegin, 0, 29)] = "" + score;
+            }
+        }
         for (int i = 1; i <= 30; i++)
         {
             scores += day[i - 1] + "|";
