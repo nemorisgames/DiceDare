@@ -17,19 +17,29 @@ public class LevelCreator : MonoBehaviour
     ArrayList board = new ArrayList();
 
     public DiceCreator dice;
+
+    public UIInput[] importMatrix;
+
+    Transform cells;
+    public UIInput diceLeft;
+    public UIInput diceUp;
+    public UIInput diceRight;
     // Use this for initialization
     void Start()
     {
         //PlayerPrefs.DeleteAll();
+
+        cells = GameObject.Find("Cells").transform;
         Scene = PlayerPrefs.GetString("SceneTest");
         SceneNumbers = PlayerPrefs.GetString("SceneNumbersTest");
         ScenePath = PlayerPrefs.GetString("ScenePathTest");
-        
+        resetDice("1", "1", "1");
+
         if (Scene != "")
         {
-            //print(Scene);
-            //print(SceneNumbers);
-            //print(ScenePath);
+            print(Scene);
+            print(SceneNumbers);
+            print(ScenePath);
             //Se crea el board
             string[] aux = Scene.Split(new char[1] { '$' });
             string[] info = aux[0].Split(new char[1] { '|' });
@@ -40,7 +50,6 @@ public class LevelCreator : MonoBehaviour
             composeBoard();
         }
 
-        resetDice();
         //dice.write(2, 3, 4);
     }
 
@@ -59,6 +68,26 @@ public class LevelCreator : MonoBehaviour
         boardSizeLabel.text = "Board: H" + boardSize.x + " , " + "V" + boardSize.y;
     }
 
+    public void import()
+    {
+        if(importMatrix.Length == 3 && importMatrix[0].value.Length > 0 && importMatrix[1].value.Length > 0 && importMatrix[2].value.Length > 0)
+        {
+            string[] pathAux1 = importMatrix[2].value.Replace('"', ' ').Replace('+', ' ').Split(new char[1] { '|' });
+            importMatrix[2].value = "";
+            for(int i = 0; i < pathAux1.Length; i++)
+            {
+                string[] pathAux2 = pathAux1[i].Split(new char[1] { ',' });
+                importMatrix[2].value += pathAux2[1] + "," + pathAux2[0] + "|";
+            }
+            importMatrix[2].value = importMatrix[2].value.Substring(0, importMatrix[2].value.Length - 1);
+            PlayerPrefs.SetString("SceneTest", importMatrix[0].value.Replace('"', ' ').Replace('+', ' '));
+            PlayerPrefs.SetString("SceneNumbersTest", importMatrix[1].value.Replace('"', ' ').Replace('+', ' '));
+            PlayerPrefs.SetString("ScenePathTest", importMatrix[2].value);
+
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
+
     public void createBoard()
     {
         for (int i = 0; i < board.Count; i++)
@@ -71,6 +100,7 @@ public class LevelCreator : MonoBehaviour
             for (int j = 0; j < boardSize.x; j++)
             {
                 GameObject g = (GameObject)Instantiate(cellConfig, new Vector3(j, -0.1f, -i), Quaternion.identity);
+                g.transform.parent = cells;
                 CellLevelCreator c = g.GetComponent<CellLevelCreator>();
                 /*if(j - beginCell.x == 0 && -i + beginCell.y == 0)
                 {
@@ -79,7 +109,7 @@ public class LevelCreator : MonoBehaviour
                 board.Add(g);
             }
         }
-        resetDice();
+        resetDice(diceLeft.value, diceUp.value, diceRight.value);
     }
 
     public void composeBoard()
@@ -96,6 +126,7 @@ public class LevelCreator : MonoBehaviour
                 RaycastHit hit;
                 if (Physics.Raycast(new Vector3(j, 0.5f, -i), -Vector3.up, out hit, 100.0f))
                 {
+                    //print(int.Parse(SceneAux[contador]));
                     //completa los tipos de celdas
                     hit.transform.GetComponent<CellLevelCreator>().cellType = int.Parse(SceneAux[contador]);
 
@@ -108,6 +139,11 @@ public class LevelCreator : MonoBehaviour
                 }
             }
         }
+        string[] diceNumbers = SceneNumbers.Split(new char[1] { '$' })[0].Split(new char[1] { '|' });
+        diceLeft.value = diceNumbers[1];
+        diceUp.value = diceNumbers[0];
+        diceRight.value = diceNumbers[2];
+        resetDice(diceNumbers[1], diceNumbers[0], diceNumbers[2]);
     }
 
     int getPathNumber(string[] vector, int hor, int ver)
@@ -127,7 +163,7 @@ public class LevelCreator : MonoBehaviour
     public void export()
     {
         Scene = boardSize.y + "|" + boardSize.x;
-        SceneNumbers = "1|1|1$";
+        SceneNumbers = diceUp.value + "|" + diceLeft.value + "|" + diceRight.value + "$";
         ScenePath = "";
         string SceneAux = "";
         string[] ScenePathAux = getScenePathVector();
@@ -192,7 +228,12 @@ public class LevelCreator : MonoBehaviour
         SceneManager.LoadScene("InGameTest");
     }
 
-    public void resetDice()
+    public void turnCells(bool CW)
+    {
+        cells.RotateAround(dice.referenceDice.transform.position, Vector3.up, (CW ? 90f : -90f));
+    }
+
+    public void resetDice(string left, string up, string right)
     {
         for(int i = 0; i < board.Count; i++)
         {
@@ -201,11 +242,13 @@ public class LevelCreator : MonoBehaviour
                 dice.setReferenceDice(((GameObject)board[i]).transform.position.x, ((GameObject)board[i]).transform.position.z);
             }
         }
+        dice.setFaces(int.Parse(left), int.Parse(up), int.Parse(right));
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        //if(Input.GetKeyUp(KeyCode.X))
+        //    cells.RotateAround(dice.referenceDice.transform.position, Vector3.up, (true ? 90f : -90f));
     }
 }

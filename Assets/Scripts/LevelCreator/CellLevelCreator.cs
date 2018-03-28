@@ -24,7 +24,7 @@ public class CellLevelCreator : MonoBehaviour {
         if (Input.GetKey(KeyCode.Alpha1))
         {
             cellType++;
-            if (cellType > 8) cellType = -2;
+            if (cellType > 9) cellType = -2;
             updateType();
         }
 
@@ -72,18 +72,49 @@ public class CellLevelCreator : MonoBehaviour {
         }*/
     }
 
+    public void visit(bool v)
+    {
+        visited = v;
+        if (v)
+        {
+            StartCoroutine(shine(100));
+        }
+    }
+
     void updateType()
     {
-        for(int i = 0; i < types.Length; i++)
+        for (int i = 0; i < types.Length; i++)
         {
-            types[i].SetActive(i - 2 == cellType);
+            if (types[i] != null)
+                types[i].SetActive(i - 2 == cellType);
         }
         numberLabel.text = "" + cellNumber;
         pathLabel.text = "" + pathNumber;
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    public IEnumerator shine(int num)
+    {
+        print("shine");
+        Material m = transform.Find("Shine").GetComponent<Renderer>().material;
+        Color32 colorDefault = m.GetColor("_EmissionColor");
+        for (int j = 0; j < num; j++)
+        {
+            for (int i = 0; i < 15; i++)
+            {
+                yield return new WaitForSeconds(0.01f);
+                m.SetColor("_EmissionColor", Color.yellow * i * 0.01f);
+            }
+            for (int i = 15; i > 0; i--)
+            {
+                yield return new WaitForSeconds(0.01f);
+                m.SetColor("_EmissionColor", Color.yellow * i * 0.01f);
+            }
+        }
+        m.SetColor("_EmissionColor", colorDefault);
+    }
+
+    // Update is called once per frame
+    void Update () {
 		
 	}
 }
