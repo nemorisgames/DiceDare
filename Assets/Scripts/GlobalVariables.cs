@@ -5,6 +5,7 @@ using UnityEngine;
 public static class GlobalVariables {
 
 	public static int nLevels = 21;
+    public static bool finishOrderingProcess = false;
     public static string[] Scene = new string[nLevels];
     public static string[] SceneNumbers = new string[nLevels];
     public static string[] ScenePath = new string[nLevels];
@@ -140,21 +141,87 @@ public static class GlobalVariables {
         Scene[20] = "7|7|5|1|0$   0|   9|   9|   9|   9|   9|   0|   9|   1|   1|   1|   5|  -1|   9|   9|   1|   1|   1|   1|   5|   9|     9|   3|   1|   6|   1|   1|   9|  9|   1|   1|   1|   1|   1|   9|   9|  -2|   1|   3|   1|   1|   9|   0|   9|   9|   9|   9|   9|   0|";
         SceneNumbers[20] = "4|4|2$    0|   0|   0|   0|   0|   0|   0|    0| 256|  32| 128|   8|   0|   0|   0|  16|   8|  64|  16|   8|   0|   0|   4|  32| 512|   2|  64|   0| 0|  12|   8|   8|   6|  32|   0|   0|   0|  32|   8|   4| 256|   0|  0|   0|   0|   0|   0|   0|   0|";
         ScenePath[20] = "1,4|2,4|2,3|3,3|4,3|3,4|3,2|2,2|3,1|4,1";
+        
     }
-	//Tutoriales
-	public static string Scene91 = "4|5|3|1|1$    9|   9|   9|   9|   9|  9|   9|   1|  -1|   9|   9|  -2|   1|   9|   9|  9|   9|   9|   9|   9|";
-	public static string Scene91Numbers = "1|1|1$    0|   0|   0|   0|   0|    0|   0|   2|   2|   0|  0|   0|   3|   3|   0|    0|   0|   0|   0|   0|";
-	public static string Scene91Path = "1,3|1,2|2,1|3,1";
-	
-	public static string Scene92 = "4|5|3|1|1$   9|   9|   9|   9|   9|    9|   9|   4|  -1|   9|   9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
-	public static string Scene92Numbers = "1|1|1$   0|   0|   0|   0|   0|   0|   0|   2|   2|   0|    0|   0|   1|   3|   0|  0|   0|   0|   0|   0|";
+
+    //Tutoriales
+    public static string Scene91 = "4|5|3|1|1$    9|   9|   9|   9|   9|  9|   9|   1|  -1|   9|   9|  -2|   1|   9|   9|  9|   9|   9|   9|   9|";
+    public static string Scene91Numbers = "1|1|1$    0|   0|   0|   0|   0|    0|   0|   2|   2|   0|  0|   0|   3|   3|   0|    0|   0|   0|   0|   0|";
+    public static string Scene91Path = "1,3|1,2|2,1|3,1";
+
+    public static string Scene92 = "4|5|3|1|1$   9|   9|   9|   9|   9|    9|   9|   4|  -1|   9|   9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
+    public static string Scene92Numbers = "1|1|1$   0|   0|   0|   0|   0|   0|   0|   2|   2|   0|    0|   0|   1|   3|   0|  0|   0|   0|   0|   0|";
     public static string Scene92Path = "1,3|1,2|2,1|3,1";
 
-	public static string Scene93 = "4|5|3|1|1$   9|   9|   9|   9|   9|   9|   9|   5|  -1|   9|    9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
-	public static string Scene93Numbers = "2|2|2$   0|   0|   0|   0|   0|   0|   0|   4|   2|   0|  0|   0|   8|   3|   0|   0|   0|   0|   0|   0|";
+    public static string Scene93 = "4|5|3|1|1$   9|   9|   9|   9|   9|   9|   9|   5|  -1|   9|    9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
+    public static string Scene93Numbers = "2|2|2$   0|   0|   0|   0|   0|   0|   0|   4|   2|   0|  0|   0|   8|   3|   0|   0|   0|   0|   0|   0|";
     public static string Scene93Path = "1,3|1,2|2,1|3,1";
 
-	public static string Scene94 = "4|5|3|1|1$   9|   9|   9|   9|   9|   9|   9|   6|  -1|   9|  9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
-	public static string Scene94Numbers = "5|5|5$   0|   0|   0|   0|   0|  0|   0|  10|   2|   0|   0|   0|   2|   3|   0|  0|   0|   0|   0|   0|";
+    public static string Scene94 = "4|5|3|1|1$   9|   9|   9|   9|   9|   9|   9|   6|  -1|   9|  9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
+    public static string Scene94Numbers = "5|5|5$   0|   0|   0|   0|   0|  0|   0|  10|   2|   0|   0|   0|   2|   3|   0|  0|   0|   0|   0|   0|";
     public static string Scene94Path = "1,3|1,2|2,1|3,1";
+
+    public static void orderScenes()
+    {
+        float[] sceneDifficulty = new float[nLevels];
+        for(int i = 0; i < nLevels; i++)
+        {
+            int boardSize = 0;
+            int operationsSum = 1;
+            int operationsSub = 0;
+            int operationsMul = 0;
+            int operationsDiv = 0;
+            string[] boardCells = Scene[i].Split(new char[1] { '$' })[1].Split(new char[1] { '|' });
+            for(int j = 0; j < boardCells.Length - 1; j++)
+            {
+                if(int.Parse(boardCells[j]) != 9 && int.Parse(boardCells[j]) != 0)
+                {
+                    boardSize++;
+                    if (int.Parse(boardCells[j]) == 3) operationsSum++;
+                    if (int.Parse(boardCells[j]) == 4) operationsSub++;
+                    if (int.Parse(boardCells[j]) == 5) operationsMul++;
+                    if (int.Parse(boardCells[j]) == 6) operationsDiv++;
+                }
+            }
+            int totalOperations = operationsSum + operationsSub + operationsMul + operationsDiv;
+            int pathSize = ScenePath[i].Split(new char[1] { '|' }).Length;
+
+            sceneDifficulty[i] += operationsSum * 100f + operationsSub * 150f + operationsMul * 300f + operationsDiv * 500f;
+            sceneDifficulty[i] += totalOperations * 500f;
+
+            sceneDifficulty[i] += pathSize * 50f;
+            
+            sceneDifficulty[i] += boardSize * 10f;
+        }
+
+        bool ordering = true;
+        int iteration = 0;
+        while (ordering)
+        {
+            ordering = false;
+            for(int i = 0; i < sceneDifficulty.Length - 1 - iteration; i++)
+            {
+                if(sceneDifficulty[i] > sceneDifficulty[i + 1])
+                {
+                    float aux = sceneDifficulty[i + 1];
+                    sceneDifficulty[i + 1] = sceneDifficulty[i];
+                    sceneDifficulty[i] = aux;
+
+                    string auxScene = Scene[i + 1];
+                    Scene[i + 1] = Scene[i];
+                    Scene[i] = auxScene;
+                    string auxNumbers = SceneNumbers[i + 1];
+                    SceneNumbers[i + 1] = SceneNumbers[i];
+                    SceneNumbers[i] = auxNumbers;
+                    string auxPath = ScenePath[i + 1];
+                    ScenePath[i + 1] = ScenePath[i];
+                    ScenePath[i] = auxPath;
+
+                    ordering = true;
+                }
+            }
+            iteration++;
+        }
+        finishOrderingProcess = true;
+    }
 }
