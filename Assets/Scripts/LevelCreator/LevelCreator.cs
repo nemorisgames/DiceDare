@@ -25,6 +25,8 @@ public class LevelCreator : MonoBehaviour
     public UIInput diceUp;
     public UIInput diceRight;
 
+    Vector3 diceBeginValues = Vector3.one;
+
     // Use this for initialization
     void Start()
     {
@@ -154,7 +156,7 @@ public class LevelCreator : MonoBehaviour
                     hit.transform.GetComponent<CellLevelCreator>().cellNumber = int.Parse(SceneNumbersAux[contador]);
 
                     //completa el path
-                    hit.transform.GetComponent<CellLevelCreator>().pathNumber = getPathNumber(ScenePathAux, j, i);
+                    hit.transform.GetComponent<CellLevelCreator>().pathNumber = getPathNumber(ScenePathAux, i, j);
                     contador++;
                 }
             }
@@ -182,8 +184,10 @@ public class LevelCreator : MonoBehaviour
 
     public void export()
     {
+        cells.rotation = Quaternion.identity;
+        cells.position = Vector3.zero;
         Scene = boardSize.y + "|" + boardSize.x;
-        SceneNumbers = diceUp.value + "|" + diceLeft.value + "|" + diceRight.value + "$";
+        SceneNumbers = (int)diceBeginValues.y + "|" + (int)diceBeginValues.x + "|" + (int)diceBeginValues.z + "$";
         ScenePath = "";
         string SceneAux = "";
         string[] ScenePathAux = getScenePathVector();
@@ -203,7 +207,7 @@ public class LevelCreator : MonoBehaviour
                     SceneNumbers += " " + hit.transform.GetComponent<CellLevelCreator>().cellNumber + " |";
                     //completa el path
                     if (hit.transform.GetComponent<CellLevelCreator>().pathNumber != -1)
-                        ScenePathAux[hit.transform.GetComponent<CellLevelCreator>().pathNumber - 1] = j + "," + i;
+                        ScenePathAux[hit.transform.GetComponent<CellLevelCreator>().pathNumber - 1] = i + "," + j;
                 }
             }
         }
@@ -263,6 +267,7 @@ public class LevelCreator : MonoBehaviour
             }
         }
         dice.setFaces(int.Parse(left), int.Parse(up), int.Parse(right));
+        diceBeginValues = new Vector3(int.Parse(left), int.Parse(up), int.Parse(right));
     }
 
     // Update is called once per frame
