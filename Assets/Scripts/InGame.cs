@@ -101,6 +101,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     public GameObject newRecordSign;
     public UILabel stageTime;
 
+	string playerprefScene;
+
     // Use this for initialization
     void Start () {
         if (!GlobalVariables.finishOrderingProcess)
