@@ -24,9 +24,12 @@ public class LevelCreator : MonoBehaviour
     public UIInput diceLeft;
     public UIInput diceUp;
     public UIInput diceRight;
+<<<<<<< HEAD
 
     Vector3 diceBeginValues = Vector3.one;
 
+=======
+>>>>>>> parent of db7e1f1... algoritmo de ordenamiento de niveles
     // Use this for initialization
     void Start()
     {
@@ -71,26 +74,7 @@ public class LevelCreator : MonoBehaviour
         boardSizeLabel.text = "Board: H" + boardSize.x + " , " + "V" + boardSize.y;
     }
 
-    public void importScene(string number)
-    {
-        if (!GlobalVariables.finishOrderingProcess) { 
-            GlobalVariables.SetScenes();
-            GlobalVariables.orderScenes();
-        }
-        PlayerPrefs.SetString("SceneTest", GlobalVariables.Scene[int.Parse(number) - 1]);
-        PlayerPrefs.SetString("SceneNumbersTest", GlobalVariables.SceneNumbers[int.Parse(number) - 1]);
-        PlayerPrefs.SetString("ScenePathTest", GlobalVariables.ScenePath[int.Parse(number) - 1]);
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void import(string data)
-    {
-        if (data == "") importFromInput();
-        else importScene(data);
-    }
-
-    public void importFromInput()
+    public void import()
     {
         if(importMatrix.Length == 3 && importMatrix[0].value.Length > 0 && importMatrix[1].value.Length > 0 && importMatrix[2].value.Length > 0)
         {

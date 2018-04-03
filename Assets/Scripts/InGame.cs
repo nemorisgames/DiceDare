@@ -105,11 +105,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
     // Use this for initialization
     void Start () {
-        if (!GlobalVariables.finishOrderingProcess)
-        {
-            GlobalVariables.SetScenes();
-            GlobalVariables.orderScenes();
-        }
+
+        GlobalVariables.SetScenes();
         GameObject g = GameObject.Find("AppoDeal");
         if(g != null)
             appodealDemo = g.GetComponent<AppodealDemo>();

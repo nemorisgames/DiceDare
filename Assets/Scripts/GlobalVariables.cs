@@ -4,8 +4,12 @@ using UnityEngine;
 
 public static class GlobalVariables {
 
+<<<<<<< HEAD
 	public static int nLevels = 28;
     public static bool finishOrderingProcess = false;
+=======
+	public static int nLevels = 21;
+>>>>>>> parent of db7e1f1... algoritmo de ordenamiento de niveles
     public static string[] Scene = new string[nLevels];
     public static string[] SceneNumbers = new string[nLevels];
     public static string[] ScenePath = new string[nLevels];
@@ -174,23 +178,23 @@ public static class GlobalVariables {
         SceneNumbers[20] = "4|4|2$    0|   0|   0|   0|   0|   0|   0|    0| 256|  32| 128|   8|   0|   0|   0|  16|   8|  64|  16|   8|   0|   0|   4|  32| 512|   2|  64|   0| 0|  12|   8|   8|   6|  32|   0|   0|   0|  32|   8|   4| 256|   0|  0|   0|   0|   0|   0|   0|   0|";
         ScenePath[20] = "1,4|2,4|2,3|3,3|4,3|3,4|3,2|2,2|3,1|4,1";
     }
-
-    //Tutoriales
-    public static string Scene91 = "4|5|3|1|1$    9|   9|   9|   9|   9|  9|   9|   1|  -1|   9|   9|  -2|   1|   9|   9|  9|   9|   9|   9|   9|";
-    public static string Scene91Numbers = "1|1|1$    0|   0|   0|   0|   0|    0|   0|   2|   2|   0|  0|   0|   3|   3|   0|    0|   0|   0|   0|   0|";
-    public static string Scene91Path = "1,3|1,2|2,1|3,1";
-
-    public static string Scene92 = "4|5|3|1|1$   9|   9|   9|   9|   9|    9|   9|   4|  -1|   9|   9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
-    public static string Scene92Numbers = "1|1|1$   0|   0|   0|   0|   0|   0|   0|   2|   2|   0|    0|   0|   1|   3|   0|  0|   0|   0|   0|   0|";
+	//Tutoriales
+	public static string Scene91 = "4|5|3|1|1$    9|   9|   9|   9|   9|  9|   9|   1|  -1|   9|   9|  -2|   1|   9|   9|  9|   9|   9|   9|   9|";
+	public static string Scene91Numbers = "1|1|1$    0|   0|   0|   0|   0|    0|   0|   2|   2|   0|  0|   0|   3|   3|   0|    0|   0|   0|   0|   0|";
+	public static string Scene91Path = "1,3|1,2|2,1|3,1";
+	
+	public static string Scene92 = "4|5|3|1|1$   9|   9|   9|   9|   9|    9|   9|   4|  -1|   9|   9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
+	public static string Scene92Numbers = "1|1|1$   0|   0|   0|   0|   0|   0|   0|   2|   2|   0|    0|   0|   1|   3|   0|  0|   0|   0|   0|   0|";
     public static string Scene92Path = "1,3|1,2|2,1|3,1";
 
-    public static string Scene93 = "4|5|3|1|1$   9|   9|   9|   9|   9|   9|   9|   5|  -1|   9|    9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
-    public static string Scene93Numbers = "2|2|2$   0|   0|   0|   0|   0|   0|   0|   4|   2|   0|  0|   0|   8|   3|   0|   0|   0|   0|   0|   0|";
+	public static string Scene93 = "4|5|3|1|1$   9|   9|   9|   9|   9|   9|   9|   5|  -1|   9|    9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
+	public static string Scene93Numbers = "2|2|2$   0|   0|   0|   0|   0|   0|   0|   4|   2|   0|  0|   0|   8|   3|   0|   0|   0|   0|   0|   0|";
     public static string Scene93Path = "1,3|1,2|2,1|3,1";
 
-    public static string Scene94 = "4|5|3|1|1$   9|   9|   9|   9|   9|   9|   9|   6|  -1|   9|  9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
-    public static string Scene94Numbers = "5|5|5$   0|   0|   0|   0|   0|  0|   0|  10|   2|   0|   0|   0|   2|   3|   0|  0|   0|   0|   0|   0|";
+	public static string Scene94 = "4|5|3|1|1$   9|   9|   9|   9|   9|   9|   9|   6|  -1|   9|  9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
+	public static string Scene94Numbers = "5|5|5$   0|   0|   0|   0|   0|  0|   0|  10|   2|   0|   0|   0|   2|   3|   0|  0|   0|   0|   0|   0|";
     public static string Scene94Path = "1,3|1,2|2,1|3,1";
+<<<<<<< HEAD
 
     public static string getSceneName(string name)
     {
@@ -287,4 +291,6 @@ public static class GlobalVariables {
         }
         finishOrderingProcess = true;
     }
+=======
+>>>>>>> parent of db7e1f1... algoritmo de ordenamiento de niveles
 }
