@@ -13,7 +13,13 @@ public class Title : MonoBehaviour {
     bool _isAuthenticated = false;
     string message = "";
     public GameObject dailyPanel;
-    void Start () {
+    void Start ()
+    {
+        if (!GlobalVariables.finishOrderingProcess)
+        {
+            GlobalVariables.SetScenes();
+            GlobalVariables.orderScenes();
+        }
 
         PlayerPrefs.SetInt("lvlSelectDaily",0);
         /*_isAvailable = NPBinding.GameServices.IsAvailable();
@@ -70,7 +76,8 @@ public class Title : MonoBehaviour {
         if (PlayerPrefs.GetInt ("PlayedGame", 0) == 0) {
             loading.SetActive(true);
             PlayerPrefs.SetInt ("PlayedGame", 1);
-			PlayerPrefs.SetString ("scene", "Scene" + 1);
+            if(!PlayerPrefs.HasKey("scene"))
+                PlayerPrefs.SetString ("scene", GlobalVariables.getIndexScene("1"));
             loadNextScene("InGame_tutorial");
             //SceneManager.LoadScene ("InGame_tutorial");
 			PlayerPrefs.SetInt("lvlSelectDaily",0);

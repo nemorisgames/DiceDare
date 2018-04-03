@@ -38,14 +38,36 @@ public class LevelSelection : MonoBehaviour
 
     AppodealDemo appodealDemo;
     // Use this for initialization
-    void Start () {
-        appodealDemo = GameObject.Find("AppoDeal").GetComponent<AppodealDemo>();
+    void Start ()
+    {
+        
+        //PlayerPrefs.DeleteAll();
+        /*
+        PlayerPrefs.SetString("scene", "Scene1");
+        PlayerPrefs.SetInt("unlockedScene5", 1);
+        PlayerPrefs.SetInt("unlockedScene3", 1);
+        PlayerPrefs.SetInt("unlockedScene1", 1);
+        PlayerPrefs.SetInt("unlockedScene4", 1);
+        PlayerPrefs.SetInt("unlockedScene6", 1);
+        PlayerPrefs.SetFloat("recordScene5", 10f);
+        PlayerPrefs.SetFloat("recordScene3", 11f);
+        PlayerPrefs.SetFloat("recordScene1", 12f);
+        PlayerPrefs.SetFloat("recordScene4", 14f);
+        */
+        if (!GlobalVariables.finishOrderingProcess)
+        {
+            GlobalVariables.SetScenes();
+            GlobalVariables.orderScenes();
+        }
+        
+        if(GameObject.Find("AppoDeal") != null)
+            appodealDemo = GameObject.Find("AppoDeal").GetComponent<AppodealDemo>();
 
         InitMedals();
 
         PlayerPrefs.SetInt ("continueBGM", 0);
-		if (PlayerPrefs.GetInt ("unlockedScene1") != 1) {
-			PlayerPrefs.SetInt ("unlockedScene1", 1);
+		if (PlayerPrefs.GetInt ("unlocked" + GlobalVariables.getIndexScene("1")) != 1) {
+			PlayerPrefs.SetInt ("unlocked" + GlobalVariables.getIndexScene("1"), 1);
 		}
 		//PlayerPrefs.DeleteAll ();
 
@@ -57,40 +79,49 @@ public class LevelSelection : MonoBehaviour
 			controlButton.GetComponent<UIButton> ().normalSprite = "tap";
 		}
 
-		if (PlayerPrefs.GetString ("scene") != "") {
+        //calcula la posicion del scroll
+        if (PlayerPrefs.GetString ("scene") != "") {
 			string texto = PlayerPrefs.GetString ("scene", "Scene1");
-            string num = "1";
+            int num = 1;
             if (texto != "InGame_tutorial")
             {
+                num = GlobalVariables.getSceneIndex(texto) + 1;//GlobalVariables.getSceneName(texto).Split(new char[1] { 'e' })[2];
                 print(texto);
-                num = texto.Split(new char[1] { 'e' })[2];
+                //num = texto.Split(new char[1] { 'e' })[2];
             }
-			int level = Mathf.Clamp((int.Parse (num)), 1, 1000);
+			int level = num;
             print("levellll " + level);
             panel.transform.localPosition = new Vector3 (-400 * level, panel.transform.position.y, panel.transform.position.z);
 			panel.clipOffset = new Vector2 (400 * level, panel.clipOffset.y);
 		}
 
 		PlayerPrefs.SetInt ("timesDied", 0);
-		for (int i = 0; i < recordButtons.Length; i++) {
-			if (PlayerPrefs.GetInt ("unlockedScene" + (i+1),0) != 1) {
-				recordButtons[i].isEnabled = false;
+        //activa o desactiva los botones
+        for (int i = 0; i < GlobalVariables.nLevels; i++)
+        {
+            int t = (GlobalVariables.getSceneIndex("Scene" + (i + 1)));
+            //print("boton" + t + " " + (recordSeconds > 0));
+            //if (PlayerPrefs.GetInt ("unlockedScene"+(GlobalVariables.getSceneIndex("Scene" + (i + 1))), 0) != 1) {
+            if (PlayerPrefs.GetInt("unlockedScene" + (i + 1), 0) != 1)
+            {
+                recordButtons[t].isEnabled = false;
+                print("locked " + t);
 			}
 		}
-		//	
-
-		for (int i = 0; i < recordButtons.Length; i++) {
-			float recordSeconds = PlayerPrefs.GetFloat ("recordScene" + (i + 1), -1f);
-			recordButtons[i].transform.Find("record").gameObject.SetActive(recordSeconds > 0);
+		
+        //escribe los tiempos en cada boton
+		for (int i = 0; i < GlobalVariables.nLevels; i++) {
+            int t =(GlobalVariables.getSceneIndex("Scene" + (i + 1))); 
+			//float recordSeconds = PlayerPrefs.GetFloat ("recordScene" + (GlobalVariables.getSceneIndex("Scene" + (i + 1))), -1f);
+            float recordSeconds = PlayerPrefs.GetFloat("recordScene" + (i + 1), -1f);
+            recordButtons[t].transform.Find("record").gameObject.SetActive(recordSeconds > 0);
 			if (recordSeconds > 0) {
 				int minutes = (int)((recordSeconds) / 60);
 				int seconds = (int)((recordSeconds) % 60);
 				int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
-				recordButtons[i].transform.Find("record").GetComponent<UILabel>().text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
+				recordButtons[t].transform.Find("record").GetComponent<UILabel>().text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 			}
 		}
-
-        //////////////////cortado desde getconsecutivedays()//////////////////
         int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays", 0);
         System.DateTime date = System.DateTime.Now.Date;
         //date = System.DateTime.Parse("12/28/2017 12:00:00 AM");
@@ -160,9 +191,8 @@ public class LevelSelection : MonoBehaviour
         }
 
         PlayerPrefs.SetFloat("totalDaily", PlayerPrefs.GetFloat("totalDaily") + penalization);
-        /////////////////////////////////////////////
-
-        appodealDemo.Init();
+        if(appodealDemo != null)
+            appodealDemo.Init();
         showBanner();
         if (PlayerPrefs.GetInt("lvlSelectDaily",0) == 1){
             dailyPanel.GetComponent<TweenAlpha>().PlayForward();
@@ -174,25 +204,7 @@ public class LevelSelection : MonoBehaviour
             rewardsPanel.GetComponent<TweenAlpha>().PlayForward();
             GetConsecutiveDays();
         }
-
-        /*int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays", -1);
-        System.DateTime date = System.DateTime.Now.Date;
-        System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate", date.ToString()));
-        int daysSinceLastPlay = (int)(date - lastPlayedDate).TotalDays;
-        if (daysSinceLastPlay == 0)
-        {
-            if (consecutiveDays == -1)
-            {
-                Debug.Log("First stage played");
-            }
-            else
-            {
-                Debug.Log(date);
-                Debug.Log("Already played today");
-                //dailyButton.gameObject.SetActive(false);
-            }
-
-        }*/
+        
         GameObject bgm = GameObject.Find("BGM");
         if (bgm != null) Destroy(bgm);
         StartCoroutine(showSwipe());
@@ -329,7 +341,7 @@ public class LevelSelection : MonoBehaviour
             #if !UNITY_EDITOR
 		            Analytics.CustomEvent ("enteringLevel" + num);
             #endif
-            PlayerPrefs.SetString("scene", "Scene" + num);
+            PlayerPrefs.SetString("scene", (GlobalVariables.getIndexScene(num)));
             if (loading != null)
                 loading.SetActive(true);
 			if(int.Parse(num) % 5 == 1)

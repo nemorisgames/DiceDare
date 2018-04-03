@@ -133,8 +133,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         string texto = PlayerPrefs.GetString("scene", "Scene1");
         if (texto != "TUTORIAL")
         {
-            string num = texto.Split(new char[1] { 'e' })[2];
-            int level = (int.Parse(num));
+            //string num = texto.Split(new char[1] { 'e' })[2];
+            //int level = (int.Parse(num));
+            int level = GlobalVariables.getSceneIndex(texto) + 1;
             currentScene = level;
             levelNum.text = "LEVEL " + level.ToString();
         }
@@ -382,32 +383,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         }
         else
         {
-            string level = PlayerPrefs.GetString("scene", "Scene1");
-            completo = GlobalVariables.Scene[int.Parse(level.Substring(5, level.Length - 5)) - 1];
-            /*switch ()
-            {
-                case "Scene1":  break;
-                case "Scene2": completo = GlobalVariables.Scene[1]; break;
-                case "Scene3": completo = GlobalVariables.Scene[2]; break;
-                case "Scene4": completo = GlobalVariables.Scene[3]; break;
-                case "Scene5": completo = GlobalVariables.Scene5; break;
-                case "Scene6": completo = GlobalVariables.Scene6; break;
-                case "Scene7": completo = GlobalVariables.Scene7; break;
-                case "Scene8": completo = GlobalVariables.Scene8; break;
-                case "Scene9": completo = GlobalVariables.Scene9; break;
-                case "Scene10": completo = GlobalVariables.Scene10; break;
-                case "Scene11": completo = GlobalVariables.Scene11; break;
-                case "Scene12": completo = GlobalVariables.Scene12; break;
-                case "Scene13": completo = GlobalVariables.Scene13; break;
-                case "Scene14": completo = GlobalVariables.Scene14; break;
-                case "Scene15": completo = GlobalVariables.Scene15; break;
-                case "Scene16": completo = GlobalVariables.Scene16; break;
-                case "Scene17": completo = GlobalVariables.Scene17; break;
-                case "Scene18": completo = GlobalVariables.Scene18; break;
-                case "Scene19": completo = GlobalVariables.Scene19; break;
-                case "Scene20": completo = GlobalVariables.Scene20; break;
-                case "Scene21": completo = GlobalVariables.Scene21; break;
-            }*/
+            int level = GlobalVariables.getSceneIndex(PlayerPrefs.GetString("scene", "Scene1"));
+            //print(Mathf.Clamp(int.Parse(level.Substring(5, level.Length - 5)) - 1, 1, 100000) + " " + GlobalVariables.Scene[0]);
+            completo = GlobalVariables.Scene[Mathf.Clamp(level, 0, 100000)];
             if (tutorial)
             {
                 switch (tutorialMode)
@@ -452,32 +430,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         }
         else
         {
-            string level = PlayerPrefs.GetString("scene", "Scene1");
-            completoNumbers = GlobalVariables.SceneNumbers[int.Parse(level.Substring(5, level.Length - 5)) - 1];
-            /*switch (PlayerPrefs.GetString("scene", "Scene1"))
-            {
-                case "Scene1": completoNumbers = GlobalVariables.SceneNumbers[0]; break;
-                case "Scene2": completoNumbers = GlobalVariables.SceneNumbers[1]; break;
-                case "Scene3": completoNumbers = GlobalVariables.SceneNumbers[2]; break;
-                case "Scene4": completoNumbers = GlobalVariables.SceneNumbers[3]; break;
-                case "Scene5": completoNumbers = GlobalVariables.Scene5Numbers; break;
-                case "Scene6": completoNumbers = GlobalVariables.Scene6Numbers; break;
-                case "Scene7": completoNumbers = GlobalVariables.Scene7Numbers; break;
-                case "Scene8": completoNumbers = GlobalVariables.Scene8Numbers; break;
-                case "Scene9": completoNumbers = GlobalVariables.Scene9Numbers; break;
-                case "Scene10": completoNumbers = GlobalVariables.Scene10Numbers; break;
-                case "Scene11": completoNumbers = GlobalVariables.Scene11Numbers; break;
-                case "Scene12": completoNumbers = GlobalVariables.Scene12Numbers; break;
-                case "Scene13": completoNumbers = GlobalVariables.Scene13Numbers; break;
-                case "Scene14": completoNumbers = GlobalVariables.Scene14Numbers; break;
-                case "Scene15": completoNumbers = GlobalVariables.Scene15Numbers; break;
-                case "Scene16": completoNumbers = GlobalVariables.Scene16Numbers; break;
-                case "Scene17": completoNumbers = GlobalVariables.Scene17Numbers; break;
-                case "Scene18": completoNumbers = GlobalVariables.Scene18Numbers; break;
-                case "Scene19": completoNumbers = GlobalVariables.Scene19Numbers; break;
-                case "Scene20": completoNumbers = GlobalVariables.Scene20Numbers; break;
-                case "Scene21": completoNumbers = GlobalVariables.Scene21Numbers; break;
-            }*/
+            int level = GlobalVariables.getSceneIndex(PlayerPrefs.GetString("scene", "Scene1"));
+            completoNumbers = GlobalVariables.SceneNumbers[Mathf.Clamp(level, 0, 100000)];
             if (tutorial)
             {
                 switch (tutorialMode)
@@ -505,33 +459,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         }
         else
         {
-
-            string level = PlayerPrefs.GetString("scene", "Scene1");
-            completoPath = GlobalVariables.ScenePath[int.Parse(level.Substring(5, level.Length - 5)) - 1];
-            /*switch (PlayerPrefs.GetString("scene", "Scene1"))
-            {
-                case "Scene1": completoPath = GlobalVariables.ScenePath[0]; break;
-                case "Scene2": completoPath = GlobalVariables.ScenePath[1]; break;
-                case "Scene3": completoPath = GlobalVariables.ScenePath[2]; break;
-                case "Scene4": completoPath = GlobalVariables.ScenePath[3]; break;
-                case "Scene5": completoPath = GlobalVariables.Scene5Path; break;
-                case "Scene6": completoPath = GlobalVariables.Scene6Path; break;
-                case "Scene7": completoPath = GlobalVariables.Scene7Path; break;
-                case "Scene8": completoPath = GlobalVariables.Scene8Path; break;
-                case "Scene9": completoPath = GlobalVariables.Scene9Path; break;
-                case "Scene10": completoPath = GlobalVariables.Scene10Path; break;
-                case "Scene11": completoPath = GlobalVariables.Scene11Path; break;
-                case "Scene12": completoPath = GlobalVariables.Scene12Path; break;
-                case "Scene13": completoPath = GlobalVariables.Scene13Path; break;
-                case "Scene14": completoPath = GlobalVariables.Scene14Path; break;
-                case "Scene15": completoPath = GlobalVariables.Scene15Path; break;
-                case "Scene16": completoPath = GlobalVariables.Scene16Path; break;
-                case "Scene17": completoPath = GlobalVariables.Scene17Path; break;
-                case "Scene18": completoPath = GlobalVariables.Scene18Path; break;
-                case "Scene19": completoPath = GlobalVariables.Scene19Path; break;
-                case "Scene20": completoPath = GlobalVariables.Scene20Path; break;
-                case "Scene21": completoPath = GlobalVariables.Scene21Path; break;
-            }*/
+            int level = GlobalVariables.getSceneIndex(PlayerPrefs.GetString("scene", "Scene1"));
+            completoPath = GlobalVariables.ScenePath[Mathf.Clamp(level, 0, 100000)];
             if (tutorial)
                 completoPath = GlobalVariables.Scene91Path;
         }
@@ -777,19 +706,31 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		//tutorialVideo.ToggleOff ();
 		audio.pitch = 1f;
 		audio.PlayOneShot(audioFinish);
+        if(PlayerPrefs.GetString("scene") == "Scene0")
+        {
+            PlayerPrefs.SetString("scene", GlobalVariables.getIndexScene("1"));
+            PlayerPrefs.SetInt("unlocked" + GlobalVariables.getIndexScene("1"), 1);
+        }
         if (daily)
         {
             PlayerPrefs.SetInt("lvlSelectDaily", 0);
         }
 
-		if(tutorial)
-			return;
+        if (tutorial)
+        {
+            
+            return;
+        }
         if (stageTime != null)
             stageTime.text = clockShow.text;
-        if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
+        string level = PlayerPrefs.GetString("scene", "Scene1");
+        string completo = GlobalVariables.Scene[GlobalVariables.getSceneIndex(level)];
+        string[] aux = completo.Split(new char[1] { '$' })[0].Split(new char[1] { '|' });
+        //if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
+        if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + aux[5], float.MaxValue))
         {
             newRecordSign.SetActive(true);
-            PlayerPrefs.SetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), Time.timeSinceLevelLoad - pauseTime);
+            PlayerPrefs.SetFloat("record" + aux[5], Time.timeSinceLevelLoad - pauseTime);
             /*if (NPBinding.GameServices.LocalUser.IsAuthenticated)
             {
                 NPBinding.GameServices.ReportScoreWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), (int)((Time.timeSinceLevelLoad - pauseTime) * 100), (bool _success, string _error) => {
@@ -821,12 +762,20 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		}
 		else{
 			Debug.Log("skill");
-			string texto = PlayerPrefs.GetString ("scene", "Scene1");
-			string num = texto.Split (new char[1]{ 'e' }) [2];
-			int level = (int.Parse (num) + 1);
-			if(level < GlobalVariables.nLevels)
-				PlayerPrefs.SetInt ("unlockedScene" + level, 1);
-			Debug.Log(LevelSelection.LevelSkillTotal());
+            //string texto = GlobalVariables.getSceneName(PlayerPrefs.GetString("scene", "Scene1"));
+            //string num = texto.Split (new char[1]{ 'e' }) [2];
+            int levelS = GlobalVariables.getSceneIndex(PlayerPrefs.GetString("scene", "Scene1")) + 1 + 1; //int.Parse(PlayerPrefs.GetString("scene", "Scene1").Split(new char[1] { 'e' })[2]) + 1;//// (int.Parse (num) + 1);
+
+            if (levelS < GlobalVariables.nLevels)
+            {
+                //PlayerPrefs.SetInt("unlockedScene" + levelS, 1);
+                PlayerPrefs.SetInt("unlocked" + GlobalVariables.getIndexScene("" + levelS), 1);
+                PlayerPrefs.SetString("scene", (GlobalVariables.getIndexScene("" + levelS)));
+            }
+            //        if (levelS < GlobalVariables.nLevels)
+            //PlayerPrefs.SetInt ("unlockedScene" + levelS, 1);
+
+            Debug.Log(LevelSelection.LevelSkillTotal());
 			StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + PlayerPrefs.GetFloat("totalDaily",0)/2f));
 		}
 		
@@ -937,8 +886,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     }
 
     public void skipTutorial(){
-		//PlayerPrefs.SetInt("SeenTutorial",1);
+        //PlayerPrefs.SetInt("SeenTutorial",1);
         //playAgain();
+        print("skip " + PlayerPrefs.GetInt("scene"));
         if (appodealDemo != null)
             appodealDemo.hideBanner();
         loadNextScene("LevelSelection");
@@ -965,7 +915,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			PlayerPrefs.SetInt ("unlockedScene" + level, 1);*/
         /*if(tutorial && PlayerPrefs.GetInt("SeenTutorial",0) == 0)
 			PlayerPrefs.SetInt("SeenTutorial",1);*/
-        string texto = PlayerPrefs.GetString("scene", "Scene1");
+        string texto = GlobalVariables.getSceneName(PlayerPrefs.GetString("scene", "Scene1"));
         string num = "1";
         if (texto != "InGame_tutorial" && texto != "TUTORIAL")
             num = texto.Split(new char[1] { 'e' })[2];
@@ -979,7 +929,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         //else
         //if(PlayerPrefs.GetInt("SeenTutorial",0) == 0)
         //	PlayerPrefs.SetInt("SeenTutorial",1);
-        PlayerPrefs.SetString("scene", "Scene" + level);
+        //PlayerPrefs.SetString("scene", "Scene" + level);
         loadNextScene("LevelSelection");
         //SceneManager.LoadScene ("LevelSelection");
     }
@@ -998,17 +948,18 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         //Appodeal.hide(Appodeal.BANNER_BOTTOM);
         if (appodealDemo != null)
             appodealDemo.hideBanner();
-        string texto = PlayerPrefs.GetString ("scene", "Scene1");
-        string num = "1";
-        if(texto != "InGame_tutorial" && texto != "TUTORIAL")
-            num = texto.Split (new char[1]{ 'e' }) [2];
-		#if !UNITY_EDITOR
+        string texto = PlayerPrefs.GetString("scene", "Scene1");
+        int num = 1;
+        if (texto != "InGame_tutorial" && texto != "TUTORIAL")
+            num = GlobalVariables.getSceneIndex(texto);// texto.Split (new char[1]{ 'e' }) [2];
+        #if !UNITY_EDITOR
 		Analytics.CustomEvent ("enteringLevel" + num);
-		#endif
-		int level = (int.Parse (num));
+#endif
+        int level = num + 1 + 1;
+        if (tutorial && level == 2) level = 1;
 		//Debug.Log()
 		//if(!tutorial)
-		level += 1;
+		
 		//else
 			//if(PlayerPrefs.GetInt("SeenTutorial",0) == 0)
 			//	PlayerPrefs.SetInt("SeenTutorial",1);
@@ -1022,7 +973,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				LevelSelection.CheckTutorial(level);
 			}
 			else{
-				PlayerPrefs.SetString ("scene", "Scene" + level);
+                
+                //PlayerPrefs.SetInt("unlocked" + GlobalVariables.getIndexScene("" + level), 1);
+                //PlayerPrefs.SetString("scene", (GlobalVariables.getIndexScene("" + level)));
+                //PlayerPrefs.SetString ("scene", "Scene" + level);
                 loadNextScene("InGame");
                 //SceneManager.LoadScene ("InGame");
             }
