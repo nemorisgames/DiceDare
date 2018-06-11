@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public static class GlobalVariables {
-
-<<<<<<< HEAD
+    
 	public static int nLevels = 28;
     public static bool finishOrderingProcess = false;
-=======
-	public static int nLevels = 21;
->>>>>>> parent of db7e1f1... algoritmo de ordenamiento de niveles
     public static string[] Scene = new string[nLevels];
     public static string[] SceneNumbers = new string[nLevels];
     public static string[] ScenePath = new string[nLevels];
@@ -194,7 +190,6 @@ public static class GlobalVariables {
 	public static string Scene94 = "4|5|3|1|1$   9|   9|   9|   9|   9|   9|   9|   6|  -1|   9|  9|  -2|   1|   9|   9|   9|   9|   9|   9|   9|";
 	public static string Scene94Numbers = "5|5|5$   0|   0|   0|   0|   0|  0|   0|  10|   2|   0|   0|   0|   2|   3|   0|  0|   0|   0|   0|   0|";
     public static string Scene94Path = "1,3|1,2|2,1|3,1";
-<<<<<<< HEAD
 
     public static string getSceneName(string name)
     {
@@ -226,7 +221,7 @@ public static class GlobalVariables {
     {
         return Scene[int.Parse(num) - 1].Split(new char[1] { '$' })[0].Split(new char[1] { '|' })[5];
     }
-
+    /*
     public static void orderScenes()
     {
         float[] sceneDifficulty = new float[nLevels];
@@ -266,7 +261,7 @@ public static class GlobalVariables {
         {
             ordering = false;
             //cambiar el numero inicial para dejar etapas fijas
-            for(int i = 9; i < sceneDifficulty.Length - 1 - iteration; i++)
+            for(int i = 0; i < sceneDifficulty.Length - 1 - iteration; i++)
             {
                 if(sceneDifficulty[i] > sceneDifficulty[i + 1])
                 {
@@ -290,7 +285,5 @@ public static class GlobalVariables {
             iteration++;
         }
         finishOrderingProcess = true;
-    }
-=======
->>>>>>> parent of db7e1f1... algoritmo de ordenamiento de niveles
+    }*/
 }

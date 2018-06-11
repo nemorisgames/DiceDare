@@ -15,12 +15,15 @@ public class Title : MonoBehaviour {
     public GameObject dailyPanel;
     void Start ()
     {
+        /*
         if (!GlobalVariables.finishOrderingProcess)
         {
             GlobalVariables.SetScenes();
-            GlobalVariables.orderScenes();
-        }
-
+            //GlobalVariables.orderScenes();
+            for (int i = 0; i < GlobalVariables.nLevels; i++)
+                print(GlobalVariables.getIndexScene("" + (i + 1)));
+        }*/
+        GlobalVariables.SetScenes();
         PlayerPrefs.SetInt("lvlSelectDaily",0);
         /*_isAvailable = NPBinding.GameServices.IsAvailable();
         if (_isAvailable)

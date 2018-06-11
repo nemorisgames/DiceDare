@@ -40,7 +40,7 @@ public class LevelSelection : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-        
+
         //PlayerPrefs.DeleteAll();
         /*
         PlayerPrefs.SetString("scene", "Scene1");
@@ -54,10 +54,13 @@ public class LevelSelection : MonoBehaviour
         PlayerPrefs.SetFloat("recordScene1", 12f);
         PlayerPrefs.SetFloat("recordScene4", 14f);
         */
-        if (!GlobalVariables.finishOrderingProcess)
+        GlobalVariables.SetScenes();
+        if (false) // !GlobalVariables.finishOrderingProcess)
         {
             GlobalVariables.SetScenes();
-            GlobalVariables.orderScenes();
+            //GlobalVariables.orderScenes();
+            for (int i = 0; i < GlobalVariables.nLevels; i++)
+                print(GlobalVariables.getIndexScene("" + (i + 1)));
         }
         
         if(GameObject.Find("AppoDeal") != null)
@@ -100,13 +103,17 @@ public class LevelSelection : MonoBehaviour
         for (int i = 0; i < GlobalVariables.nLevels; i++)
         {
             int t = (GlobalVariables.getSceneIndex("Scene" + (i + 1)));
-            //print("boton" + t + " " + (recordSeconds > 0));
-            //if (PlayerPrefs.GetInt ("unlockedScene"+(GlobalVariables.getSceneIndex("Scene" + (i + 1))), 0) != 1) {
+            print("boton" + t + " " + PlayerPrefs.GetInt("unlockedScene" + (i + 1), 0));
+            
             if (PlayerPrefs.GetInt("unlockedScene" + (i + 1), 0) != 1)
             {
                 recordButtons[t].isEnabled = false;
                 print("locked " + t);
 			}
+            else
+            {
+                print("unlocked " + t);
+            }
 		}
 		
         //escribe los tiempos en cada boton
@@ -344,7 +351,7 @@ public class LevelSelection : MonoBehaviour
             PlayerPrefs.SetString("scene", (GlobalVariables.getIndexScene(num)));
             if (loading != null)
                 loading.SetActive(true);
-			if(int.Parse(num) % 5 == 1)
+			if(int.Parse(num) - 1 % 5 == 1)
 				CheckTutorial(int.Parse(num));
             loadNextScene("InGame");
             //SceneManager.LoadScene("InGame");
@@ -542,7 +549,8 @@ public class LevelSelection : MonoBehaviour
 	}
 
 	public static void CheckTutorial(int level){
-        if (PlayerPrefs.GetInt("tutorialMode", 0) == Mathf.RoundToInt(level / 5) + 1 || level == 1) return;
+        //if (PlayerPrefs.GetInt("tutorialMode", 0) == Mathf.RoundToInt(level / 5) + 1 || level == 1) return;
+        if(level == 1) return;
 		PlayerPrefs.SetInt("tutorialMode",Mathf.RoundToInt(level/5) + 1);
         SceneManager.LoadScene("InGame_tutorial");
     }

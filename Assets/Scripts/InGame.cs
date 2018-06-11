@@ -141,7 +141,12 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 		if(tutorial){
 			tutorialMode = Mathf.Clamp(PlayerPrefs.GetInt("tutorialMode",1),1,4);
-			PlayerPrefs.SetString ("scene", "Scene" + (int)((tutorialMode - 1) * 5));
+            if ((int)((tutorialMode - 1) * 5) == 0)
+            {
+                PlayerPrefs.SetString("scene", "Scene0");
+            }
+            else
+			    PlayerPrefs.SetString ("scene", GlobalVariables.getIndexScene("" + (int)((tutorialMode - 1) * 5))) ;
 			tutorialOps = new string[2];
 			switch(tutorialMode){
 				case 1:
@@ -624,10 +629,17 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				}
 				break;
 			case 2:
+                    /*
 				foreach (Vector2 v in path) {
 					StartCoroutine (cellArray [(int)v.x, (int)v.y].GetComponent<Cell> ().shine (1));
 					yield return new WaitForSeconds (1f / 2);
-				}
+				}*/
+                    print("PROBLEMA CON PATH CUANDO UNO SE MUEVE Y NO HA TERMINADO DE MOSTRAR");
+                for(int i = path.Count - 1; i == 0; i--)
+                {
+                    StartCoroutine(cellArray[(int)(((Vector2)path[i]).x), (int)(((Vector2)path[i]).y)].GetComponent<Cell>().shine(1));
+                    yield return new WaitForSeconds(1f / 2);
+                }
 				foreach (Transform t in adjacentCells)
 					t.GetComponent<AdjacentCellFinder> ().active = true;
                 StartCoroutine (cellArray [(int)((Vector2)path [0]).x, (int)((Vector2)path [0]).y].GetComponent<Cell> ().shine (2));
@@ -715,7 +727,14 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
         if (tutorial)
         {
-            
+            int levelS = GlobalVariables.getSceneIndex(PlayerPrefs.GetString("scene", "Scene1")) + 1; //int.Parse(PlayerPrefs.GetString("scene", "Scene1").Split(new char[1] { 'e' })[2]) + 1;//// (int.Parse (num) + 1);
+
+            if (levelS < GlobalVariables.nLevels)
+            {
+                //PlayerPrefs.SetInt("unlockedScene" + levelS, 1);
+                PlayerPrefs.SetInt("unlocked" + GlobalVariables.getIndexScene("" + levelS), 1);
+                PlayerPrefs.SetString("scene", (GlobalVariables.getIndexScene("" + levelS)));
+            }
             return;
         }
         if (stageTime != null)
@@ -761,7 +780,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			Debug.Log("skill");
             //string texto = GlobalVariables.getSceneName(PlayerPrefs.GetString("scene", "Scene1"));
             //string num = texto.Split (new char[1]{ 'e' }) [2];
-            int levelS = GlobalVariables.getSceneIndex(PlayerPrefs.GetString("scene", "Scene1")) + 1 + 1; //int.Parse(PlayerPrefs.GetString("scene", "Scene1").Split(new char[1] { 'e' })[2]) + 1;//// (int.Parse (num) + 1);
+            // test1 int levelS = GlobalVariables.getSceneIndex(PlayerPrefs.GetString("scene", "Scene1")) + 1 + 1; //int.Parse(PlayerPrefs.GetString("scene", "Scene1").Split(new char[1] { 'e' })[2]) + 1;//// (int.Parse (num) + 1);
+            int levelS = GlobalVariables.getSceneIndex(PlayerPrefs.GetString("scene", "Scene1")) + 1 + 1;
 
             if (levelS < GlobalVariables.nLevels)
             {
@@ -966,7 +986,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		else {
 			PlayerPrefs.SetInt ("timesDied", 0);
 			//PlayerPrefs.SetInt ("unlockedScene" + level, 1);
-			if(!tutorial && level % 5 == 1){
+			if(!tutorial && (level - 1) % 5 == 1){
 				LevelSelection.CheckTutorial(level);
 			}
 			else{

@@ -14,6 +14,7 @@ public class LoadSceneWait : MonoBehaviour {
 
     void Start()
     {
+        //PlayerPrefs.DeleteAll();
         print("variables " + VariablesGlobales.nextScene);
         print("scene " + SceneManager.GetActiveScene().name);
         if (VariablesGlobales.nextScene == "")

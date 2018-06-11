@@ -8,7 +8,7 @@ public class Splash : MonoBehaviour {
 	public float timeLimit = 7f;
 	// Use this for initialization
 	void Start () {
-        PlayerPrefs.DeleteAll();
+        //PlayerPrefs.DeleteAll();
         PlayerPrefs.SetInt("lvlSelectDaily", 0);
         //permite que el calendario no escriba puntaje cuando no se escribio en la sesion anterior
         PlayerPrefs.DeleteKey("dailyScore");

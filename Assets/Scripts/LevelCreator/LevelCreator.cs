@@ -19,17 +19,14 @@ public class LevelCreator : MonoBehaviour
     public DiceCreator dice;
 
     public UIInput[] importMatrix;
+    public UIInput importSceneNumber;
 
     Transform cells;
     public UIInput diceLeft;
     public UIInput diceUp;
     public UIInput diceRight;
-<<<<<<< HEAD
 
     Vector3 diceBeginValues = Vector3.one;
-
-=======
->>>>>>> parent of db7e1f1... algoritmo de ordenamiento de niveles
     // Use this for initialization
     void Start()
     {
@@ -55,7 +52,7 @@ public class LevelCreator : MonoBehaviour
 
             composeBoard();
         }
-
+        GlobalVariables.SetScenes();
         //dice.write(2, 3, 4);
     }
 
@@ -91,6 +88,18 @@ public class LevelCreator : MonoBehaviour
             PlayerPrefs.SetString("ScenePathTest", importMatrix[2].value);
 
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        else
+        {
+            int levelRequested;
+            if (importSceneNumber.value != "" && int.TryParse(importSceneNumber.value, out levelRequested))
+            {
+                PlayerPrefs.SetString("SceneTest", GlobalVariables.Scene[levelRequested]);
+                PlayerPrefs.SetString("SceneNumbersTest", GlobalVariables.SceneNumbers[levelRequested]);
+                PlayerPrefs.SetString("ScenePathTest", GlobalVariables.ScenePath[levelRequested]);
+
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
         }
     }
 
