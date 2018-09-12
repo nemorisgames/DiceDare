@@ -14,6 +14,14 @@ using AppodealAds.Unity.Common;
 public class LevelSelection : MonoBehaviour
 {
 	public bool testing = true;
+    public GameObject buttonBase;
+    public UIGrid grid;
+    UIPanel gridPanel;
+    public int buttonsPerPage;
+    public int firstInPage = 0;
+    int page = 0;
+    Resolution resolution;
+    List<GameObject> currentButtons;
 	public UIButton[] recordButtons;
 	public UIPanel panel;
 	public GameObject loading;
@@ -33,14 +41,21 @@ public class LevelSelection : MonoBehaviour
 	public TweenAlpha swipeIcon;
 	public UIScrollView dragLevels;
 	bool dragged;
+    float swipeInitialTime;
+    Vector3 swipeInitialPos;
 
     public GameObject connectionProblem;
 
     AppodealDemo appodealDemo;
+
+    public bool autoFlip = false;
     // Use this for initialization
     void Start ()
     {
-
+        resolution = Screen.currentResolution;
+        Debug.Log(resolution);
+        firstInPage = 0;
+        currentButtons = new List<GameObject>();
         //PlayerPrefs.DeleteAll();
         /*
         PlayerPrefs.SetString("scene", "Scene1");
@@ -100,7 +115,7 @@ public class LevelSelection : MonoBehaviour
 
 		PlayerPrefs.SetInt ("timesDied", 0);
         //activa o desactiva los botones
-        for (int i = 0; i < GlobalVariables.nLevels; i++)
+        /*for (int i = 0; i < GlobalVariables.nLevels; i++)
         {
             int t = (GlobalVariables.getSceneIndex("Scene" + (i + 1)));
             print("boton" + t + " " + PlayerPrefs.GetInt("unlockedScene" + (i + 1), 0));
@@ -114,11 +129,11 @@ public class LevelSelection : MonoBehaviour
             {
                 print("unlocked " + t);
             }
-		}
+		}*/
 		
         //escribe los tiempos en cada boton
-		for (int i = 0; i < GlobalVariables.nLevels; i++) {
-            int t =(GlobalVariables.getSceneIndex("Scene" + (i + 1))); 
+		/*for (int i = 0; i < GlobalVariables.nLevels; i++) {
+            int t = (GlobalVariables.getSceneIndex("Scene" + (i + 1))); 
 			//float recordSeconds = PlayerPrefs.GetFloat ("recordScene" + (GlobalVariables.getSceneIndex("Scene" + (i + 1))), -1f);
             float recordSeconds = PlayerPrefs.GetFloat("recordScene" + (i + 1), -1f);
             recordButtons[t].transform.Find("record").gameObject.SetActive(recordSeconds > 0);
@@ -128,7 +143,12 @@ public class LevelSelection : MonoBehaviour
 				int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
 				recordButtons[t].transform.Find("record").GetComponent<UILabel>().text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;	
 			}
-		}
+		}*/
+
+
+        //new grid
+        ResetGridButtons(firstInPage);
+
         int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays", 0);
         System.DateTime date = System.DateTime.Now.Date;
         //date = System.DateTime.Parse("12/28/2017 12:00:00 AM");
@@ -215,6 +235,54 @@ public class LevelSelection : MonoBehaviour
         GameObject bgm = GameObject.Find("BGM");
         if (bgm != null) Destroy(bgm);
         StartCoroutine(showSwipe());
+        gridPanel = grid.GetComponentInParent<UIPanel>();
+    }
+
+    void ResetGridButtons(int startIndex){
+        //limpiar
+        if(currentButtons.Count > 0)
+            foreach(GameObject go in currentButtons)
+                DestroyImmediate(go);
+        currentButtons.Clear();
+        //calcular filas + ajustar escala
+        if(resolution.width > resolution.height){
+            grid.maxPerLine = 5;
+            grid.transform.localScale = new Vector3(1,1,1);
+        }
+        else{
+            grid.maxPerLine = 3;
+            grid.transform.localScale = new Vector3(0.8f,0.8f,0.8f);
+        }
+        buttonsPerPage = grid.maxPerLine * 2;
+        //instanciar botones
+        
+        for(int i = startIndex; i < Mathf.Min(startIndex + buttonsPerPage,GlobalVariables.nLevels); i++){
+            GameObject go = (GameObject)Instantiate(buttonBase,grid.transform.position,grid.transform.rotation,grid.transform);
+            currentButtons.Add(go);
+            //int t = (GlobalVariables.getSceneIndex("Scene" + (i + 1)));
+            UILabel nameLabel = go.transform.Find("Label").GetComponent<UILabel>();
+            //button name
+            nameLabel.text = "LVL" + (i+1).ToString();
+            go.name = "Button"+(i+1).ToString();
+            //button record
+            //float recordSeconds = PlayerPrefs.GetFloat("recordScene" + (i + 1), -1f);
+            float recordSeconds = PlayerPrefs.GetFloat ("recordScene" + (i+1), -1f);
+            UILabel recordLabel = go.transform.Find("record").GetComponent<UILabel>();
+            recordLabel.gameObject.SetActive(recordSeconds > 0);
+            if(recordSeconds > 0){
+                int minutes = (int)((recordSeconds) / 60);
+				int seconds = (int)((recordSeconds) % 60);
+				int dec = (int)(((recordSeconds) % 60 * 10f) - ((int)((recordSeconds) % 60) * 10));
+				recordLabel.text = "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + dec;
+            }
+            //button click
+            EventDelegate.Set(go.GetComponent<UIButton>().onClick,() => launchLevel(nameLabel.text));
+        }
+        grid.Reposition();
+
+        /*for(int i = 1; i < 10; i++){
+            Debug.Log("Scene "+i+": "+PlayerPrefs.GetFloat("recordScene"+GlobalVariables.getSceneIndex("Scene"+i)));
+        }*/
     }
 
 
@@ -348,11 +416,12 @@ public class LevelSelection : MonoBehaviour
             #if !UNITY_EDITOR
 		            Analytics.CustomEvent ("enteringLevel" + num);
             #endif
-            PlayerPrefs.SetString("scene", (GlobalVariables.getIndexScene(num)));
+            Debug.Log("Enter stage "+num+" -> "+GlobalVariables.getSceneIndex(num));
+            PlayerPrefs.SetString("scene", "Scene"+num);
             if (loading != null)
                 loading.SetActive(true);
-			if(int.Parse(num) - 1 % 5 == 1)
-				CheckTutorial(int.Parse(num));
+			//if(int.Parse(num) - 1 % 5 == 1)
+				//CheckTutorial(int.Parse(num));
             loadNextScene("InGame");
             //SceneManager.LoadScene("InGame");
         }
@@ -386,9 +455,58 @@ public class LevelSelection : MonoBehaviour
 		if(dragLevels.isDragging && swipeIcon.gameObject.activeSelf){
 			swipeIcon.PlayReverse();
 		}
-			
+		
+            
+        if(Input.GetKeyDown(KeyCode.RightArrow)){
+            NextPage();
+        }
 
+        if(Input.GetKeyDown(KeyCode.LeftArrow)){
+            PrevPage();
+        }
+
+        if(autoFlip && resolution.width != Screen.currentResolution.width){
+            resolution = Screen.currentResolution;
+            ResetGridButtons(firstInPage);
+        }
+
+        if (Input.GetMouseButtonDown (0)) {
+            swipeInitialPos = Input.mousePosition;
+            swipeInitialTime = Time.time;
+        }
+
+        if(Input.GetMouseButtonUp(0)){
+            if (Input.GetMouseButtonUp (0)) {
+				if (swipeInitialTime + 1f > Time.time && Vector3.Distance (swipeInitialPos, Input.mousePosition) >= 40f) {
+					Vector3 dir = (Input.mousePosition - swipeInitialPos).normalized;
+					print ("swipe!" + Vector3.Angle (new Vector3 (1f, 0f, 0f), dir));
+					float angle = Vector3.Angle (new Vector3 (1f, 0f, 0f), dir);
+					if (angle >= 0f && angle < 90f) {
+                        PrevPage();
+					} 
+                    else {
+                        NextPage();
+					}
+				}
+			}
+        }
 	}
+
+    void NextPage(){
+        if(firstInPage + buttonsPerPage >= GlobalVariables.nLevels)
+            return;
+        page = Mathf.Clamp(page + 1,0,300);     
+        Debug.Log("page "+page);
+        firstInPage = page * buttonsPerPage;
+        ResetGridButtons(firstInPage);
+    }
+
+    void PrevPage(){
+        page = Mathf.Clamp(page - 1,0,300); 
+        Debug.Log("page "+page);
+        firstInPage = page * buttonsPerPage;
+        ResetGridButtons(firstInPage);
+    }
 
 	void Mute(){
 		PlayerPrefs.SetInt ("Mute", 1);
@@ -397,6 +515,10 @@ public class LevelSelection : MonoBehaviour
         //Camera.main.GetComponent<AudioSource> ().mute = true;
         AudioListener.volume = 0f;
 	}
+
+    public void AutoRotateToggle(){
+        autoFlip = !autoFlip;
+    }
 
 	void UnMute(){
 		PlayerPrefs.SetInt ("Mute", 0);

@@ -130,9 +130,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         string texto = PlayerPrefs.GetString("scene", "Scene1");
         if (texto != "TUTORIAL")
         {
-            //string num = texto.Split(new char[1] { 'e' })[2];
-            //int level = (int.Parse(num));
-            int level = GlobalVariables.getSceneIndex(texto) + 1;
+            string num = texto.Split(new char[1] { 'e' })[2];
+            int level = (int.Parse(num));
+            //int level = GlobalVariables.getSceneIndex(texto) + 1;
             currentScene = level;
             levelNum.text = "LEVEL " + level.ToString();
         }
@@ -746,6 +746,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + aux[5], float.MaxValue))
         {
             newRecordSign.SetActive(true);
+			Debug.Log("record"+aux[5]);
             PlayerPrefs.SetFloat("record" + aux[5], Time.timeSinceLevelLoad - pauseTime);
             /*if (NPBinding.GameServices.LocalUser.IsAuthenticated)
             {
@@ -987,7 +988,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			PlayerPrefs.SetInt ("timesDied", 0);
 			//PlayerPrefs.SetInt ("unlockedScene" + level, 1);
 			if(!tutorial && (level - 1) % 5 == 1){
-				LevelSelection.CheckTutorial(level);
+				//LevelSelection.CheckTutorial(level);
 			}
 			else{
                 
