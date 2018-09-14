@@ -17,6 +17,7 @@ public class LevelSelection : MonoBehaviour
     public GameObject buttonBase;
     public UIGrid grid;
     UIPanel gridPanel;
+    TweenAlpha panelTween;
     public int buttonsPerPage;
     public int firstInPage = 0;
     int page = 0;
@@ -43,13 +44,14 @@ public class LevelSelection : MonoBehaviour
 	bool dragged;
     float swipeInitialTime;
     Vector3 swipeInitialPos;
-
     public GameObject connectionProblem;
-
     AppodealDemo appodealDemo;
-
     public bool autoFlip = false;
-    // Use this for initialization
+
+    void Awake(){
+        gridPanel = grid.GetComponentInParent<UIPanel>();
+        panelTween = gridPanel.GetComponent<TweenAlpha>();
+    }
     void Start ()
     {
         resolution = Screen.currentResolution;
@@ -235,7 +237,7 @@ public class LevelSelection : MonoBehaviour
         GameObject bgm = GameObject.Find("BGM");
         if (bgm != null) Destroy(bgm);
         StartCoroutine(showSwipe());
-        gridPanel = grid.GetComponentInParent<UIPanel>();
+        
     }
 
     void ResetGridButtons(int startIndex){
@@ -255,10 +257,42 @@ public class LevelSelection : MonoBehaviour
         }
         buttonsPerPage = grid.maxPerLine * 2;
         //instanciar botones
-        
+        Random.InitState(25*page + 25 + 100*page);
         for(int i = startIndex; i < Mathf.Min(startIndex + buttonsPerPage,GlobalVariables.nLevels); i++){
             GameObject go = (GameObject)Instantiate(buttonBase,grid.transform.position,grid.transform.rotation,grid.transform);
             currentButtons.Add(go);
+            //sprite color
+            UISprite sprite = go.GetComponent<UISprite>();
+            int random = Random.Range(0,60);
+            Color aux = new Color();
+
+            if(random < 10)
+                sprite.spriteName = "Cubo1";
+            else if(random < 20)
+                sprite.spriteName = "Cubo2";
+            else if(random < 30){
+                sprite.spriteName = "Cubo1";
+                // E35A73FF
+                ColorUtility.TryParseHtmlString("#FD6A85FF",out aux);
+                sprite.color = aux;
+            }
+            else if(random < 40){
+                sprite.spriteName = "Cubo2";
+                //528F94FF 9E9E9FFF
+                ColorUtility.TryParseHtmlString("#B8B8BFFF",out aux);
+                sprite.color = aux;
+            }
+            else if(random < 50){
+                sprite.spriteName = "Cubo1";
+                ColorUtility.TryParseHtmlString("#70D6DFFF",out aux);
+                sprite.color = aux;
+            }
+            else if(random < 60){
+                sprite.spriteName = "Cubo2";
+                ColorUtility.TryParseHtmlString("#69D884FF",out aux);
+                sprite.color = aux;
+            }
+
             //int t = (GlobalVariables.getSceneIndex("Scene" + (i + 1)));
             UILabel nameLabel = go.transform.Find("Label").GetComponent<UILabel>();
             //button name
@@ -279,6 +313,8 @@ public class LevelSelection : MonoBehaviour
             EventDelegate.Set(go.GetComponent<UIButton>().onClick,() => launchLevel(nameLabel.text));
         }
         grid.Reposition();
+        panelTween.PlayForward();
+        panelTween.ResetToBeginning();
 
         /*for(int i = 1; i < 10; i++){
             Debug.Log("Scene "+i+": "+PlayerPrefs.GetFloat("recordScene"+GlobalVariables.getSceneIndex("Scene"+i)));
@@ -451,11 +487,6 @@ public class LevelSelection : MonoBehaviour
 
         if (dragLevels.isDragging)
 			dragged = true;
-
-		if(dragLevels.isDragging && swipeIcon.gameObject.activeSelf){
-			swipeIcon.PlayReverse();
-		}
-		
             
         if(Input.GetKeyDown(KeyCode.RightArrow)){
             NextPage();
@@ -473,10 +504,12 @@ public class LevelSelection : MonoBehaviour
         if (Input.GetMouseButtonDown (0)) {
             swipeInitialPos = Input.mousePosition;
             swipeInitialTime = Time.time;
+            dragged = true;
         }
 
         if(Input.GetMouseButtonUp(0)){
             if (Input.GetMouseButtonUp (0)) {
+                dragged = false;
 				if (swipeInitialTime + 1f > Time.time && Vector3.Distance (swipeInitialPos, Input.mousePosition) >= 40f) {
 					Vector3 dir = (Input.mousePosition - swipeInitialPos).normalized;
 					print ("swipe!" + Vector3.Angle (new Vector3 (1f, 0f, 0f), dir));
@@ -490,6 +523,11 @@ public class LevelSelection : MonoBehaviour
 				}
 			}
         }
+
+        if((dragLevels.isDragging || dragged) && swipeIcon.gameObject.activeSelf){
+			swipeIcon.PlayReverse();
+		}
+            
 	}
 
     void NextPage(){
