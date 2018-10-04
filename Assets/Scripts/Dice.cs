@@ -35,6 +35,10 @@ public class Dice : MonoBehaviour {
     bool dropped = false;
     // Use this for initialization
     bool swipe;
+	public bool testDifficulty = false;
+	public int opChanges = 0;
+	public int spins = 0;
+	public int passedCells = -1;
 
 	void Awake(){
 		inGame = Camera.main.GetComponent<InGame> ();
@@ -285,7 +289,45 @@ public class Dice : MonoBehaviour {
 		return new int[]{int.Parse (((TextMesh)list [0]).text),int.Parse (((TextMesh)list [2]).text),int.Parse (((TextMesh)list [4]).text)};
 	}
 
+	void EvaluarDificultad(string tag, Cell c){
+		switch(tag){
+			case "Rotate90CW":
+			case "Rotate90CCW":
+			spins++;
+			break;
+			default:
+			break;
+		}
+		if (onMovement || calculated)
+			return;
+		if(c.stateCell == Cell.StateCell.Passed)
+			passedCells++;
+		else{
+			switch(tag){
+				case "Sum":
+				if(currentOperation != Operation.Sum)
+					opChanges++;
+				break;
+				case "Substraction":
+				if(currentOperation != Operation.Rest)
+					opChanges++;
+				break;
+				case "Multiplication":
+				if(currentOperation != Operation.Mult)
+					opChanges++;
+				break;
+				case "Division":
+				if(currentOperation != Operation.Div)
+					opChanges++;
+				break;
+				default:
+				break;
+			}
+		}
+	}
+
 	void OnTriggerStay(Collider c){
+		EvaluarDificultad(c.tag,c.GetComponent<Cell>());
 		if (c.CompareTag ("Untagged") || c.CompareTag ("Sum") || c.CompareTag ("Substraction") || c.CompareTag ("Multiplication") || c.CompareTag ("Division")) {
 			if (onMovement || calculated)
 				return;
@@ -294,6 +336,7 @@ public class Dice : MonoBehaviour {
 				inGame.UnPause();
 			//comprueba que el calculo este bien
 			//acepto para up y right, en ese caso comprueba que la celda haya sido pisada
+
 			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.Normal) {
 				int cellValue = c.GetComponent<Cell> ().number;
 				int diceValueA = -100;
@@ -390,6 +433,11 @@ public class Dice : MonoBehaviour {
 			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.EndCell) {
 				c.GetComponent<Cell> ().stateCell = Cell.StateCell.Passed;
 				inGame.finishGame ();
+				if(testDifficulty){
+					Debug.Log("Giros: "+spins);
+					Debug.Log("Cuadros retrocedidos: "+passedCells);
+					Debug.Log("Cambios operacion: "+opChanges);
+				}
 			}
 			calculated = true;
 		} else {

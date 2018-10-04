@@ -111,6 +111,16 @@ public class LevelSelection : MonoBehaviour
             }
 			int level = num;
             print("levellll " + level);
+            int textoLevel = int.Parse(texto.Substring(5,texto.Length-5));
+            int auxIndex = 0;
+            CalculateGrid();
+            while(auxIndex + (grid.maxPerLine * 2) < textoLevel){
+                auxIndex += (grid.maxPerLine * 2);
+            }
+            Debug.Log(auxIndex);
+            firstInPage = auxIndex;
+            page = firstInPage / (grid.maxPerLine * 2);
+            //while(auxIndex < texto.)
             panel.transform.localPosition = new Vector3 (-400 * level, panel.transform.position.y, panel.transform.position.z);
 			panel.clipOffset = new Vector2 (400 * level, panel.clipOffset.y);
 		}
@@ -240,12 +250,7 @@ public class LevelSelection : MonoBehaviour
         
     }
 
-    void ResetGridButtons(int startIndex){
-        //limpiar
-        if(currentButtons.Count > 0)
-            foreach(GameObject go in currentButtons)
-                DestroyImmediate(go);
-        currentButtons.Clear();
+    void CalculateGrid(){
         //calcular filas + ajustar escala
         if(resolution.width > resolution.height){
             grid.maxPerLine = 5;
@@ -256,9 +261,18 @@ public class LevelSelection : MonoBehaviour
             grid.transform.localScale = new Vector3(0.8f,0.8f,0.8f);
         }
         buttonsPerPage = grid.maxPerLine * 2;
+    }
+
+    void ResetGridButtons(int startIndex){
+        //limpiar
+        if(currentButtons.Count > 0)
+            foreach(GameObject go in currentButtons)
+                DestroyImmediate(go);
+        currentButtons.Clear();
+        CalculateGrid();
         //instanciar botones
         Random.InitState(25*page + 25 + 100*page);
-        for(int i = startIndex; i < Mathf.Min(startIndex + buttonsPerPage,GlobalVariables.nLevels); i++){
+        for(int i = startIndex; i < Mathf.Min(startIndex + buttonsPerPage,GlobalVariables.nLevels-1); i++){
             GameObject go = (GameObject)Instantiate(buttonBase,grid.transform.position,grid.transform.rotation,grid.transform);
             currentButtons.Add(go);
             //sprite color
@@ -301,6 +315,7 @@ public class LevelSelection : MonoBehaviour
             //button record
             //float recordSeconds = PlayerPrefs.GetFloat("recordScene" + (i + 1), -1f);
             float recordSeconds = PlayerPrefs.GetFloat ("recordScene" + (i+1), -1f);
+            //Debug.Log((i+1) +" "+recordSeconds);
             UILabel recordLabel = go.transform.Find("record").GetComponent<UILabel>();
             recordLabel.gameObject.SetActive(recordSeconds > 0);
             if(recordSeconds > 0){

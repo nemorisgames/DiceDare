@@ -377,6 +377,25 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		UnPause ();
 	}
 
+	public void EvaluarDificultad(string [] cuadros, string [] path){
+		int count = 0;
+		for(int i = 0; i < cuadros.Length; i++){
+			//Debug.Log(cuadros[i]);(
+			string aux = cuadros[i].Trim();
+			int auxI = 0;
+			if(aux != ""){
+				auxI = int.Parse(aux);
+				if(auxI != 0 && auxI != 9)
+				{
+					//Debug.Log(cuadros[i].Trim());
+					count++;
+				}
+			}
+		}
+		Debug.Log("Cantidad cuadros: "+count);
+		Debug.Log("Largo ruta: "+(path.Length + 1));
+	}
+
 	public void componerEscena(){
 		string completo = "";
         if (SceneManager.GetActiveScene().name == "InGameTest")
@@ -410,6 +429,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		string[] aux = completo.Split(new char[1]{'$'});
 		string[] info = aux[0].Split(new char[1]{'|'});
 		string[] arreglo = aux[1].Split(new char[1]{'|'});
+
+
 		Vector3 posIni = new Vector3 (int.Parse (info [2]), 0f, -int.Parse (info [3]));
 		if (int.Parse (info [4]) > 0) {
 			//tutorialIndex = int.Parse (info [4]);
@@ -473,6 +494,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			Vector2 coord = new Vector2 (float.Parse (auxCoord [0]), float.Parse (auxCoord [1]));
 			path.Add (coord);
 		};
+
+		//Evaluar
+		EvaluarDificultad(arreglo,auxPath);
 
 		string[] auxNumbers = completoNumbers.Split(new char[1]{'$'});
 		string[] infoNumbers = auxNumbers[0].Split(new char[1]{'|'});
@@ -742,12 +766,13 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         string level = PlayerPrefs.GetString("scene", "Scene1");
         string completo = GlobalVariables.Scene[GlobalVariables.getSceneIndex(level)];
         string[] aux = completo.Split(new char[1] { '$' })[0].Split(new char[1] { '|' });
+		string stage = aux[5].Trim();
         //if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
-        if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + aux[5], float.MaxValue))
+        if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + stage, float.MaxValue))
         {
             newRecordSign.SetActive(true);
-			Debug.Log("record"+aux[5]);
-            PlayerPrefs.SetFloat("record" + aux[5], Time.timeSinceLevelLoad - pauseTime);
+			Debug.Log("record"+stage);
+            PlayerPrefs.SetFloat("record" + stage, Time.timeSinceLevelLoad - pauseTime);
             /*if (NPBinding.GameServices.LocalUser.IsAuthenticated)
             {
                 NPBinding.GameServices.ReportScoreWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), (int)((Time.timeSinceLevelLoad - pauseTime) * 100), (bool _success, string _error) => {
@@ -987,17 +1012,17 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		else {
 			PlayerPrefs.SetInt ("timesDied", 0);
 			//PlayerPrefs.SetInt ("unlockedScene" + level, 1);
-			if(!tutorial && (level - 1) % 5 == 1){
+			/*if(!tutorial && (level - 1) % 5 == 1){
 				//LevelSelection.CheckTutorial(level);
 			}
 			else{
-                
+            */
                 //PlayerPrefs.SetInt("unlocked" + GlobalVariables.getIndexScene("" + level), 1);
                 //PlayerPrefs.SetString("scene", (GlobalVariables.getIndexScene("" + level)));
                 //PlayerPrefs.SetString ("scene", "Scene" + level);
                 loadNextScene("InGame");
                 //SceneManager.LoadScene ("InGame");
-            }
+            //}
         }
 	}
 	
