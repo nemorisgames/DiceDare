@@ -7,7 +7,7 @@ public class Dice : MonoBehaviour {
 	[HideInInspector]
 	public bool onMovement = false;
 	bool calculated = false;
-	public enum Operation {Sum, Rest, Mult, Div};
+	public enum Operation {Sum, Rest, Mult, Div, None};
 	public Operation currentOperation = Operation.Sum;
 	public enum Direction {Up, Down, Left, Right};
 	Direction lastDirection;
@@ -50,7 +50,6 @@ public class Dice : MonoBehaviour {
 		numbers.Add(transform.Find("TextBackward").GetComponent<TextMesh>());
 
 		currentNumbers = numbers;
-
     }
 	void Start () {
 		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
@@ -101,16 +100,16 @@ public class Dice : MonoBehaviour {
 		inGame.UnPause();
 		//if(inGame.daily)
             EnableTutorialSign(true);
-		if(inGame.tutorial)
-			inGame.NextTutorial(false);
+		//if(inGame.tutorial)
+		//	inGame.NextTutorial(false);
 	}
 
 	public IEnumerator turn(Direction d){
 		if(inGame.tutorial){
 			if(inGame.tutorialIndex == 0 && d != Direction.Left || inGame.tutorialIndex == 1 && d != Direction.Down || inGame.tutorialIndex == 3 && d != Direction.Left)
 				yield break;
-			else
-				inGame.NextTutorial(false);
+			//else
+			//	inGame.NextTutorial(false);
 		}
 		EnableTutorialSign(false);
 		onMovement = true;
@@ -551,10 +550,10 @@ public class Dice : MonoBehaviour {
 			//fix
 			hintTime += getHintTime();
 		}
-		if (Input.GetKeyDown (KeyCode.W)) { if(!inGame.daily) StartCoroutine(turn (Direction.Up)); }
+		if (Input.GetKeyDown (KeyCode.W)) { if(!inGame.daily || inGame.tutorial) StartCoroutine(turn (Direction.Up)); }
 		if (Input.GetKeyDown (KeyCode.S)) { StartCoroutine(turn (Direction.Down)); }
 		if (Input.GetKeyDown (KeyCode.A)) { StartCoroutine(turn (Direction.Left)); }
-		if (Input.GetKeyDown (KeyCode.D)) { if(!inGame.daily) StartCoroutine(turn (Direction.Right));}
+		if (Input.GetKeyDown (KeyCode.D)) { if(!inGame.daily || inGame.tutorial) StartCoroutine(turn (Direction.Right));}
 
 		if (swipe) {
 			if (Input.GetMouseButtonDown (0)) {
@@ -568,13 +567,13 @@ public class Dice : MonoBehaviour {
 					float angle = Vector3.Angle (new Vector3 (1f, 0f, 0f), dir);
 					if (angle >= 0f && angle < 90f) {
 						if (dir.y > 0f) {
-							if(!inGame.daily) StartCoroutine (turn (Direction.Right));
+							if(!inGame.daily || inGame.tutorial) StartCoroutine (turn (Direction.Right));
 						} else {
 							StartCoroutine (turn (Direction.Down));
 						}
 					} else {
 						if (dir.y > 0f) {
-							if(!inGame.daily) StartCoroutine (turn (Direction.Up));
+							if(!inGame.daily || inGame.tutorial) StartCoroutine (turn (Direction.Up));
 						} else {
 							StartCoroutine (turn (Direction.Left));
 						}
@@ -618,5 +617,14 @@ public class Dice : MonoBehaviour {
 			UpdateTutorialSign(currentOperation);
 		
 		inGame.tutorialv2.gameObject.SetActive(b);
+	}
+
+	public void SetNumbers(int left, int forward, int top, int right, int backward, int bottom){
+		((TextMesh)currentNumbers[0]).text = top.ToString();
+		((TextMesh)currentNumbers[1]).text = bottom.ToString();
+		((TextMesh)currentNumbers[2]).text = left.ToString();
+		((TextMesh)currentNumbers[3]).text = right.ToString();
+		((TextMesh)currentNumbers[4]).text = forward.ToString();
+		((TextMesh)currentNumbers[5]).text = backward.ToString();
 	}
 }

@@ -102,11 +102,12 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     public UILabel stageTime;
 
 	string playerprefScene;
+	private int newTutorialIndex = 0;
 
     // Use this for initialization
     void Start () {
-
-        GlobalVariables.SetScenes();
+		if(!daily)
+        	GlobalVariables.SetScenes();
         GameObject g = GameObject.Find("AppoDeal");
         if(g != null)
             appodealDemo = g.GetComponent<AppodealDemo>();
@@ -140,6 +141,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         dice = GameObject.FindGameObjectWithTag("Dice").GetComponent<Dice>();
 
 		if(tutorial){
+			/*
 			tutorialMode = Mathf.Clamp(PlayerPrefs.GetInt("tutorialMode",1),1,4);
             if ((int)((tutorialMode - 1) * 5) == 0)
             {
@@ -170,7 +172,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			tutorialv3[0].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[0];
 			tutorialv3[1].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[1];
 
-			//Debug.Log(tutorialMode);
+			//Debug.Log(tutorialMode);*/
 		}
 
 
@@ -210,6 +212,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		if(daily){
 			DailyInit();
 		}
+		if(tutorial){
+			dice.SetNumbers(1,1,1,1,1,1);
+		}
+
         if(appodealDemo != null)
             appodealDemo.showBanner(Appodeal.BANNER_BOTTOM);
     }
@@ -222,7 +228,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
     public void NextTutorial(bool b){
 
-
+		/*
 		if(tutorialIndex == 3)
 			return;
 		if(tutorialIndex >= 0){
@@ -244,8 +250,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			tutorialv3[tutorialIndex].value = 1;
 		Pause();
 		/*if(tutorialIndex == 2)
-			b = true;*/
-		StartCoroutine(tutorialPause(b));
+			b = true;
+		StartCoroutine(tutorialPause(b));*/
 	}
 
 	IEnumerator tutorialPause(bool b){
@@ -255,10 +261,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		else
 			pause = 0.5f;
 		yield return new WaitForSeconds(pause);
-		if(b)
+		/*if(b)
 			NextTutorial(false);
 		else
-			UnPause();
+			UnPause();*/
 	}
 
 	void InitMedals(){
@@ -283,7 +289,12 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		ResetDiceNumbers();
 		levelNum.text = "";
 		currentBlock.currentNumbers = dice.faceNumbers();
-		currentBlock.Init(currentBlock.currentNumbers, dice.currentOperation);
+		if(tutorial){
+			currentBlock.InitNormalCell(0,1);
+			currentBlock.InitNormalCell(1,1);
+		}
+		else
+			currentBlock.Init(currentBlock.currentNumbers, dice.currentOperation);
 		dailyCorrect = 0;
 		dailyWrong = 0;
 		Pause();
@@ -577,7 +588,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
 		print ("calculating");
 		if (checkOperationResult (diceValueA, diceValueB) != cellValue) {
-			if(daily){
+			if(tutorial){
+				componerEscena_Tutorial();
+			}
+			else if(daily){
 				DailyAnswer(false);
 				componerEscena_Daily();
 			}
@@ -589,7 +603,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			if(path.Count > 0)
 				path.RemoveAt (0);
 			Instantiate (dice.goodMove, new Vector3(dice.transform.position.x,dice.transform.position.y + diceSize, dice.transform.position.z), Quaternion.LookRotation(Vector3.up));
-			if(daily){
+			if(tutorial){
+				componerEscena_Tutorial();
+			}
+			else if(daily){
 				DailyAnswer(true);
 				componerEscena_Daily();
 			}
@@ -1099,6 +1116,12 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				
 
 		adjacentCells.position = dice.transform.position;
+
+		if(tutorial){
+			if(Input.GetKeyDown(KeyCode.C)){
+				badMove();
+			}
+		}
 	}
 
 	public static void GetConsecutiveDays(){
@@ -1172,7 +1195,38 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		currentBlock = block;
 		levelNum.text = "Right: "+dailyCorrect+" ; Wrong: "+dailyWrong;
 		//Pause();
-		
+	}
+
+	void componerEscena_Tutorial(){
+		//currentBlock.DropRemainingBlocks();
+		GameObject aux = (GameObject)Instantiate(baseBlock, new Vector3(dice.transform.position.x, 0f, dice.transform.position.z), currentBlock.transform.rotation);
+		DailyBlock block = aux.GetComponent<DailyBlock>();
+		currentBlock.currentNumbers = dice.faceNumbers();
+		Dice.Operation operation = dice.currentOperation;
+		if(currentBlock.currentNumbers[0] > 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[1] >= 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[2]  >= 100 || currentBlock.currentNumbers[0] == 0 || Mathf.Abs(currentBlock.currentNumbers[0]) > 10 && (Mathf.Abs(currentBlock.currentNumbers[1]) > 10 || Mathf.Abs(currentBlock.currentNumbers[2]) > 10)){
+			ResetDiceNumbers();
+			currentBlock.currentNumbers = dice.faceNumbers();
+		}
+
+		newTutorialIndex++;
+		switch(newTutorialIndex){
+			case 0:
+				block.InitNormalCell(0,2);
+				block.InitNormalCell(1,2);
+			break;
+			case 1:
+				block.InitNormalCell(0,2);
+				block.InitOperationCell(1,Dice.Operation.Rest,3);
+			break;
+			case 2:
+				block.InitNormalCell(0,5);
+				block.InitNormalCell(1,1);
+			break;
+			default:
+			break;
+		}
+
+		currentBlock = block;
 	}
 
 	int dailyConsec = 0;

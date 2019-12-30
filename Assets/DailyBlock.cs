@@ -64,6 +64,39 @@ public class DailyBlock : MonoBehaviour {
 		}
 	}
 
+	public void InitOperationCell(int pos, Dice.Operation operation, int cellNumber){
+		pos = Mathf.Clamp(pos,0,1);
+		//Debug.Log(pos);
+		GameObject cell = inGame.cellNormal;
+		switch(operation){
+			case Dice.Operation.Div:
+				cell = inGame.cellDivision;
+			break;
+			case Dice.Operation.Mult:
+				cell = inGame.cellMultiplication;
+			break;
+			case Dice.Operation.Rest:
+				cell = inGame.cellSubstraction;
+			break;
+			case Dice.Operation.Sum:
+				cell = inGame.cellSum;
+			break;
+		}
+		Cell leftCell = instantiateCell(cellNumber, cell, (pos == 0 ? LCell : DCell));
+	}
+
+	public void InitNormalCell(int pos, int cellNumber, bool endCell = false){
+		pos = Mathf.Clamp(pos,0,1);
+		//Debug.Log(pos);
+
+		Cell leftCell = instantiateCell(cellNumber, (endCell ? inGame.cellEnd : inGame.cellNormal), (pos == 0 ? LCell : DCell));
+	}
+	
+
+	public void InitCellDown(int[] numbers, Dice.Operation operation, int cellNumber){
+		Cell downCell = instantiateCell(cellNumber, inGame.cellNormal, DCell);
+	}
+
 	int wrongRange(){
 		int randomSign = (int)(Mathf.Sign(Random.Range(-1,1)));
 		int randomNumber = Random.Range(1,3);
