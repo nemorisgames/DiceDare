@@ -5,8 +5,8 @@ using UnityEngine;
 public class DailyBlock : MonoBehaviour {
 	public InGame inGame;
 	public int [] currentNumbers;
-	Transform LCell;
-	Transform DCell;
+	public Transform LCell;
+	public Transform DCell;
 
 	void Awake(){
 		inGame = Camera.main.GetComponent<InGame>();
@@ -83,13 +83,22 @@ public class DailyBlock : MonoBehaviour {
 			break;
 		}
 		Cell leftCell = instantiateCell(cellNumber, cell, (pos == 0 ? LCell : DCell));
+		if(pos == 0)
+			LCell = leftCell.transform;
+		else if(pos == 1)
+			DCell = leftCell.transform;
 	}
 
-	public void InitNormalCell(int pos, int cellNumber, bool endCell = false){
+	public Cell InitNormalCell(int pos, int cellNumber, bool endCell = false){
 		pos = Mathf.Clamp(pos,0,1);
 		//Debug.Log(pos);
 
 		Cell leftCell = instantiateCell(cellNumber, (endCell ? inGame.cellEnd : inGame.cellNormal), (pos == 0 ? LCell : DCell));
+		if(pos == 0)
+			LCell = leftCell.transform;
+		else if(pos == 1)
+			DCell = leftCell.transform;
+		return leftCell;
 	}
 	
 
@@ -112,7 +121,7 @@ public class DailyBlock : MonoBehaviour {
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
 		cell.transform.position = new Vector3(cell.transform.position.x, aux, cell.transform.position.z);
-		if(inGame.pause)
+		if(inGame.pause && !inGame.tutorial)
 			inGame.UnPause();
 	}
 
