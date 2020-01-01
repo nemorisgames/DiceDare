@@ -102,7 +102,14 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     public UILabel stageTime;
 
 	string playerprefScene;
+	
+	[Header("Tutorial")]
+	public UIPanel panelTransicion;
 	private int newTutorialIndex = 0;
+	public UIPanel panelUITutorial;
+	public UILabel tutorialLeft, tutorialRight;
+	private GameObject tutorialLeftGO, tutorialRightGO;
+	public TweenScale tutorialLeftScale, tutorialRightScale;
 
     // Use this for initialization
     void Start () {
@@ -213,12 +220,128 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			DailyInit();
 		}
 		if(tutorial){
-			dice.SetNumbers(1,1,1,1,1,1);
+			dice.SetNumbers(1,2,3,3,3,3);
 		}
 
         if(appodealDemo != null)
             appodealDemo.showBanner(Appodeal.BANNER_BOTTOM);
     }
+
+	private Cell tutorialEndBlock;
+
+	void DailyInit(){
+		ResetDiceNumbers();
+		levelNum.text = "";
+		currentBlock.currentNumbers = dice.faceNumbers();
+		if(tutorial){
+			tutorialEndBlock = currentBlock.InitNormalCell(0,0);
+			currentBlock.InitNormalCell(1,5);
+			tutorialLeft.text = 3+"\n\n"+dice.OperationString()+" "+1+"\n_____\n\n"+0;
+			tutorialRight.text = 3+"\n\n"+dice.OperationString()+" "+2+"\n_____\n\n"+5;
+			StartCoroutine(ShowTutorialPanel(0,5,"+",2.5f));
+			StartCoroutine(LightDice(Vector3.up,-Vector3.forward,1,3.5f));
+		}
+		else
+			currentBlock.Init(currentBlock.currentNumbers, dice.currentOperation);
+		dailyCorrect = 0;
+		dailyWrong = 0;
+		Pause();
+	}
+
+	void componerEscena_Tutorial(){
+		Pause();
+		//currentBlock.DropRemainingBlocks();
+		GameObject aux = (GameObject)Instantiate(baseBlock, new Vector3(dice.transform.position.x, 0f, dice.transform.position.z), currentBlock.transform.rotation);
+		DailyBlock block = aux.GetComponent<DailyBlock>();
+		currentBlock.currentNumbers = dice.faceNumbers();
+		Dice.Operation operation = dice.currentOperation;
+		if(currentBlock.currentNumbers[0] > 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[1] >= 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[2]  >= 100 || currentBlock.currentNumbers[0] == 0 || Mathf.Abs(currentBlock.currentNumbers[0]) > 10 && (Mathf.Abs(currentBlock.currentNumbers[1]) > 10 || Mathf.Abs(currentBlock.currentNumbers[2]) > 10)){
+			ResetDiceNumbers();
+			currentBlock.currentNumbers = dice.faceNumbers();
+		}
+		
+		newTutorialIndex++;
+		switch(newTutorialIndex){
+			case 1:
+				block.InitNormalCell(1,6);
+				block.InitOperationCell(0,Dice.Operation.Rest,6);
+				StartCoroutine(ShowTutorialPanel(6,6,"+"));
+				StartCoroutine(LightDice(Vector3.forward,Vector3.up,1));
+			break;
+			case 2:
+				block.InitNormalCell(0,3);
+				block.InitNormalCell(1,3);
+				StartCoroutine(ShowTutorialPanel(3,3,"-"));
+				StartCoroutine(LightDice(Vector3.right,Vector3.up,1));
+			break;
+			case 3:
+				block.InitOperationCell(0,Dice.Operation.Sum,1);
+				block.InitOperationCell(1,Dice.Operation.Sum,-3);
+				StartCoroutine(ShowTutorialPanel(1,-3,"-"));
+				StartCoroutine(LightDice(-Vector3.up,Vector3.right,1));
+			break;
+			case 4:
+				StartCoroutine(TutorialEndCell());
+				HideTutorialPanel();
+			break;
+			default:
+			break;
+		}
+
+		currentBlock = block;
+	}
+
+	private Color textColor = new Color(1,1,1,0);
+
+	private IEnumerator ShowTutorialPanel(int left, int right, string sign, float delay = 2f, bool writeFromDice = true){
+		Pause();
+		yield return new WaitForSeconds(delay);
+		tutorialLeft.color = textColor;
+		tutorialRight.color = textColor;
+		tutorialLeftScale.PlayForward();
+		tutorialRightScale.PlayForward();
+		if(true){
+			tutorialLeft.text = dice.faceNumbers()[0]+"\n\n"+sign+" "+dice.faceNumbers()[1]+"\n_____\n\n"+left;
+			tutorialRight.text = dice.faceNumbers()[0]+"\n\n"+sign+" "+dice.faceNumbers()[2]+"\n_____\n\n"+right;
+		}
+	}
+
+	private IEnumerator LightDice(Vector3 up, Vector3 dir, int cell, float delay = 3f){
+		yield return new WaitForSeconds(delay);
+		Pause();
+		dice.ShineFace(up,1);
+		yield return new WaitForSeconds(1f);
+		dice.ShineFace(dir,1);
+		yield return new WaitForSeconds(1f);
+		if(cell == 0)
+			StartCoroutine(currentBlock.LCell.GetComponent<Cell>().shine(1));
+		else
+			StartCoroutine(currentBlock.DCell.GetComponent<Cell>().shine(1));
+		UnPause();
+	}
+
+	public void HideTutorialPanel(){
+		//panelUITutorial.GetComponent<TweenAlpha>().PlayReverse();
+		tutorialLeftScale.PlayReverse();
+		tutorialRightScale.PlayReverse();
+	}
+
+	IEnumerator TutorialEndCell(){
+		Vector3 pos = new Vector3(-2,-0.1f,0);
+		GameObject aux = (GameObject)Instantiate(cellEnd, new Vector3(pos.x, pos.y - 8f, pos.z), cellEnd.transform.rotation);
+		Cell cell = aux.GetComponent<Cell>();
+		//c.Init(sum);
+		//Debug.Log(numbers[0] + numbers[2]);
+		float posAux = pos.y;
+		float currentPos = cell.transform.position.y;
+		while(currentPos < posAux){
+			currentPos += 0.4f;
+			cell.transform.position = new Vector3(cell.transform.position.x, currentPos, cell.transform.position.z);
+			yield return new WaitForSeconds(Time.deltaTime);
+		}
+		cell.transform.position = new Vector3(cell.transform.position.x, posAux, cell.transform.position.z);
+		UnPause();
+	}
 
     void loadNextScene(string s)
     {
@@ -283,21 +406,6 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			if(unlockedMedals[i] == 1)
 				medals[i].enabled = true;
 		}
-	}
-
-	void DailyInit(){
-		ResetDiceNumbers();
-		levelNum.text = "";
-		currentBlock.currentNumbers = dice.faceNumbers();
-		if(tutorial){
-			currentBlock.InitNormalCell(0,1);
-			currentBlock.InitNormalCell(1,1);
-		}
-		else
-			currentBlock.Init(currentBlock.currentNumbers, dice.currentOperation);
-		dailyCorrect = 0;
-		dailyWrong = 0;
-		Pause();
 	}
 
 	void ResetDiceNumbers(){
@@ -585,11 +693,25 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		}
 	}
 
-	public void calculateResult(int diceValueA, int diceValueB, int cellValue){
+	private IEnumerator TutorialFail(){
+		while(panelTransicion.alpha < 1){
+			panelTransicion.alpha += 0.2f;
+			yield return new WaitForSeconds(0.01f);
+		}
+		dice.RollBack();
+		yield return new WaitForSeconds(0.5f);
+		while(panelTransicion.alpha > 0){
+			panelTransicion.alpha -= 0.2f;
+			yield return new WaitForSeconds(0.01f);
+		}
+		UnPause();
+	}
+
+	public bool calculateResult(int diceValueA, int diceValueB, int cellValue, Cell cell = null){
 		print ("calculating");
 		if (checkOperationResult (diceValueA, diceValueB) != cellValue) {
 			if(tutorial){
-				componerEscena_Tutorial();
+				StartCoroutine(TutorialFail());
 			}
 			else if(daily){
 				DailyAnswer(false);
@@ -598,12 +720,14 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			else
 				badMove ();
 		} else {
+			cell.changeState (Cell.StateCell.Passed);
 			audio.pitch = Random.Range (0.95f, 1.05f);
 			audio.PlayOneShot(audioGoodMove);
 			if(path.Count > 0)
 				path.RemoveAt (0);
 			Instantiate (dice.goodMove, new Vector3(dice.transform.position.x,dice.transform.position.y + diceSize, dice.transform.position.z), Quaternion.LookRotation(Vector3.up));
 			if(tutorial){
+				//UnPause();
 				componerEscena_Tutorial();
 			}
 			else if(daily){
@@ -611,6 +735,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				componerEscena_Daily();
 			}
 		}
+		return (checkOperationResult (diceValueA, diceValueB) == cellValue);
 	}
 
 	public void badMove(){
@@ -768,14 +893,15 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
         if (tutorial)
         {
-            int levelS = GlobalVariables.getSceneIndex(PlayerPrefs.GetString("scene", "Scene1")) + 1; //int.Parse(PlayerPrefs.GetString("scene", "Scene1").Split(new char[1] { 'e' })[2]) + 1;//// (int.Parse (num) + 1);
+            /*int levelS = GlobalVariables.getSceneIndex(PlayerPrefs.GetString("scene", "Scene1")) + 1; //int.Parse(PlayerPrefs.GetString("scene", "Scene1").Split(new char[1] { 'e' })[2]) + 1;//// (int.Parse (num) + 1);
 
             if (levelS < GlobalVariables.nLevels)
             {
                 //PlayerPrefs.SetInt("unlockedScene" + levelS, 1);
                 PlayerPrefs.SetInt("unlocked" + GlobalVariables.getIndexScene("" + levelS), 1);
                 PlayerPrefs.SetString("scene", (GlobalVariables.getIndexScene("" + levelS)));
-            }
+            }*/
+			Debug.Log("Finished Tutorial");
             return;
         }
         if (stageTime != null)
@@ -1111,7 +1237,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 					t.GetComponent<AdjacentCellFinder> ().EnableCell (false);
 			adjacentCells.gameObject.SetActive (false);
 		}
-		else if (!adjacentCells.gameObject.activeSelf && !finished)
+		else if (!adjacentCells.gameObject.activeSelf && !finished && !tutorial)
 			adjacentCells.gameObject.SetActive (true);
 				
 
@@ -1197,37 +1323,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		//Pause();
 	}
 
-	void componerEscena_Tutorial(){
-		//currentBlock.DropRemainingBlocks();
-		GameObject aux = (GameObject)Instantiate(baseBlock, new Vector3(dice.transform.position.x, 0f, dice.transform.position.z), currentBlock.transform.rotation);
-		DailyBlock block = aux.GetComponent<DailyBlock>();
-		currentBlock.currentNumbers = dice.faceNumbers();
-		Dice.Operation operation = dice.currentOperation;
-		if(currentBlock.currentNumbers[0] > 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[1] >= 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[2]  >= 100 || currentBlock.currentNumbers[0] == 0 || Mathf.Abs(currentBlock.currentNumbers[0]) > 10 && (Mathf.Abs(currentBlock.currentNumbers[1]) > 10 || Mathf.Abs(currentBlock.currentNumbers[2]) > 10)){
-			ResetDiceNumbers();
-			currentBlock.currentNumbers = dice.faceNumbers();
-		}
-
-		newTutorialIndex++;
-		switch(newTutorialIndex){
-			case 0:
-				block.InitNormalCell(0,2);
-				block.InitNormalCell(1,2);
-			break;
-			case 1:
-				block.InitNormalCell(0,2);
-				block.InitOperationCell(1,Dice.Operation.Rest,3);
-			break;
-			case 2:
-				block.InitNormalCell(0,5);
-				block.InitNormalCell(1,1);
-			break;
-			default:
-			break;
-		}
-
-		currentBlock = block;
-	}
+	
 
 	int dailyConsec = 0;
 	float extraSeconds = 0;
