@@ -63,6 +63,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 	//[HideInInspector]
 	public bool pause = false;
+	public bool unPauseOnMove = true;
 
 	int timesDied = 0;
 	public GameObject hintScreen;
@@ -113,6 +114,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public UILabel tutorialLeft, tutorialRight;
 	private GameObject tutorialLeftGO, tutorialRightGO;
 	public TweenScale tutorialLeftScale, tutorialRightScale;
+	private IEnumerator ITutorialPath, ITutorialPanel;
 
     // Use this for initialization
     void Start () {
@@ -151,6 +153,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         dice = GameObject.FindGameObjectWithTag("Dice").GetComponent<Dice>();
 
 		if(tutorial){
+			unPauseOnMove = false;
 			/*
 			tutorialMode = Mathf.Clamp(PlayerPrefs.GetInt("tutorialMode",1),1,4);
             if ((int)((tutorialMode - 1) * 5) == 0)
@@ -241,14 +244,28 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			currentBlock.InitNormalCell(1,5);
 			tutorialLeft.text = 3+"\n\n"+dice.OperationString()+" "+1+"\n_____\n\n"+0;
 			tutorialRight.text = 3+"\n\n"+dice.OperationString()+" "+2+"\n_____\n\n"+5;
-			StartCoroutine(ShowTutorialPanel(0,5,"+",2.5f));
-			StartCoroutine(LightDice(Vector3.up,-Vector3.forward,1,3.5f));
+			ITutorialPanel = ShowTutorialPanel(0,5,"+",2.5f);
+			ITutorialPath = LightDice(Vector3.up,-Vector3.forward,1,3.5f);
+			ShowCurrentTutorial();
 		}
 		else
 			currentBlock.Init(currentBlock.currentNumbers, dice.currentOperation);
 		dailyCorrect = 0;
 		dailyWrong = 0;
 		Pause();
+	}
+
+	private void ShowCurrentTutorial(){
+		if(ITutorialPanel != null){
+			StopCoroutine(ITutorialPanel);
+			StartCoroutine(ITutorialPanel);
+		}
+			
+		if(ITutorialPath != null){
+			StopCoroutine(ITutorialPath);
+			StartCoroutine(ITutorialPath);
+		}
+			
 	}
 
 	void componerEscena_Tutorial(){
@@ -268,26 +285,33 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			case 1:
 				block.InitNormalCell(1,6);
 				block.InitOperationCell(0,Dice.Operation.Rest,6);
-				StartCoroutine(ShowTutorialPanel(6,6,"+"));
-				StartCoroutine(LightDice(Vector3.forward,Vector3.up,1));
+				ITutorialPanel = ShowTutorialPanel(6,6,"+");
+				ITutorialPath = LightDice(Vector3.forward,-Vector3.right,0);
+				ShowCurrentTutorial();
+				
 			break;
 			case 2:
 				block.InitNormalCell(0,3);
 				block.InitNormalCell(1,3);
-				StartCoroutine(ShowTutorialPanel(3,3,"-"));
-				StartCoroutine(LightDice(Vector3.right,Vector3.up,1));
+				ITutorialPanel = ShowTutorialPanel(3,3,"-");
+				ITutorialPath = LightDice(Vector3.right,Vector3.up,1);
+				ShowCurrentTutorial();
 			break;
 			case 3:
 				block.InitOperationCell(0,Dice.Operation.Sum,1);
 				block.InitOperationCell(1,Dice.Operation.Sum,-3);
-				StartCoroutine(ShowTutorialPanel(1,-3,"-"));
-				StartCoroutine(LightDice(-Vector3.up,Vector3.right,1));
+				ITutorialPanel = ShowTutorialPanel(1,-3,"-");
+				ITutorialPath = LightDice(-Vector3.up,Vector3.right,1);
+				ShowCurrentTutorial();
+				unPauseOnMove = true;
 			break;
 			case 4:
 				StartCoroutine(TutorialEndCell());
 				HideTutorialPanel();
 			break;
 			default:
+				if(unPauseOnMove)
+					UnPause();
 			break;
 		}
 
@@ -706,17 +730,23 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	private IEnumerator TutorialFail(){
+		dice.ExecAnim("BadMove");
+		yield return new WaitForSeconds(0.8f);
 		while(panelTransicion.alpha < 1){
-			panelTransicion.alpha += 0.2f;
+			panelTransicion.alpha += 0.1f;
 			yield return new WaitForSeconds(0.01f);
 		}
+		dice.ExecAnim("Idle");
 		dice.RollBack();
+		//dice.transform.eulerAngles = Vector3.zero;
 		yield return new WaitForSeconds(0.5f);
+		dice.ResetNumberPositions();
 		while(panelTransicion.alpha > 0){
-			panelTransicion.alpha -= 0.2f;
+			panelTransicion.alpha -= 0.1f;
 			yield return new WaitForSeconds(0.01f);
 		}
 		UnPause();
+		ShowCurrentTutorial();
 	}
 
 	public bool calculateResult(int diceValueA, int diceValueB, int cellValue, Cell cell = null){
@@ -739,7 +769,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				path.RemoveAt (0);
 			Instantiate (dice.goodMove, new Vector3(dice.transform.position.x,dice.transform.position.y + diceSize, dice.transform.position.z), Quaternion.LookRotation(Vector3.up));
 			if(tutorial){
-				//UnPause();
+				if(unPauseOnMove)
+					UnPause();
 				componerEscena_Tutorial();
 			}
 			else if(daily){

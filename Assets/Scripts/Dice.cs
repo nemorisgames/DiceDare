@@ -40,10 +40,12 @@ public class Dice : MonoBehaviour {
 	public int spins = 0;
 	public int passedCells = -1;
 	private Renderer [] quads = new Renderer[6];
+	private Animator animator;
 
 	void Awake(){
 		inGame = Camera.main.GetComponent<InGame> ();
-        if (transform.Find("QuadUp") != null)
+		animator = GetComponent<Animator>();
+        if (inGame.tutorial && transform.Find("QuadUp") != null)
         {
             quads[0] = transform.Find("QuadUp").GetComponent<Renderer>();
             quads[1] = transform.Find("QuadDown").GetComponent<Renderer>();
@@ -65,6 +67,15 @@ public class Dice : MonoBehaviour {
 		currentNumbers = numbers;
 	}
 
+	public void ResetNumberPositions(){
+		transform.Find("TextUp").localPosition = Vector3.up * 0.51f;
+		transform.Find("TextDown").localPosition = Vector3.up * -0.51f;
+		transform.Find("TextLeft").localPosition = Vector3.right * -0.51f;
+		transform.Find("TextRight").localPosition = Vector3.right * 0.51f;
+		transform.Find("TextForward").localPosition = Vector3.forward * -0.51f;
+		transform.Find("TextBackward").localPosition = Vector3.forward * 0.51f;
+	}
+
 	public string OperationString(){
 		switch(currentOperation){
 			case Operation.Sum:
@@ -78,6 +89,10 @@ public class Dice : MonoBehaviour {
 			default:
 			return "";
 		}
+	}
+
+	public void ExecAnim(string s){
+		animator.SetTrigger(s);
 	}
 
 	void Start () {
@@ -174,7 +189,7 @@ public class Dice : MonoBehaviour {
 	IEnumerator applyRootMotion(){
 		yield return new WaitForSeconds (1.6f);
 		transform.rotation = Quaternion.identity;
-		GetComponent<Animator> ().applyRootMotion = true;
+		animator.applyRootMotion = true;
 		if(!inGame.tutorial)
 			inGame.UnPause();
 		//if(inGame.daily)
@@ -442,7 +457,7 @@ public class Dice : MonoBehaviour {
 			if (onMovement || calculated)
 				return;
 			//print (c.GetComponent<Cell> ().stateCell);
-			if((!inGame.daily ) && inGame.pause)
+			if((!inGame.daily || (inGame.tutorial && inGame.unPauseOnMove)) && inGame.pause)
 				inGame.UnPause();
 			//comprueba que el calculo este bien
 			//acepto para up y right, en ese caso comprueba que la celda haya sido pisada
