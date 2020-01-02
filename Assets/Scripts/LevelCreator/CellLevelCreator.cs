@@ -24,7 +24,7 @@ public class CellLevelCreator : MonoBehaviour {
         if (Input.GetKey(KeyCode.Alpha1))
         {
             cellType++;
-            if (cellType > 9) cellType = -2;
+            if (cellType > 12) cellType = -2;
             updateType();
         }
 

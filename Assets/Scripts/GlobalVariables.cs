@@ -21,6 +21,8 @@ public static class GlobalVariables {
     //7: CW
     //8: CCW
     //9: muerte //no es necesario usarlo
+    //10: Puas
+    //11: Cambia número
 
     //10X: camino con un numero especifico (X)
 
@@ -71,7 +73,8 @@ public static class GlobalVariables {
         SceneNumbers[2] = "1|1|1$ 4 | 0 | 5 | 4 | 0 | 9 | 8 | 5 | 3 | 0 | 4 | 5 | 4 | 3 | 3 | 0 | 3 | 2 | 0 | 3 | 0 | 7 | 4 | 3 | 5 |";
         ScenePath[2] = "3,2|3,1|2,1|1,1";
 
-        Scene[3] = "5|3|1|1|0|Scene3$ 0 | 9 | 0 | 1 | -1 | 9 | 1 | 1 | 9 | -2 | 1 | 9 | 0 | 9 | 0 |";
+        //Scene[3] = "5|3|1|1|0|Scene3$ 0 | 9 | 0 | 1 | -1 | 9 | 1 | 1 | 9 | -2 | 1 | 9 | 0 | 9 | 0 |";
+        Scene[3] = "5|3|1|1|0|Scene3$ 0 | 9 | 0 | 1 | -1 | 9 | 12 | 12 | 9 | -2 | 1 | 9 | 0 | 9 | 0 |";
         SceneNumbers[3] = "2|1|1$ 0 | 0 | 0 | 2 | 0 | 0 | 4 | 3 | 0 | 0 | 5 | 0 | 0 | 0 | 0 |";
         ScenePath[3] = "2,1|3,1";
 

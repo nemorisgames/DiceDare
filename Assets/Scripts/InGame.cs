@@ -52,8 +52,11 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public GameObject cellCW;
 	public GameObject cellCCW;
 	public GameObject cellDeath;
+    public GameObject cellSpikes;
+    public GameObject cellChangeNumber;
+    public GameObject cellDissapearNumber;
 
-	public AudioSource bgm_go;
+    public AudioSource bgm_go;
 	public static AudioSource bgm;
 
 	//public TutorialVideo tutorialVideo;
@@ -661,8 +664,17 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				case 9:
 					g = (GameObject)Instantiate (cellDeath, new Vector3 (j, -0.1f, -i) - posIni, Quaternion.identity);
 					break;
-				}
-				if (g != null) {
+                case 10:
+                    g = (GameObject)Instantiate(cellSpikes, new Vector3(j, -0.1f, -i) - posIni, Quaternion.identity);
+                    break;
+                case 11:
+                    g = (GameObject)Instantiate(cellChangeNumber, new Vector3(j, -0.1f, -i) - posIni, Quaternion.identity);
+                break;
+                    case 12:
+                    g = (GameObject)Instantiate(cellDissapearNumber, new Vector3(j, -0.1f, -i) - posIni, Quaternion.identity);
+                    break;
+            }
+            if (g != null) {
 					g.GetComponent<Cell> ().number = int.Parse (arregloNumbers [indice]);
 					g.transform.parent = rootCells;
 					cellArray [i,j] = g;

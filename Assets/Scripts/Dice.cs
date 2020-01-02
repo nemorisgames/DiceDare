@@ -43,13 +43,15 @@ public class Dice : MonoBehaviour {
 
 	void Awake(){
 		inGame = Camera.main.GetComponent<InGame> ();
-		
-		quads[0] = transform.Find("QuadUp").GetComponent<Renderer>();
-		quads[1] = transform.Find("QuadDown").GetComponent<Renderer>();
-		quads[2] = transform.Find("QuadLeft").GetComponent<Renderer>();
-		quads[3] = transform.Find("QuadRight").GetComponent<Renderer>();
-		quads[4] = transform.Find("QuadForward").GetComponent<Renderer>();
-		quads[5] = transform.Find("QuadBackward").GetComponent<Renderer>();
+        if (transform.Find("QuadUp") != null)
+        {
+            quads[0] = transform.Find("QuadUp").GetComponent<Renderer>();
+            quads[1] = transform.Find("QuadDown").GetComponent<Renderer>();
+            quads[2] = transform.Find("QuadLeft").GetComponent<Renderer>();
+            quads[3] = transform.Find("QuadRight").GetComponent<Renderer>();
+            quads[4] = transform.Find("QuadForward").GetComponent<Renderer>();
+            quads[5] = transform.Find("QuadBackward").GetComponent<Renderer>();
+        }
 
     }
 
@@ -83,10 +85,14 @@ public class Dice : MonoBehaviour {
 		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
 		line = GetComponent<LineRenderer> ();
 		currentPos = transform.position;
-		
-		for(int i = 0; i < quads.Length; i++){
-			quads[i].gameObject.SetActive(false);
-		}
+
+        if (quads[0] != null)
+        {
+            for (int i = 0; i < quads.Length; i++)
+            {
+                quads[i].gameObject.SetActive(false);
+            }
+        }
 		
 		audio = GetComponent<AudioSource> ();
 
@@ -362,6 +368,13 @@ public class Dice : MonoBehaviour {
 		steps++;
 		timeLastMove = Time.timeSinceLevelLoad;
 		hintTime = 10f;
+
+        //ejecuta la funcion para mostrar numeros con cada giro
+        DissapearNumber[] dissapearNumbers = GameObject.FindObjectsOfType<DissapearNumber>();
+        foreach(DissapearNumber dis in dissapearNumbers)
+        {
+            dis.Show();
+        }
 	}
 
 	public int[] faceNumbers(){

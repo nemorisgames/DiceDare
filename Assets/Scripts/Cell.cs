@@ -11,21 +11,38 @@ public class Cell : MonoBehaviour {
 	public bool operation = false;
 	// Use this for initialization
 	void Start () {
-		text = transform.Find ("Text").GetComponent<TextMesh> ();
-		text.text = "" + number;
+        SetNumber(number);
 		changeState (stateCell);
 		defaultColor = GetComponent<Renderer> ().material.GetColor ("_EmissionColor");
 	}
 
+    public void SetNumber(int number)
+    {
+        this.number = number;
+        text = transform.Find("Text").GetComponent<TextMesh>();
+        SetText("" + number);
+    }
+
 	public void changeState(StateCell s){
 		switch (s) {
-		case StateCell.Passed: 
-			text.text = "-";
+		case StateCell.Passed:
+            SetText("-");
 			GetComponent<MeshRenderer> ().enabled = false;
-			break;
+            //elimina el script para cambio de numero automatico
+            AutomaticChangeNumber a = GetComponent<AutomaticChangeNumber>();
+            if (a != null) Destroy(a);
+            //elimina el script para cambio de numero invisible
+            DissapearNumber d = GetComponent<DissapearNumber>();
+            if (d != null) Destroy(d);
+            break;
 		}
 		stateCell = s;
 	}
+
+    public void SetText(string text)
+    {
+        this.text.text = text;
+    }
 
 	public IEnumerator shine(int num){
 		Material m = GetComponent<Renderer> ().material;
