@@ -59,10 +59,17 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     public AudioSource bgm_go;
 	public static AudioSource bgm;
 
-	//public TutorialVideo tutorialVideo;
+    GameObject limitRight;
+    GameObject limitLeft;
+    GameObject limitUp;
+    GameObject limitDown;
 
-	//[HideInInspector]
-	public bool pause = false;
+    string currentSceneText;
+
+    //public TutorialVideo tutorialVideo;
+
+    //[HideInInspector]
+    public bool pause = false;
 
 	int timesDied = 0;
 	public GameObject hintScreen;
@@ -139,6 +146,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         else
             bgm.mute = false;*/
         string texto = PlayerPrefs.GetString("scene", "Scene1");
+        currentSceneText = texto;
         if (texto != "TUTORIAL")
         {
             string num = texto.Split(new char[1] { 'e' })[2];
@@ -228,6 +236,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
         if(appodealDemo != null)
             appodealDemo.showBanner(Appodeal.BANNER_BOTTOM);
+
     }
 
 	private Cell tutorialEndBlock;
@@ -682,7 +691,26 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				indice++;
 			}
 		}
-	}
+
+        GameObject limitParent = GameObject.Find("Limits");
+        if (limitParent != null)
+        {
+            limitRight = GameObject.Find("LimitRight");
+            limitRight.transform.position = new Vector3(0.5f, 0f, 0.5f);
+            limitRight.transform.localScale = new Vector3(1f, 1f, int.Parse(info[0]));
+            limitLeft = GameObject.Find("LimitLeft");
+            limitLeft.transform.position = new Vector3(-int.Parse(info[1]) + 0.5f, 0f, 0.5f);
+            limitLeft.transform.localScale = new Vector3(1f, 1f, int.Parse(info[0]));
+            limitUp = GameObject.Find("LimitUp");
+            limitUp.transform.position = new Vector3(0.5f, 0f, 0.5f);
+            limitUp.transform.localScale = new Vector3(int.Parse(info[1]), 1f, 1f);
+            limitDown = GameObject.Find("LimitDown");
+            limitDown.transform.position = new Vector3(0.5f, 0f, - int.Parse(info[0]) + 0.5f);
+            limitDown.transform.localScale = new Vector3(int.Parse(info[1]), 1f, 1f);
+
+            limitParent.transform.position = new Vector3((int.Parse(info[1]) - int.Parse(info[2])) - 1f, 0f, int.Parse(info[3]));
+        }
+    }
 
     public void backToCreator()
     {
@@ -1077,6 +1105,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 	public void playAgain(){
         //Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        PlayerPrefs.SetString("scene", currentSceneText);
         if (appodealDemo != null)
             appodealDemo.hideBanner();
         loadNextScene(SceneManager.GetActiveScene().name);

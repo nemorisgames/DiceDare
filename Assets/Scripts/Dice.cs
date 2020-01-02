@@ -400,6 +400,7 @@ public class Dice : MonoBehaviour {
 	}
 
 	void EvaluarDificultad(string tag, Cell c){
+        if (c == null) return;
 		switch(tag){
 			case "Rotate90CW":
 			case "Rotate90CCW":
