@@ -9,8 +9,8 @@ public class Dice : MonoBehaviour {
 	bool calculated = false;
 	public enum Operation {Sum, Rest, Mult, Div, None};
 	public Operation currentOperation = Operation.Sum;
-	public enum Direction {Up, Down, Left, Right};
-	Direction lastDirection;
+	public enum Direction {Up, Down, Left, Right, None};
+	public Direction lastDirection;
 	public Vector3 currentPos;
 	ArrayList numbers = new ArrayList();
 	ArrayList currentNumbers = new ArrayList();
@@ -41,6 +41,8 @@ public class Dice : MonoBehaviour {
 	public int passedCells = -1;
 	private Renderer [] quads = new Renderer[6];
 	private Animator animator;
+	private Quaternion lastRotation;
+	private Vector3 lastPosition;
 
 	void Awake(){
 		inGame = Camera.main.GetComponent<InGame> ();
@@ -68,6 +70,11 @@ public class Dice : MonoBehaviour {
 	}
 
 	public void ResetNumberPositions(){
+		transform.eulerAngles = new Vector3(
+			(transform.eulerAngles.x > 0 ? Mathf.Floor(transform.eulerAngles.x) : Mathf.Ceil(transform.eulerAngles.x)),
+			(transform.eulerAngles.y > 0 ? Mathf.Floor(transform.eulerAngles.y) : Mathf.Ceil(transform.eulerAngles.y)),
+			(transform.eulerAngles.z > 0 ? Mathf.Floor(transform.eulerAngles.z) : Mathf.Ceil(transform.eulerAngles.z))
+		);
 		transform.Find("TextUp").localPosition = Vector3.up * 0.51f;
 		transform.Find("TextDown").localPosition = Vector3.up * -0.51f;
 		transform.Find("TextLeft").localPosition = Vector3.right * -0.51f;
@@ -220,6 +227,11 @@ public class Dice : MonoBehaviour {
 		}
 	}
 
+	public void RestoreLastRotation(){
+		transform.rotation = lastRotation;
+		transform.position = lastPosition;
+	}
+
 	public IEnumerator turn(Direction d){
 		if(inGame.tutorial){
 			//if(inGame.tutorialIndex == 0 && d != Direction.Left || inGame.tutorialIndex == 1 && d != Direction.Down || inGame.tutorialIndex == 3 && d != Direction.Left)
@@ -228,6 +240,9 @@ public class Dice : MonoBehaviour {
 			//	inGame.NextTutorial(false);
 			inGame.HideTutorialPanel();
 		}
+		//lastRotation = transform.rotation;
+		//lastPosition = transform.position;
+		//Debug.Log(lastPosition);
 		EnableTutorialSign(false);
 		onMovement = true;
 		calculated = false;
@@ -257,7 +272,7 @@ public class Dice : MonoBehaviour {
 			break;
 		case Direction.Right:
 			//if(!Physics.Raycast(transform.position - Vector3.forward + Vector3.up, new Vector3(0f, -1f, 0f), out r, 5f,LayerMask.GetMask(new string[1]{"Cell"}))){
-				Debug.Log("nope");
+				//Debug.Log("nope");
 			//}
 			break;
 		}
@@ -288,6 +303,7 @@ public class Dice : MonoBehaviour {
 			}
 		}
 
+		
 		//ordena las caras y las almacena
 		switch(d){
 		case Direction.Up:
@@ -375,6 +391,7 @@ public class Dice : MonoBehaviour {
 			}
 			break;
 		}
+		
 		lastDirection = d;
 		onMovement = false;
 		currentPos = transform.position;
@@ -415,6 +432,7 @@ public class Dice : MonoBehaviour {
 	}
 
 	void EvaluarDificultad(string tag, Cell c){
+        if (c == null) return;
 		switch(tag){
 			case "Rotate90CW":
 			case "Rotate90CCW":
@@ -452,18 +470,19 @@ public class Dice : MonoBehaviour {
 	}
 
 	void OnTriggerStay(Collider c){
-		EvaluarDificultad(c.tag,c.GetComponent<Cell>());
+		Cell cell = c.GetComponent<Cell>();
+		EvaluarDificultad(c.tag,cell);
 		if (c.CompareTag ("Untagged") || c.CompareTag ("Sum") || c.CompareTag ("Substraction") || c.CompareTag ("Multiplication") || c.CompareTag ("Division")) {
 			if (onMovement || calculated)
 				return;
 			//print (c.GetComponent<Cell> ().stateCell);
-			if((!inGame.daily || (inGame.tutorial && inGame.unPauseOnMove)) && inGame.pause)
+			if((!inGame.daily || (inGame.tutorial && cell.stateCell == Cell.StateCell.Passed && inGame.TutorialIndex() > 0)) && inGame.pause)
 				inGame.UnPause();
 			//comprueba que el calculo este bien
 			//acepto para up y right, en ese caso comprueba que la celda haya sido pisada
 
-			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.Normal) {
-				int cellValue = c.GetComponent<Cell> ().number;
+			if (cell.stateCell == Cell.StateCell.Normal) {
+				int cellValue = cell.number;
 				int diceValueA = -100;
 				int diceValueB = -1;
 				switch (lastDirection) {
@@ -489,7 +508,7 @@ public class Dice : MonoBehaviour {
 
  				print (diceValueA + " + " + diceValueB + " = " + cellValue);
 				//inGame.currentBlock.currentNumbers = faceNumbers();
-				bool correct = inGame.calculateResult (diceValueA, diceValueB, cellValue,c.GetComponent<Cell>());
+				bool correct = inGame.calculateResult (diceValueA, diceValueB, cellValue,cell);
 
 				//Cambia el color del dado si toca una operacion
 				print(c.tag);
@@ -552,8 +571,8 @@ public class Dice : MonoBehaviour {
 					audio.PlayOneShot(audioCubeChange);
 				}
 			}
-			if (c.GetComponent<Cell> ().stateCell == Cell.StateCell.EndCell) {
-				c.GetComponent<Cell> ().stateCell = Cell.StateCell.Passed;
+			if (cell.stateCell == Cell.StateCell.EndCell) {
+				cell.stateCell = Cell.StateCell.Passed;
 				inGame.finishGame ();
 				if(testDifficulty){
 					Debug.Log("Giros: "+spins);

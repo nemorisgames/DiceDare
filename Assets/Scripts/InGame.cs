@@ -59,7 +59,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     public AudioSource bgm_go;
 	public static AudioSource bgm;
 
-	//public TutorialVideo tutorialVideo;
+    GameObject limitRight;
+    GameObject limitLeft;
+    GameObject limitUp;
+    GameObject limitDown;
 
 	//[HideInInspector]
 	public bool pause = false;
@@ -104,7 +107,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     public GameObject connectionProblem;
     public GameObject newRecordSign;
     public UILabel stageTime;
-
+	string currentSceneText;
 	string playerprefScene;
 	
 	[Header("Tutorial")]
@@ -141,6 +144,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         else
             bgm.mute = false;*/
         string texto = PlayerPrefs.GetString("scene", "Scene1");
+        currentSceneText = texto;
         if (texto != "TUTORIAL")
         {
             string num = texto.Split(new char[1] { 'e' })[2];
@@ -231,9 +235,16 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
         if(appodealDemo != null)
             appodealDemo.showBanner(Appodeal.BANNER_BOTTOM);
+
     }
 
 	private Cell tutorialEndBlock;
+
+	public int TutorialIndex(){
+		return newTutorialIndex;
+	}
+
+	public bool restartCoroutine;
 
 	void DailyInit(){
 		ResetDiceNumbers();
@@ -256,13 +267,14 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	private void ShowCurrentTutorial(){
+		restartCoroutine = false;
 		if(ITutorialPanel != null){
-			StopCoroutine(ITutorialPanel);
+			//StopCoroutine(ITutorialPanel);
 			StartCoroutine(ITutorialPanel);
 		}
 			
 		if(ITutorialPath != null){
-			StopCoroutine(ITutorialPath);
+			//StopCoroutine(ITutorialPath);
 			StartCoroutine(ITutorialPath);
 		}
 			
@@ -298,7 +310,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				ShowCurrentTutorial();
 			break;
 			case 3:
-				block.InitOperationCell(0,Dice.Operation.Sum,1);
+				block.InitNormalCell(0,1);
 				block.InitOperationCell(1,Dice.Operation.Sum,-3);
 				ITutorialPanel = ShowTutorialPanel(1,-3,"-");
 				ITutorialPath = LightDice(-Vector3.up,Vector3.right,1);
@@ -706,7 +718,26 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				indice++;
 			}
 		}
-	}
+
+        GameObject limitParent = GameObject.Find("Limits");
+        if (limitParent != null)
+        {
+            limitRight = GameObject.Find("LimitRight");
+            limitRight.transform.position = new Vector3(0.5f, 0f, 0.5f);
+            limitRight.transform.localScale = new Vector3(1f, 1f, int.Parse(info[0]));
+            limitLeft = GameObject.Find("LimitLeft");
+            limitLeft.transform.position = new Vector3(-int.Parse(info[1]) + 0.5f, 0f, 0.5f);
+            limitLeft.transform.localScale = new Vector3(1f, 1f, int.Parse(info[0]));
+            limitUp = GameObject.Find("LimitUp");
+            limitUp.transform.position = new Vector3(0.5f, 0f, 0.5f);
+            limitUp.transform.localScale = new Vector3(int.Parse(info[1]), 1f, 1f);
+            limitDown = GameObject.Find("LimitDown");
+            limitDown.transform.position = new Vector3(0.5f, 0f, - int.Parse(info[0]) + 0.5f);
+            limitDown.transform.localScale = new Vector3(int.Parse(info[1]), 1f, 1f);
+
+            limitParent.transform.position = new Vector3((int.Parse(info[1]) - int.Parse(info[2])) - 1f, 0f, int.Parse(info[3]));
+        }
+    }
 
     public void backToCreator()
     {
@@ -729,6 +760,27 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		}
 	}
 
+	private IEnumerator TutorialFall(){
+		dice.ExecAnim("BadMove");
+		yield return new WaitForSeconds(1.2f);
+		while(panelTransicion.alpha < 1){
+			panelTransicion.alpha += 0.1f;
+			yield return new WaitForSeconds(0.01f);
+		}
+		SceneManager.LoadScene("NewTutorial");
+		/*dice.ExecAnim("Idle");
+		//dice.transform.eulerAngles = Vector3.zero;
+		yield return new WaitForSeconds(0.5f);
+		dice.ResetNumberPositions();
+		dice.RestoreLastRotation();
+		while(panelTransicion.alpha > 0){
+			panelTransicion.alpha -= 0.1f;
+			yield return new WaitForSeconds(0.01f);
+		}
+		UnPause();
+		ShowCurrentTutorial();*/
+	}
+
 	private IEnumerator TutorialFail(){
 		dice.ExecAnim("BadMove");
 		yield return new WaitForSeconds(0.8f);
@@ -739,7 +791,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		dice.ExecAnim("Idle");
 		dice.RollBack();
 		//dice.transform.eulerAngles = Vector3.zero;
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(1f);
 		dice.ResetNumberPositions();
 		while(panelTransicion.alpha > 0){
 			panelTransicion.alpha -= 0.1f;
@@ -790,6 +842,11 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		{ "time", secondsAvailable - Time.timeSinceLevelLoad }
 		});
 #endif
+		if(tutorial){
+			Pause();
+			StartCoroutine(TutorialFall());
+			return;
+		}
         if (Random.Range(0, 100) < 30)
         {
             if (appodealDemo != null)
@@ -806,7 +863,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         StartCoroutine(reloadScene());
         audio.pitch = 1f;
         audio.PlayOneShot(audioBadMove);
-        dice.GetComponent<Animator>().SetTrigger("BadMove");
+        dice.ExecAnim("BadMove");
     }
 
 	IEnumerator reloadScene(){
@@ -1108,6 +1165,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 	public void playAgain(){
         //Appodeal.hide(Appodeal.BANNER_BOTTOM);
+        PlayerPrefs.SetString("scene", currentSceneText);
         if (appodealDemo != null)
             appodealDemo.hideBanner();
         loadNextScene(SceneManager.GetActiveScene().name);
