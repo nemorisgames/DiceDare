@@ -200,7 +200,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         cells = GameObject.Find("Cells").transform;
         cellsText = cells.GetComponentsInChildren<TextMesh>();
         foreach (TextMesh t in cellsText) {
-            texts.Add(t.GetComponent<Transform>());
+            if(t.gameObject.name != "TextApprox")
+                texts.Add(t.GetComponent<Transform>());
         }
 		if(!daily){
        		recordSeconds = PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), -1f);
@@ -684,7 +685,13 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
                     break;
             }
             if (g != null) {
-					g.GetComponent<Cell> ().number = int.Parse (arregloNumbers [indice]);
+                    if (arregloNumbers[indice].Contains("*"))
+                    {
+                        g.GetComponent<Cell>().SetNumberApprox(int.Parse(arregloNumbers[indice].Remove(0, 2)));
+                    }
+                    else {
+                        g.GetComponent<Cell>().number = int.Parse(arregloNumbers[indice]);
+                    }
 					g.transform.parent = rootCells;
 					cellArray [i,j] = g;
 				}
@@ -1032,7 +1039,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			res = ((diceValueA * diceValueB));
 			break;
 		case Dice.Operation.Div:
-			res = ((diceValueA / diceValueB));
+			res = (Mathf.RoundToInt((diceValueA * 1f) / (diceValueB * 1f)));
 			//if (res == 0)
 			//	res = -1;
 			break;

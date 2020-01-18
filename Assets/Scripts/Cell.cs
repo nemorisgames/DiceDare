@@ -4,23 +4,45 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour {
 	TextMesh text;
-	public enum StateCell {Normal, Passed, EndCell};
+    TextMesh textAprox;
+    public enum StateCell {Normal, Passed, EndCell};
 	public StateCell stateCell = StateCell.Normal;
 	public int number = 3;
 	Color32 defaultColor;
 	public bool operation = false;
+    bool approx = false;
 	// Use this for initialization
 	void Start () {
         SetNumber(number);
 		changeState (stateCell);
 		defaultColor = GetComponent<Renderer> ().material.GetColor ("_EmissionColor");
-	}
+    }
+
+    public void SetNumberApprox(int number)
+    {
+        approx = true;
+        SetNumber(number);
+    }
 
     public void SetNumber(int number)
     {
+        if(text == null)
+            text = transform.Find("Text").GetComponent<TextMesh>();
         this.number = number;
-        text = transform.Find("Text").GetComponent<TextMesh>();
         SetText("" + number);
+        if (approx)
+            CreateAprox();
+    }
+
+    public void CreateAprox()
+    {
+        GameObject textAproxGO = Instantiate(text.gameObject, text.gameObject.transform.position, text.gameObject.transform.rotation);
+        textAproxGO.name = "TextApprox";
+        textAproxGO.transform.parent = transform;
+        textAproxGO.transform.localPosition += new Vector3(0f, 0f, -0.3f);
+        textAprox = textAproxGO.GetComponent<TextMesh>();
+        textAprox.fontSize = 26;
+        textAprox.text = "Approx.";
     }
 
 	public void changeState(StateCell s){
@@ -41,6 +63,7 @@ public class Cell : MonoBehaviour {
 
     public void SetText(string text)
     {
+        if (textAprox != null) Destroy(textAprox.gameObject);
         this.text.text = text;
     }
 

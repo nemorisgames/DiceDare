@@ -11,6 +11,7 @@ public class CellLevelCreator : MonoBehaviour {
     public int pathNumber = -1;
     public TextMesh pathLabel;
     public bool visited = false;
+    public bool approx = false;
 
     LevelCreator levelCreator;
     //public Vector2 position = Vector2.zero;
@@ -64,6 +65,12 @@ public class CellLevelCreator : MonoBehaviour {
             updateType();
         }
 
+        if (Input.GetKey(KeyCode.Alpha8))
+        {
+            approx = !approx;
+            updateType();
+        }
+
         /*
         if (Input.GetKey(KeyCode.Alpha8))
         {
@@ -81,14 +88,14 @@ public class CellLevelCreator : MonoBehaviour {
         }
     }
 
-    void updateType()
+    public void updateType()
     {
         for (int i = 0; i < types.Length; i++)
         {
             if (types[i] != null)
                 types[i].SetActive(i - 2 == cellType);
         }
-        numberLabel.text = "" + cellNumber;
+        numberLabel.text = (approx?"*":"") + cellNumber;
         pathLabel.text = "" + pathNumber;
     }
 
