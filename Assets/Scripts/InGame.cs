@@ -117,7 +117,11 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public UILabel tutorialLeft, tutorialRight;
 	private GameObject tutorialLeftGO, tutorialRightGO;
 	public TweenScale tutorialLeftScale, tutorialRightScale;
+	public TweenScale tutorialBottom;
+	public UIWidget tutorialBottomWidget;
+	public GameObject [] tutorialInstructions;
 	private IEnumerator ITutorialPath, ITutorialPanel;
+	private Color redText, greenText;
 
     // Use this for initialization
     void Start () {
@@ -130,7 +134,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         //tutorialPanel.gameObject.SetActive(true);
         //playTutorial();
 
-
+		ColorUtility.TryParseHtmlString("#FF321D",out redText);
+		ColorUtility.TryParseHtmlString("#17CF3F",out greenText);
 
         if (bgm == null) {
 			bgm = bgm_go;
@@ -158,38 +163,6 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 		if(tutorial){
 			unPauseOnMove = false;
-			/*
-			tutorialMode = Mathf.Clamp(PlayerPrefs.GetInt("tutorialMode",1),1,4);
-            if ((int)((tutorialMode - 1) * 5) == 0)
-            {
-                PlayerPrefs.SetString("scene", "Scene0");
-            }
-            else
-			    PlayerPrefs.SetString ("scene", GlobalVariables.getIndexScene("" + (int)((tutorialMode - 1) * 5))) ;
-			tutorialOps = new string[2];
-			switch(tutorialMode){
-				case 1:
-				tutorialOps[0] = "1 + 1 = 2";
-				tutorialOps[1] = "2 + 1 = 3";
-				break;
-				case 2:
-				tutorialOps[0] = "1 + 1 = 2";
-				tutorialOps[1] = "2 - 1 = 1";
-				break;
-				case 3:
-				tutorialOps[0] = "2 + 2 = 4";
-				tutorialOps[1] = "4 x 2 = 8";
-				break;
-				case 4:
-				tutorialOps[0] = "5 + 5 = 10";
-				tutorialOps[1] = "10 / 5 = 2";
-				break;
-			}
-
-			tutorialv3[0].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[0];
-			tutorialv3[1].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[1];
-
-			//Debug.Log(tutorialMode);*/
 		}
 
 
@@ -267,6 +240,36 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	private void ShowCurrentTutorial(){
+		StartCoroutine(TutorialOrder());
+	}
+
+	private IEnumerator TutorialOrder(){
+		tutorialBottomWidget.alpha = 0;
+		switch(newTutorialIndex){
+			case 2:
+				ShowBottomTutorial(0);
+				yield return new WaitForSeconds(0.5f);
+				tutorialBottom.PlayForward();
+				yield return new WaitForSeconds(4f);
+				tutorialBottom.PlayReverse();
+				yield return new WaitForSeconds(0.25f);
+			break;
+			case 1:
+				ShowBottomTutorial(2);
+				yield return new WaitForSeconds(0.5f);
+				tutorialBottom.PlayForward();
+				yield return new WaitForSeconds(4f);
+				tutorialBottom.PlayReverse();
+				yield return new WaitForSeconds(0.25f);
+			break;
+			case 4:
+				ShowBottomTutorial(1);
+				yield return new WaitForSeconds(0.5f);
+				tutorialBottom.PlayForward();
+			break;
+			default:
+			break;
+		}
 		restartCoroutine = false;
 		if(ITutorialPanel != null){
 			//StopCoroutine(ITutorialPanel);
@@ -276,9 +279,31 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		if(ITutorialPath != null){
 			//StopCoroutine(ITutorialPath);
 			StartCoroutine(ITutorialPath);
-		}
-			
+		}	
 	}
+
+	private void ShowBottomTutorial(int index){
+		foreach(GameObject g in tutorialInstructions){
+			g.SetActive(false);
+		}
+		tutorialInstructions[index].SetActive(true);
+	}
+
+	public struct DiceLights{
+		public Vector3 up;
+		public Vector3 dir;
+		public int cell;
+		public float delay;
+
+		public void Config(Vector3 _up, Vector3 _dir, int _cell, float _delay = 3f){
+			up = _up;
+			dir = _dir;
+			cell = _cell;
+			delay = _delay;
+		}
+	}
+
+	private DiceLights lightConfig;
 
 	void componerEscena_Tutorial(){
 		Pause();
@@ -299,8 +324,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				block.InitOperationCell(0,Dice.Operation.Rest,6);
 				ITutorialPanel = ShowTutorialPanel(6,6,"+");
 				ITutorialPath = LightDice(Vector3.forward,-Vector3.right,0);
-				ShowCurrentTutorial();
-				
+				ShowCurrentTutorial();	
 			break;
 			case 2:
 				block.InitNormalCell(0,3);
@@ -319,7 +343,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			break;
 			case 4:
 				StartCoroutine(TutorialEndCell());
-				HideTutorialPanel();
+				//HideTutorialPanel();
+				ITutorialPanel = null;
+				ITutorialPath = null;
+				ShowCurrentTutorial();
 			break;
 			default:
 				if(unPauseOnMove)
@@ -330,13 +357,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		currentBlock = block;
 	}
 
-	private Color textColor = new Color(1,1,1,0);
-
-	private IEnumerator ShowTutorialPanel(int left, int right, string sign, float delay = 2f, bool writeFromDice = true){
+	private IEnumerator ShowTutorialPanel(int left, int right, string sign, float delay = 1.5f, bool writeFromDice = true){
 		Pause();
 		yield return new WaitForSeconds(delay);
-		tutorialLeft.color = textColor;
-		tutorialRight.color = textColor;
 		tutorialLeftScale.PlayForward();
 		tutorialRightScale.PlayForward();
 		if(true){
@@ -346,16 +369,27 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	private IEnumerator LightDice(Vector3 up, Vector3 dir, int cell, float delay = 3f){
+		tutorialLeft.color = redText;
+		tutorialRight.color = redText;
+		if(cell == 0){
+			tutorialLeft.color = greenText;
+		}
+		else{
+			tutorialRight.color = greenText;
+		}
+		lightConfig.Config(up,dir,cell,delay);
 		yield return new WaitForSeconds(delay);
 		Pause();
 		dice.ShineFace(up,1);
 		yield return new WaitForSeconds(1f);
 		dice.ShineFace(dir,1);
 		yield return new WaitForSeconds(1f);
-		if(cell == 0)
+		if(cell == 0){
 			StartCoroutine(currentBlock.LCell.GetComponent<Cell>().shine(1));
-		else
+		}
+		else{
 			StartCoroutine(currentBlock.DCell.GetComponent<Cell>().shine(1));
+		}
 		UnPause();
 	}
 
@@ -389,31 +423,6 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     }
 
     public void NextTutorial(bool b){
-
-		/*
-		if(tutorialIndex == 3)
-			return;
-		if(tutorialIndex >= 0){
-			if(tutorialIndex == 0)
-				//tutorialv3[0].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[0];
-			if(tutorialIndex == 1)
-				//tutorialv3[1].transform.Find("Container/Op").GetComponent<UILabel>().text = tutorialOps[1];
-			if(tutorialIndex != 3)
-				tutorialv3[tutorialIndex].PlayReverse();
-			tutorialv3[tutorialIndex].gameObject.SetActive(false);
-		}
-		tutorialIndex++;
-		if(tutorialv3.Length <= tutorialIndex)
-			return;
-		tutorialv3[tutorialIndex].gameObject.SetActive(true);
-		if(tutorialIndex != 4)
-			tutorialv3[tutorialIndex].PlayForward();
-		else
-			tutorialv3[tutorialIndex].value = 1;
-		Pause();
-		/*if(tutorialIndex == 2)
-			b = true;
-		StartCoroutine(tutorialPause(b));*/
 	}
 
 	IEnumerator tutorialPause(bool b){
@@ -798,7 +807,12 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			yield return new WaitForSeconds(0.01f);
 		}
 		UnPause();
-		ShowCurrentTutorial();
+		if(newTutorialIndex < 4){
+			tutorialLeftScale.PlayForward();
+			tutorialRightScale.PlayForward();
+			StartCoroutine(LightDice(lightConfig.up,lightConfig.dir,lightConfig.cell,1f));
+		}
+		
 	}
 
 	public bool calculateResult(int diceValueA, int diceValueB, int cellValue, Cell cell = null){
@@ -993,6 +1007,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
         if (tutorial)
         {
+			tutorialBottom.PlayReverse();
             /*int levelS = GlobalVariables.getSceneIndex(PlayerPrefs.GetString("scene", "Scene1")) + 1; //int.Parse(PlayerPrefs.GetString("scene", "Scene1").Split(new char[1] { 'e' })[2]) + 1;//// (int.Parse (num) + 1);
 
             if (levelS < GlobalVariables.nLevels)
