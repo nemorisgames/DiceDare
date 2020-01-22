@@ -146,7 +146,16 @@ public class LevelCreator : MonoBehaviour
                     hit.transform.GetComponent<CellLevelCreator>().cellType = int.Parse(SceneAux[contador]);
 
                     //completa los numeros de las celdas
-                    hit.transform.GetComponent<CellLevelCreator>().cellNumber = int.Parse(SceneNumbersAux[contador]);
+                    if (SceneNumbersAux[contador].Contains("*"))
+                    {
+                        hit.transform.GetComponent<CellLevelCreator>().approx = true;
+                        hit.transform.GetComponent<CellLevelCreator>().cellNumber = (int.Parse(SceneNumbersAux[contador].Remove(0, 2)));
+                        hit.transform.GetComponent<CellLevelCreator>().updateType();
+                    }
+                    else
+                    {
+                        hit.transform.GetComponent<CellLevelCreator>().cellNumber = int.Parse(SceneNumbersAux[contador]);
+                    }
 
                     //completa el path
                     hit.transform.GetComponent<CellLevelCreator>().pathNumber = getPathNumber(ScenePathAux, i, j);
@@ -197,7 +206,7 @@ public class LevelCreator : MonoBehaviour
                     if(hit.transform.GetComponent<CellLevelCreator>().cellType == -1)  Scene += "|" + (j) + "|" + (i) + "|0$";
                     
                     //completa los numeros de las celdas
-                    SceneNumbers += " " + hit.transform.GetComponent<CellLevelCreator>().cellNumber + " |";
+                    SceneNumbers += " " + (hit.transform.GetComponent<CellLevelCreator>().approx?"*":"") + hit.transform.GetComponent<CellLevelCreator>().cellNumber + " |";
                     //completa el path
                     if (hit.transform.GetComponent<CellLevelCreator>().pathNumber != -1)
                         ScenePathAux[hit.transform.GetComponent<CellLevelCreator>().pathNumber - 1] = i + "," + j;

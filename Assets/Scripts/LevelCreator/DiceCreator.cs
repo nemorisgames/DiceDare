@@ -62,7 +62,7 @@ public class DiceCreator : MonoBehaviour {
             if (Physics.Raycast(referenceDice.position + referenceDice.right, -Vector3.up, out hit, 100.0f))
             {
                 CellLevelCreator cellLevelCreator = hit.transform.GetComponent<CellLevelCreator>();
-                string valueNextCell = hit.transform.Find("Text").GetComponent<TextMesh>().text;
+                string valueNextCell = hit.transform.Find("Text").GetComponent<TextMesh>().text.Replace("*", "");
                 write(int.Parse((cellLevelCreator.visited) ?"" + right: valueNextCell), left, up, down, backward, forward);
                 referenceDice.position = referenceDice.position + referenceDice.right;
                 if (!cellLevelCreator.visited && cellLevelCreator.cellType >= 3 && cellLevelCreator.cellType <= 8)
@@ -105,7 +105,7 @@ public class DiceCreator : MonoBehaviour {
             if (Physics.Raycast(referenceDice.position + referenceDice.forward, -Vector3.up, out hit, 100.0f))
             {
                 CellLevelCreator cellLevelCreator = hit.transform.GetComponent<CellLevelCreator>();
-                string valueNextCell = hit.transform.Find("Text").GetComponent<TextMesh>().text;
+                string valueNextCell = hit.transform.Find("Text").GetComponent<TextMesh>().text.Replace("*", "");
                 write(int.Parse((cellLevelCreator.visited) ? "" + backward : valueNextCell), forward, left, right, down, up);
                 referenceDice.position = referenceDice.position + referenceDice.forward;
                 if (!cellLevelCreator.visited && cellLevelCreator.cellType >= 3 && cellLevelCreator.cellType <= 8)
