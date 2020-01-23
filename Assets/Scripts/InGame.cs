@@ -233,8 +233,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			currentBlock.InitNormalCell(1,5);
 			tutorialLeft.text = 3+"\n\n"+dice.OperationString()+" "+1+"\n_____\n\n"+0;
 			tutorialRight.text = 3+"\n\n"+dice.OperationString()+" "+2+"\n_____\n\n"+5;
-			ITutorialPanel = ShowTutorialPanel(0,5,"+",2.5f);
-			ITutorialPath = LightDice(Vector3.up,-Vector3.forward,1,3.5f);
+			ITutorialPanel = ShowTutorialPanel(0,5,"+",1.5f);
+			ITutorialPath = LightDice(Vector3.up,-Vector3.forward,1,2f);
 			ShowCurrentTutorial();
 		}
 		else
@@ -257,19 +257,16 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				ShowBottomTutorial(3);
 				yield return new WaitForSeconds(0.5f);
 				tutorialBottom.PlayForward();
-				yield return new WaitForSeconds(0.25f);
 			break;
 			case 2:
 				ShowBottomTutorial(0);
 				yield return new WaitForSeconds(0.5f);
 				tutorialBottom.PlayForward();
-				yield return new WaitForSeconds(0.25f);
 			break;
 			case 1:
 				ShowBottomTutorial(2);
 				yield return new WaitForSeconds(0.5f);
 				tutorialBottom.PlayForward();
-				yield return new WaitForSeconds(0.25f);
 			break;
 			case 4:
 				ShowBottomTutorial(1);
@@ -333,22 +330,22 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			case 1:
 				block.InitNormalCell(1,6);
 				block.InitOperationCell(0,Dice.Operation.Rest,6);
-				ITutorialPanel = ShowTutorialPanel(6,6,"+");
-				ITutorialPath = LightDice(Vector3.forward,-Vector3.right,0);
+				ITutorialPanel = ShowTutorialPanel(6,6,"+",1f);
+				ITutorialPath = LightDice(Vector3.forward,-Vector3.right,0,1.5f);
 				ShowCurrentTutorial();	
 			break;
 			case 2:
 				block.InitNormalCell(0,3);
 				block.InitNormalCell(1,3);
-				ITutorialPanel = ShowTutorialPanel(3,3,"-");
-				ITutorialPath = LightDice(Vector3.right,Vector3.up,1);
+				ITutorialPanel = ShowTutorialPanel(3,3,"-",1f);
+				ITutorialPath = LightDice(Vector3.right,Vector3.up,1,1.5f);
 				ShowCurrentTutorial();
 			break;
 			case 3:
 				block.InitNormalCell(0,1);
 				block.InitOperationCell(1,Dice.Operation.Sum,-3);
-				ITutorialPanel = ShowTutorialPanel(1,-3,"-");
-				ITutorialPath = LightDice(-Vector3.up,Vector3.right,1);
+				ITutorialPanel = ShowTutorialPanel(1,-3,"-",1f);
+				ITutorialPath = LightDice(-Vector3.up,Vector3.right,1,1.5f);
 				ShowCurrentTutorial();
 				unPauseOnMove = true;
 			break;
