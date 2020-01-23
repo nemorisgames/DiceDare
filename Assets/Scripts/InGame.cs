@@ -205,6 +205,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		}
 		if(tutorial){
 			dice.SetNumbers(1,2,3,3,3,3);
+			tutorialLeftScale.transform.localScale = Vector3.up + Vector3.forward;
+			tutorialRightScale.transform.localScale = Vector3.up + Vector3.forward;
+			tutorialBottom.transform.localScale = Vector3.right + Vector3.forward;
+			tutorialBottomWidget.alpha = 0;
 		}
 
         if(appodealDemo != null)
@@ -245,22 +249,26 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	private IEnumerator TutorialOrder(){
-		tutorialBottomWidget.alpha = 0;
+		if(newTutorialIndex != 3)
+			tutorialBottomWidget.alpha = 0;
+		yield return new WaitForSeconds(0.5f);
 		switch(newTutorialIndex){
+			case 0:
+				ShowBottomTutorial(3);
+				yield return new WaitForSeconds(0.5f);
+				tutorialBottom.PlayForward();
+				yield return new WaitForSeconds(0.25f);
+			break;
 			case 2:
 				ShowBottomTutorial(0);
 				yield return new WaitForSeconds(0.5f);
 				tutorialBottom.PlayForward();
-				yield return new WaitForSeconds(4f);
-				tutorialBottom.PlayReverse();
 				yield return new WaitForSeconds(0.25f);
 			break;
 			case 1:
 				ShowBottomTutorial(2);
 				yield return new WaitForSeconds(0.5f);
 				tutorialBottom.PlayForward();
-				yield return new WaitForSeconds(4f);
-				tutorialBottom.PlayReverse();
 				yield return new WaitForSeconds(0.25f);
 			break;
 			case 4:
@@ -295,12 +303,14 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		public Vector3 dir;
 		public int cell;
 		public float delay;
+		public DailyBlock block;
 
-		public void Config(Vector3 _up, Vector3 _dir, int _cell, float _delay = 3f){
+		public void Config(Vector3 _up, Vector3 _dir, int _cell, DailyBlock _block, float _delay = 3f){
 			up = _up;
 			dir = _dir;
 			cell = _cell;
 			delay = _delay;
+			block = _block;
 		}
 	}
 
@@ -370,6 +380,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	private IEnumerator LightDice(Vector3 up, Vector3 dir, int cell, float delay = 3f){
+		DailyBlock block = currentBlock;
 		tutorialLeft.color = redText;
 		tutorialRight.color = redText;
 		if(cell == 0){
@@ -378,26 +389,29 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		else{
 			tutorialRight.color = greenText;
 		}
-		lightConfig.Config(up,dir,cell,delay);
+		lightConfig.Config(up,dir,cell,block,delay);
+
 		yield return new WaitForSeconds(delay);
-		Pause();
+		UnPause();
 		dice.ShineFace(up,1);
 		yield return new WaitForSeconds(1f);
 		dice.ShineFace(dir,1);
 		yield return new WaitForSeconds(1f);
 		if(cell == 0){
-			StartCoroutine(currentBlock.LCell.GetComponent<Cell>().shine(1));
+			StartCoroutine(block.LCell.GetComponent<Cell>().shine(1));
 		}
 		else{
-			StartCoroutine(currentBlock.DCell.GetComponent<Cell>().shine(1));
+			StartCoroutine(block.DCell.GetComponent<Cell>().shine(1));
 		}
-		UnPause();
+		//UnPause();
 	}
 
 	public void HideTutorialPanel(){
 		//panelUITutorial.GetComponent<TweenAlpha>().PlayReverse();
 		tutorialLeftScale.PlayReverse();
 		tutorialRightScale.PlayReverse();
+		if(newTutorialIndex < 4 && newTutorialIndex != 2)
+			tutorialBottom.PlayReverse();
 	}
 
 	IEnumerator TutorialEndCell(){
@@ -842,6 +856,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				path.RemoveAt (0);
 			Instantiate (dice.goodMove, new Vector3(dice.transform.position.x,dice.transform.position.y + diceSize, dice.transform.position.z), Quaternion.LookRotation(Vector3.up));
 			if(tutorial){
+				HideTutorialPanel();
 				if(unPauseOnMove)
 					UnPause();
 				componerEscena_Tutorial();

@@ -238,7 +238,7 @@ public class Dice : MonoBehaviour {
 			//	yield break;
 			//else
 			//	inGame.NextTutorial(false);
-			inGame.HideTutorialPanel();
+			//inGame.HideTutorialPanel();
 		}
 		//lastRotation = transform.rotation;
 		//lastPosition = transform.position;
