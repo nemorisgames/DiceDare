@@ -134,6 +134,8 @@ public class Dice : MonoBehaviour {
 
 		if(inGame.daily) inGame.currentBlock.currentNumbers = faceNumbers();
 		hintTime = 5 + getHintTime();
+
+		EnableTutorialSign(false);
 	}
 
 	public void ShineFace(Vector3 face, int num){
@@ -200,7 +202,7 @@ public class Dice : MonoBehaviour {
 		if(!inGame.tutorial)
 			inGame.UnPause();
 		//if(inGame.daily)
-            EnableTutorialSign(true);
+            //EnableTutorialSign(true);
 		//if(inGame.tutorial)
 		//	inGame.NextTutorial(false);
 	}
@@ -636,7 +638,7 @@ public class Dice : MonoBehaviour {
             if (currentOperation != op)
             {
                 currentOperation = op;
-                EnableTutorialSign(true);
+                ///EnableTutorialSign(true);
                 print("adentro");
             }
             else
@@ -711,7 +713,7 @@ public class Dice : MonoBehaviour {
 			if (Input.GetMouseButtonUp (0)) {
 				if (timeSwipe + 1f > Time.time && Vector3.Distance (initialPosition, Input.mousePosition) >= 50f) {
 					Vector3 dir = (Input.mousePosition - initialPosition).normalized;
-					print ("swipe!" + Vector3.Angle (new Vector3 (1f, 0f, 0f), dir));
+					//print ("swipe!" + Vector3.Angle (new Vector3 (1f, 0f, 0f), dir));
 					float angle = Vector3.Angle (new Vector3 (1f, 0f, 0f), dir);
 					if (angle >= 0f && angle < 90f) {
 						if (dir.y > 0f) {
@@ -756,13 +758,13 @@ public class Dice : MonoBehaviour {
 		/*if(inGame.pause)
 			return;*/
 		//Debug.Log("enable "+b);
-		if(PlayerPrefs.GetInt("tutorialsDisabled",0) == 1){
+		/*if(PlayerPrefs.GetInt("tutorialsDisabled",0) == 1){
 			inGame.tutorialv2.gameObject.SetActive(false);
 			return;
-		}
+		}*/
 		
-		if(b)
-			UpdateTutorialSign(currentOperation);
+		//if(b)
+		//	UpdateTutorialSign(currentOperation);
 		
 		//inGame.tutorialv2.gameObject.SetActive(b);
 	}

@@ -251,8 +251,8 @@ public class LevelSelection : MonoBehaviour
     }
 
     void CalculateGrid(){
-        //calcular filas + ajustar escala
-        if(resolution.width > resolution.height){
+        //Debug.Log(screenRes);
+        if(screenRes > 1){
             grid.maxPerLine = 5;
             grid.transform.localScale = new Vector3(1,1,1);
         }
@@ -270,6 +270,11 @@ public class LevelSelection : MonoBehaviour
                 DestroyImmediate(go);
         currentButtons.Clear();
         CalculateGrid();
+        Debug.Log(startIndex % buttonsPerPage != 1);
+        while(startIndex % buttonsPerPage >= 1){
+            startIndex--;
+        }
+        page = Mathf.CeilToInt(startIndex / buttonsPerPage);
         //instanciar botones
         Random.InitState(25*page + 25 + 100*page);
         for(int i = startIndex; i < Mathf.Min(startIndex + buttonsPerPage,GlobalVariables.nLevels-1); i++){
@@ -478,7 +483,8 @@ public class LevelSelection : MonoBehaviour
         }
     }
 	
-	// Update is called once per frame
+	private float screenRes;
+
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			Application.Quit ();
@@ -511,10 +517,16 @@ public class LevelSelection : MonoBehaviour
             PrevPage();
         }
 
-        if(autoFlip && resolution.width != Screen.currentResolution.width){
-            resolution = Screen.currentResolution;
+        float currentRes = ((Screen.width * 1f) / (Screen.height * 1f));
+        if(autoFlip && currentRes != screenRes){
+            screenRes = currentRes;
             ResetGridButtons(firstInPage);
         }
+
+        /*if(autoFlip && resolution.width != Screen.currentResolution.width){
+            resolution = Screen.currentResolution;
+            ResetGridButtons(firstInPage);
+        }*/
 
         if (Input.GetMouseButtonDown (0)) {
             swipeInitialPos = Input.mousePosition;
@@ -549,7 +561,7 @@ public class LevelSelection : MonoBehaviour
         if(firstInPage + buttonsPerPage >= GlobalVariables.nLevels)
             return;
         page = Mathf.Clamp(page + 1,0,300);     
-        Debug.Log("page "+page);
+        //Debug.Log("page "+page);
         firstInPage = page * buttonsPerPage;
         ResetGridButtons(firstInPage);
     }
