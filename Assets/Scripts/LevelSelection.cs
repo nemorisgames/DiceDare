@@ -557,6 +557,10 @@ public class LevelSelection : MonoBehaviour
             
 	}
 
+    public void LoadTutorial(){
+        SceneManager.LoadScene("NewTutorial");
+    }
+
     void NextPage(){
         if(firstInPage + buttonsPerPage >= GlobalVariables.nLevels)
             return;

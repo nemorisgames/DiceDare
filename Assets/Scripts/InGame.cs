@@ -193,8 +193,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         //StartCoroutine (cellArray[1,2].GetComponent<Cell>().shine ());
         //StartCoroutine (lightPath (2));
         diceSize = dice.GetComponent<MeshRenderer>().bounds.size.y / 2;
-        hintsAvailable = PlayerPrefs.GetInt("hints", 2);
-        hintIndicator.text = "" + hintsAvailable;
+		if(!tutorial){
+			hintsAvailable = PlayerPrefs.GetInt("hints", 2);
+        	hintIndicator.text = "" + hintsAvailable;
+		}
 		//showTutorial = nguiCam.cullingMask;
 
 		//GetConsecutiveDays();
@@ -229,6 +231,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public bool restartCoroutine;
 
 	void DailyInit(){
+		Debug.Log("here");
 		ResetDiceNumbers();
 		levelNum.text = "";
 		currentBlock.currentNumbers = dice.faceNumbers();
@@ -324,10 +327,6 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		DailyBlock block = aux.GetComponent<DailyBlock>();
 		currentBlock.currentNumbers = dice.faceNumbers();
 		Dice.Operation operation = dice.currentOperation;
-		if(currentBlock.currentNumbers[0] > 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[1] >= 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[2]  >= 100 || currentBlock.currentNumbers[0] == 0 || Mathf.Abs(currentBlock.currentNumbers[0]) > 10 && (Mathf.Abs(currentBlock.currentNumbers[1]) > 10 || Mathf.Abs(currentBlock.currentNumbers[2]) > 10)){
-			ResetDiceNumbers();
-			currentBlock.currentNumbers = dice.faceNumbers();
-		}
 		
 		newTutorialIndex++;
 		switch(newTutorialIndex){
@@ -473,6 +472,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	void ResetDiceNumbers(){
+		Debug.Log("RESET");
 		dice.transform.Find ("TextUp").GetComponent<TextMesh> ().text = "" + Random.Range(2,7);
 		dice.transform.Find ("TextLeft").GetComponent<TextMesh> ().text = "" + Random.Range(1,7);
 		dice.transform.Find ("TextForward").GetComponent<TextMesh> ().text = "" + Random.Range(1,7);
@@ -1453,6 +1453,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		currentBlock.currentNumbers = dice.faceNumbers();
 		Dice.Operation operation = dice.currentOperation;
 		if(currentBlock.currentNumbers[0] > 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[1] >= 100 || currentBlock.currentNumbers[0] * currentBlock.currentNumbers[2]  >= 100 || currentBlock.currentNumbers[0] == 0 || Mathf.Abs(currentBlock.currentNumbers[0]) > 10 && (Mathf.Abs(currentBlock.currentNumbers[1]) > 10 || Mathf.Abs(currentBlock.currentNumbers[2]) > 10)){
+			Debug.Log("here");
 			ResetDiceNumbers();
 			currentBlock.currentNumbers = dice.faceNumbers();
 		}
