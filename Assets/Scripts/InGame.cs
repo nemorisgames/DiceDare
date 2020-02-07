@@ -1640,7 +1640,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		else if(!daily && !tutorial){
 			Analytics.CustomEvent("Finished"+PlayerPrefs.GetString("scene","Scene1"),new Dictionary<string,object>
 			{
-				{"sceneTime",Time.timeSinceLevelLoad}
+				{"sceneTime",Time.timeSinceLevelLoad},
 				{"totalSceneTime",totalTime},
 			});
 		}
