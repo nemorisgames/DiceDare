@@ -1607,7 +1607,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			Analytics.CustomEvent("QuitDaily");
 		}
 		else if(!daily && !tutorial){
-			Analytics.CustomEvent("Quit"+PlayerPrefs.GetString("scene","Scene1"),new Dictionary<string,Object>{
+			Analytics.CustomEvent("Quit"+PlayerPrefs.GetString("scene","Scene1"),new Dictionary<string,object>{
 				{"sceneTime",Time.timeSinceLevelLoad}
 				{"totalSceneTime",totalTime},
 			});
@@ -1638,7 +1638,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			Analytics.CustomEvent("FinishedDaily");
 		}
 		else if(!daily && !tutorial){
-			Analytics.CustomEvent("Finished"+PlayerPrefs.GetString("scene","Scene1"),new Dictionary<string,Object>{
+			Analytics.CustomEvent("Finished"+PlayerPrefs.GetString("scene","Scene1"),new Dictionary<string,object>
+			{
 				{"sceneTime",Time.timeSinceLevelLoad}
 				{"totalSceneTime",totalTime},
 			});
