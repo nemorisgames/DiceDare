@@ -47,6 +47,8 @@ public class LevelSelection : MonoBehaviour
     public GameObject connectionProblem;
     AppodealDemo appodealDemo;
     public bool autoFlip = false;
+    public bool skipAds = false;
+    public AudioClip bgm;
 
     void Awake(){
         gridPanel = grid.GetComponentInParent<UIPanel>();
@@ -85,11 +87,13 @@ public class LevelSelection : MonoBehaviour
 
         InitMedals();
 
-        PlayerPrefs.SetInt ("continueBGM", 0);
+        //PlayerPrefs.SetInt ("continueBGM", 0);
 		if (PlayerPrefs.GetInt ("unlocked" + GlobalVariables.getIndexScene("1")) != 1) {
 			PlayerPrefs.SetInt ("unlocked" + GlobalVariables.getIndexScene("1"), 1);
 		}
 		//PlayerPrefs.DeleteAll ();
+
+        BGMManager.Instance.Play(bgm,0.47f,1.4f);
 
 		if (PlayerPrefs.GetInt ("Mute") == 1)
 			Mute ();
@@ -244,8 +248,10 @@ public class LevelSelection : MonoBehaviour
             GetConsecutiveDays();
         }
         
+        /*
         GameObject bgm = GameObject.Find("BGM");
-        if (bgm != null) Destroy(bgm);
+        if (bgm != null)
+            Destroy(bgm);*/
         StartCoroutine(showSwipe());
         
     }
@@ -404,7 +410,7 @@ public class LevelSelection : MonoBehaviour
 	}
     public void showBanner()
     {
-        if (appodealDemo != null)
+        if (appodealDemo != null && !skipAds)
             appodealDemo.showBanner(Appodeal.BANNER_TOP);
     }
 
@@ -558,6 +564,8 @@ public class LevelSelection : MonoBehaviour
 	}
 
     public void LoadTutorial(){
+        if (appodealDemo != null)
+            appodealDemo.hideBanner();
         SceneManager.LoadScene("NewTutorial");
     }
 

@@ -56,8 +56,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     public GameObject cellChangeNumber;
     public GameObject cellDissapearNumber;
 
-    public AudioSource bgm_go;
-	public static AudioSource bgm;
+    //public AudioSource bgm_go;
+	//public static AudioSource bgm;
 
     GameObject limitRight;
     GameObject limitLeft;
@@ -123,6 +123,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	private IEnumerator ITutorialPath, ITutorialPanel;
 	private Color redText, greenText;
 	private float totalTime = 0f;
+	public bool skipAds = false;
+	public AudioClip bgm;
 
     // Use this for initialization
     void Start () {
@@ -138,6 +140,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		ColorUtility.TryParseHtmlString("#FF321D",out redText);
 		ColorUtility.TryParseHtmlString("#17CF3F",out greenText);
 
+		BGMManager.Instance.Play(bgm,0.6f);
+		/*
         if (bgm == null) {
 			bgm = bgm_go;
 			DontDestroyOnLoad (bgm);
@@ -217,7 +221,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 		Analytics_Start();
 
-        if(appodealDemo != null)
+        if(appodealDemo != null && !skipAds)
             appodealDemo.showBanner(Appodeal.BANNER_BOTTOM);
 
     }
@@ -1173,7 +1177,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 					yield return new WaitForSeconds (1.4f);
 					finishedSign.SetActive (true);
 					finishedSign.SendMessage ("PlayForward");
-                    if (appodealDemo != null)
+                    if (appodealDemo != null && !skipAds)
                         appodealDemo.showBanner(Appodeal.BANNER_BOTTOM);
                 }
 			}
@@ -1325,7 +1329,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape)) {
-			Destroy (bgm.gameObject);
+			//Destroy (bgm.gameObject);
             //Appodeal.hide(Appodeal.BANNER_BOTTOM);
             if (appodealDemo != null)
                 appodealDemo.hideBanner();

@@ -13,6 +13,8 @@ public class Title : MonoBehaviour {
     bool _isAuthenticated = false;
     string message = "";
     public GameObject dailyPanel;
+    public AudioClip bgm;
+
     void Start ()
     {
         /*
@@ -44,6 +46,7 @@ public class Title : MonoBehaviour {
                 });
             }
         }*/
+        BGMManager.Instance.Play(bgm,0.47f,1.4f);
         int consecutiveDays = PlayerPrefs.GetInt("consecutiveDays", -1);
         System.DateTime date = System.DateTime.Now.Date;
         System.DateTime lastPlayedDate = System.DateTime.Parse(PlayerPrefs.GetString("lastPlayedDate", date.ToString()));
@@ -60,7 +63,6 @@ public class Title : MonoBehaviour {
                 Debug.Log("Already played today");
                 //dailyPanel.SetActive(false);
             }
-
         }
     }
 
@@ -81,7 +83,7 @@ public class Title : MonoBehaviour {
             PlayerPrefs.SetInt ("PlayedGame", 1);
             if(!PlayerPrefs.HasKey("scene"))
                 PlayerPrefs.SetString ("scene", GlobalVariables.getIndexScene("1"));
-            loadNextScene("InGame_tutorial");
+            loadNextScene("NewTutorial");
             //SceneManager.LoadScene ("InGame_tutorial");
 			PlayerPrefs.SetInt("lvlSelectDaily",0);
 		} else
