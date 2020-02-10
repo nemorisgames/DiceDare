@@ -92,8 +92,7 @@ public class LevelSelection : MonoBehaviour
 			PlayerPrefs.SetInt ("unlocked" + GlobalVariables.getIndexScene("1"), 1);
 		}
 		//PlayerPrefs.DeleteAll ();
-
-        BGMManager.Instance.Play(bgm,0.47f,1.4f);
+        
 
 		if (PlayerPrefs.GetInt ("Mute") == 1)
 			Mute ();
@@ -570,15 +569,17 @@ public class LevelSelection : MonoBehaviour
     }
 
     void NextPage(){
-        if(firstInPage + buttonsPerPage >= GlobalVariables.nLevels)
+        if(firstInPage + buttonsPerPage >= (skipAds ? 30 : GlobalVariables.nLevels))
             return;
-        page = Mathf.Clamp(page + 1,0,300);     
+        page = Mathf.Clamp(page + 1,0,300);
         //Debug.Log("page "+page);
         firstInPage = page * buttonsPerPage;
         ResetGridButtons(firstInPage);
     }
 
     void PrevPage(){
+        if(page == 0)
+            return;
         page = Mathf.Clamp(page - 1,0,300); 
         Debug.Log("page "+page);
         firstInPage = page * buttonsPerPage;

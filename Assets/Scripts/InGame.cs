@@ -236,9 +236,12 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 	void DailyInit(){
 		Debug.Log("here");
-		ResetDiceNumbers();
+		if(!tutorial)
+			ResetDiceNumbers();
 		levelNum.text = "";
 		currentBlock.currentNumbers = dice.faceNumbers();
+		foreach(int m in currentBlock.currentNumbers)
+			Debug.Log("Face > "+m);
 		if(tutorial){
 			tutorialEndBlock = currentBlock.InitNormalCell(0,0);
 			currentBlock.InitNormalCell(1,5);

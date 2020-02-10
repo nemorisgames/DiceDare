@@ -132,7 +132,7 @@ public class Dice : MonoBehaviour {
 			ToggleSwipe (false);
 		}
 
-		if(inGame.daily) inGame.currentBlock.currentNumbers = faceNumbers();
+		//if(inGame.daily) inGame.currentBlock.currentNumbers = faceNumbers();
 		hintTime = 5 + getHintTime();
 
 		EnableTutorialSign(false);
@@ -413,6 +413,8 @@ public class Dice : MonoBehaviour {
 
 	public int[] faceNumbers(){
 		ArrayList list = currentNumbers;
+		if(currentNumbers == null || currentNumbers.Count == 0)
+			return new int[]{0,0,0};
 		/*switch(lastDirection){
 			case Direction.Down:
 			TextMesh t = ((TextMesh)list [1]);
