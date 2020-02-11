@@ -82,6 +82,8 @@ public class LevelSelection : MonoBehaviour
                 print(GlobalVariables.getIndexScene("" + (i + 1)));
         }
         
+        BGMManager.Instance.Play(bgm,0.47f,1.4f);
+
         if(GameObject.Find("AppoDeal") != null)
             appodealDemo = GameObject.Find("AppoDeal").GetComponent<AppodealDemo>();
 
