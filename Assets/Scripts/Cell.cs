@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Cell : MonoBehaviour {
+    public static List<Cell> spikeCells = new List<Cell>();
 	TextMesh text;
     TextMesh textAprox;
     public enum StateCell {Normal, Passed, EndCell};
@@ -10,13 +11,52 @@ public class Cell : MonoBehaviour {
 	public int number = 3;
 	Color32 defaultColor;
 	public bool operation = false;
+    public bool spikes = false;
+    public float spikeTime = 2.5f;
     bool approx = false;
+    private TweenPosition [] spikesTP;
+    public AudioClip audioClip;
+    private IEnumerator spikesIE;
+    private bool spikePaused = false;
 	// Use this for initialization
+
+    void Awake(){
+        text = transform.Find("Text").GetComponent<TextMesh>();
+        text.font = InGame.Instance.cellFont;
+        text.GetComponent<MeshRenderer>().material = InGame.Instance.cellTextMaterials[0];
+    }
+
 	void Start () {
         SetNumber(number);
 		changeState (stateCell);
 		defaultColor = GetComponent<Renderer> ().material.GetColor ("_EmissionColor");
+        if(spikes){
+            //Debug.Log("init spike");
+            spikeCells.Add(this);
+            spikesTP = GetComponentsInChildren<TweenPosition>();
+            foreach(TweenPosition tp in spikesTP){
+                tp.duration = spikeTime;
+                tp.enabled = false;
+            }
+            spikesIE = PlaySpike();
+            StartCoroutine(spikesIE);
+        }
     }
+
+    private IEnumerator PlaySpike(float delay = 0){
+        //Debug.Log("Spikes: "+spikeCells.Count);
+        yield return new WaitForSeconds(delay);
+        if(spikeCells[0] == this || spikePaused)
+            InGame.Instance.PlayFX(audioClip,1);
+        foreach(TweenPosition tp in spikesTP){
+            tp.ResetToBeginning();
+            tp.PlayForward();
+        }
+        yield return new WaitForSeconds(spikeTime);
+        spikesIE = PlaySpike();
+        StartCoroutine(spikesIE);
+    }
+
 
     public void SetNumberApprox(int number)
     {
@@ -26,8 +66,6 @@ public class Cell : MonoBehaviour {
 
     public void SetNumber(int number)
     {
-        if(text == null)
-            text = transform.Find("Text").GetComponent<TextMesh>();
         this.number = number;
         SetText("" + number);
         if (approx)
@@ -65,6 +103,20 @@ public class Cell : MonoBehaviour {
     {
         if (textAprox != null) Destroy(textAprox.gameObject);
         this.text.text = text;
+    }
+
+    public void EnableSpikes(bool b){
+        if(b){
+            //spikeCells.Add(this);
+            spikesIE = PlaySpike(1f);
+            StartCoroutine(spikesIE);
+        }
+        else{
+            spikeCells.Remove(this);
+            spikePaused = true;
+            if(spikesIE != null)
+                StopCoroutine(spikesIE);
+        }
     }
 
 	public IEnumerator shine(int num){

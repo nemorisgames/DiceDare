@@ -71,6 +71,83 @@ public class CellLevelCreator : MonoBehaviour {
             updateType();
         }
 
+        if (Input.GetKey(KeyCode.Alpha9))
+        {
+            pathNumber = -1;
+            updateType();
+        }
+
+        //Celdas especificas
+        if(Input.GetKey(KeyCode.Q)){
+            cellType = 0;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.E)){
+            cellType = 1;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.R)){
+            cellType = 3;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.T)){
+            cellType = 4;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.Y)){
+            cellType = 5;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.U)){
+            cellType = 6;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.F)){
+            cellType = 7;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.G)){
+            cellType = 8;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.I)){
+            cellType = 9;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.H)){
+            cellType = 10;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.J)){
+            cellType = 11;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.K)){
+            cellType = 12;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.O)){
+            cellType = -2;
+            updateType();
+        }
+
+        if(Input.GetKey(KeyCode.P)){
+            cellType = -1;
+            updateType();
+        }
+
         /*
         if (Input.GetKey(KeyCode.Alpha8))
         {

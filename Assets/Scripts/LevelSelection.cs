@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 using UnityEngine.Analytics;
 using UnityEngine.Advertisements;
@@ -27,6 +28,7 @@ public class LevelSelection : MonoBehaviour
 	public UIPanel panel;
 	public GameObject loading;
 	public UISprite muteButton;
+    public UISprite muteSFXButton;
 	public UISprite controlButton;
 	public UISlider mathSkillSlider;
 	public UISlider consecDaysSlider;
@@ -48,18 +50,26 @@ public class LevelSelection : MonoBehaviour
     AppodealDemo appodealDemo;
     public bool autoFlip = false;
     public bool skipAds = false;
+    public int stageLimit = 30;
     public AudioClip bgm;
+    public UIPanel panelTransicion;
+    private string language;
+    public AudioMixer audioSettings;
 
     void Awake(){
         gridPanel = grid.GetComponentInParent<UIPanel>();
         panelTween = gridPanel.GetComponent<TweenAlpha>();
+        screenRes = ((Screen.width * 1f) / (Screen.height * 1f));
     }
     void Start ()
     {
+        language = PlayerPrefs.GetString("language","English");
         resolution = Screen.currentResolution;
         Debug.Log(resolution);
         firstInPage = 0;
         currentButtons = new List<GameObject>();
+        panelTransicion.alpha = 1;
+        
         //PlayerPrefs.DeleteAll();
         /*
         PlayerPrefs.SetString("scene", "Scene1");
@@ -96,8 +106,11 @@ public class LevelSelection : MonoBehaviour
 		//PlayerPrefs.DeleteAll ();
         
 
-		if (PlayerPrefs.GetInt ("Mute") == 1)
-			Mute ();
+		/*if (PlayerPrefs.GetInt ("Mute") == 1)
+			Mute ();*/
+
+        MuteMusic(PlayerPrefs.GetInt("bgmMute") == 1);
+        MuteSFX(PlayerPrefs.GetInt("sfxMute") == 1);
 
 		if (PlayerPrefs.GetInt ("Control") == 1) {
 			controlButton.spriteName = "tap";
@@ -119,12 +132,12 @@ public class LevelSelection : MonoBehaviour
             int textoLevel = int.Parse(texto.Substring(5,texto.Length-5));
             int auxIndex = 0;
             CalculateGrid();
-            while(auxIndex + (grid.maxPerLine * 2) < textoLevel){
-                auxIndex += (grid.maxPerLine * 2);
+            while(auxIndex + (buttonsPerPage) < textoLevel){
+                auxIndex += (buttonsPerPage);
             }
             Debug.Log(auxIndex);
             firstInPage = auxIndex;
-            page = firstInPage / (grid.maxPerLine * 2);
+            page = firstInPage / buttonsPerPage;
             //while(auxIndex < texto.)
             panel.transform.localPosition = new Vector3 (-400 * level, panel.transform.position.y, panel.transform.position.z);
 			panel.clipOffset = new Vector2 (400 * level, panel.clipOffset.y);
@@ -258,7 +271,7 @@ public class LevelSelection : MonoBehaviour
     }
 
     void CalculateGrid(){
-        //Debug.Log(screenRes);
+        Debug.Log(screenRes);
         if(screenRes > 1){
             grid.maxPerLine = 5;
             grid.transform.localScale = new Vector3(1,1,1);
@@ -567,11 +580,19 @@ public class LevelSelection : MonoBehaviour
     public void LoadTutorial(){
         if (appodealDemo != null)
             appodealDemo.hideBanner();
-        SceneManager.LoadScene("NewTutorial");
+        //SceneManager.LoadScene("NewTutorial");
+        loadNextScene("NewTutorial");
+    }
+
+    public void LoadDaily(){
+        if (appodealDemo != null)
+            appodealDemo.hideBanner();
+        loadNextScene("InGame_daily");
+        //SceneManager.LoadScene("InGame_daily");
     }
 
     void NextPage(){
-        if(firstInPage + buttonsPerPage >= (skipAds ? 30 : GlobalVariables.nLevels))
+        if(firstInPage + buttonsPerPage >= (skipAds ? stageLimit : GlobalVariables.nLevels - 1))
             return;
         page = Mathf.Clamp(page + 1,0,300);
         //Debug.Log("page "+page);
@@ -596,6 +617,17 @@ public class LevelSelection : MonoBehaviour
         AudioListener.volume = 0f;
 	}
 
+    public void ToggleLanguage(){
+        if(language == "English"){
+            language = "Spanish";
+        }
+        else{
+            language = "English";
+        }
+        PlayerPrefs.SetString("language",language);
+        Localization.language = language;
+    }
+
     public void AutoRotateToggle(){
         autoFlip = !autoFlip;
     }
@@ -614,6 +646,43 @@ public class LevelSelection : MonoBehaviour
 		else
 			UnMute ();
 	}
+    
+    private bool bgmMute = false;
+    private bool sfxMute = false;
+
+    public void ToggleMusic(){
+        bgmMute = !bgmMute;
+        PlayerPrefs.SetInt ("bgmMute", bgmMute ? 1 : 0);
+        if(bgmMute){
+            MuteMusic(true);
+        }
+        else{
+            MuteMusic(false);
+        }
+    }
+
+    private void MuteMusic(bool b, bool ignoreMute = false){
+        if(!ignoreMute) BGMManager.Instance.MuteBGM(b);
+        muteButton.spriteName = (b ? "mute2" : "mute");
+        muteButton.GetComponent<UIButton> ().normalSprite = (b ? "mute2" : "mute");
+    }
+
+    private void MuteSFX(bool b, bool ignoreMute = false){
+        if(!ignoreMute) BGMManager.Instance.MuteSFX(b);
+        muteSFXButton.spriteName = (b ? "mute2" : "mute");
+        muteSFXButton.GetComponent<UIButton> ().normalSprite = (b ? "mute2" : "mute");
+    }
+
+    public void ToggleSFX(){
+        sfxMute = !sfxMute;
+        PlayerPrefs.SetInt ("sfxMute", sfxMute ? 1 : 0);
+        if(sfxMute){
+            MuteSFX(true);
+        }
+        else{
+            MuteSFX(false);
+        }
+    }
 
 	public void ControlButton(){
 		if (PlayerPrefs.GetInt ("Control") == 0) {

@@ -43,6 +43,7 @@ public class Dice : MonoBehaviour {
 	private Animator animator;
 	private Quaternion lastRotation;
 	private Vector3 lastPosition;
+	public bool forceHint = true;
 
 	void Awake(){
 		inGame = Camera.main.GetComponent<InGame> ();
@@ -102,7 +103,12 @@ public class Dice : MonoBehaviour {
 		animator.SetTrigger(s);
 	}
 
+	public void CheckAdOnDeath(){
+		InGame.Instance.FinishShowAd(false);
+	}
+
 	void Start () {
+		forceHint = false;
 		SetNumbers();
 		plane = GameObject.Find ("Plane").GetComponent<Transform> ();
 		line = GetComponent<LineRenderer> ();
@@ -241,6 +247,11 @@ public class Dice : MonoBehaviour {
 			//else
 			//	inGame.NextTutorial(false);
 			//inGame.HideTutorialPanel();
+		}
+		if(!inGame.daily && !inGame.tutorial){
+			if(inGame.hintButton != null && inGame.hintButton.value != 0){
+				inGame.showHintButton(false);
+			}
 		}
 		//lastRotation = transform.rotation;
 		//lastPosition = transform.position;
@@ -397,8 +408,9 @@ public class Dice : MonoBehaviour {
 		lastDirection = d;
 		onMovement = false;
 		currentPos = transform.position;
-		audio.pitch = Random.Range (0.95f, 1.05f);
-		audio.PlayOneShot(audioRotation);
+		/*audio.pitch = Random.Range (0.95f, 1.05f);
+		audio.PlayOneShot(audioRotation);*/
+		BGMManager.Instance.PlayFX(audioRotation);
 		steps++;
 		timeLastMove = Time.timeSinceLevelLoad;
 		hintTime = 10f;
@@ -485,14 +497,17 @@ public class Dice : MonoBehaviour {
 			//comprueba que el calculo este bien
 			//acepto para up y right, en ese caso comprueba que la celda haya sido pisada
 
+			if(cell.spikes){
+				cell.EnableSpikes(false);
+			}
+
 			if (cell.stateCell == Cell.StateCell.Normal) {
 				int cellValue = cell.number;
 				int diceValueA = -100;
 				int diceValueB = -1;
 				switch (lastDirection) {
 				case Direction.Up:
-				//diceValueA = int.Parse (((TextMesh)currentNumbers [1]).text);
-				//diceValueB = int.Parse (((TextMesh)currentNumbers [5]).text);
+				//CORREGIR
 					cellValue = -1;
 					break;
 				case Direction.Down:
@@ -505,8 +520,6 @@ public class Dice : MonoBehaviour {
 					break;
 				case Direction.Right:
 					cellValue = -1;
-				//diceValueA = int.Parse (((TextMesh)currentNumbers [1]).text);
-				//diceValueB = int.Parse (((TextMesh)currentNumbers [3]).text);
 					break;
 				}
 
@@ -572,7 +585,8 @@ public class Dice : MonoBehaviour {
 						//line.material = materialsLine [3];
 						break;
 					}
-					audio.PlayOneShot(audioCubeChange);
+					//audio.PlayOneShot(audioCubeChange);
+					BGMManager.Instance.PlayFX(audioCubeChange,1f,audio.pitch);
 				}
 			}
 			if (cell.stateCell == Cell.StateCell.EndCell) {
@@ -605,6 +619,16 @@ public class Dice : MonoBehaviour {
 			}
 		}
 	}
+
+	void OnTriggerExit(Collider c){
+		Cell cell = c.GetComponent<Cell>();
+		if(cell != null){
+			if(cell.spikes){
+				cell.EnableSpikes(true);
+			}
+		}
+	}
+
 
 	public void changeOperation(Operation op){
 		nextOperation = op;
@@ -665,6 +689,21 @@ public class Dice : MonoBehaviour {
     }
 		
 
+	public string CurrentOpString(){
+		switch(currentOperation){
+			default:
+			return "";
+			case Operation.Div:
+			return "/";
+			case Operation.Mult:
+			return "x";
+			case Operation.Rest:
+			return "-";
+			case Operation.Sum:
+			return "+";
+		}
+	}
+
 	public void ToggleSwipe(bool b){
 		if (b) {
 			swipe = true;
@@ -687,20 +726,29 @@ public class Dice : MonoBehaviour {
 	}*/
 
 	private int shineIndex = 0;
+	private bool showingHintButton = false;
 	void Update () {
-		if(Input.GetKeyDown(KeyCode.L)){
+		/*if(Input.GetKeyDown(KeyCode.L)){
 			StartCoroutine(ShineFace(shineIndex,1));
 			shineIndex++;
 			if(shineIndex == 6)
 				shineIndex = 0;
-		}
+		}*/
 		inGame.tutorialv2.position = transform.position;
 		if (onMovement || inGame.rotating || Time.timeSinceLevelLoad < 2f || inGame.pause)
 			return;
 		if(!inGame.daily && timeLastMove <= Time.timeSinceLevelLoad - inGame.pauseTime - hintTime){
-			StartCoroutine (inGame.lightPath (0));
-			//fix
-			hintTime += getHintTime();
+			if(forceHint){
+				StartCoroutine (inGame.lightPath (0));
+				hintTime += getHintTime();
+			}
+			else{
+				if(inGame.hintButton != null && inGame.hintButton.value == 0){
+					inGame.showHintButton(true);
+					hintTime += getHintTime();
+				}	
+			}
+			
 		}
 		if (Input.GetKeyDown (KeyCode.W)) { if(!inGame.daily || inGame.tutorial) StartCoroutine(turn (Direction.Up)); }
 		if (Input.GetKeyDown (KeyCode.S)) { StartCoroutine(turn (Direction.Down)); }

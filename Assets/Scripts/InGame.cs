@@ -12,6 +12,7 @@ using AppodealAds.Unity.Common;
 
 public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListener, IInterstitialAdListener
 {
+	public static InGame Instance;
 	public bool daily = false;
 	public bool tutorial = false;
 	public TweenAlpha [] tutorialv3;
@@ -89,6 +90,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public DailyBlock currentBlock;
 	DailyBlock lastBlock;
 	public GameObject baseBlock;
+	public Font cellFont;
     
 	int dailyCorrect;
 	int dailyWrong;
@@ -126,10 +128,29 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public bool skipAds = false;
 	public AudioClip bgm;
 
-    // Use this for initialization
+	//AD TIME
+	private float adTime;
+	public int adFrequencySeconds = 60;
+	public UIButton assistBtn;
+	private bool showAssist = false;
+	public int stageLimit = 30;
+	private string lvl;
+
+	void Awake(){
+		if(Instance != null)
+			Destroy(Instance.gameObject);
+		Instance = this;
+
+		Cell.spikeCells.Clear();
+	}
+
     void Start () {
 		if(!daily)
         	GlobalVariables.SetScenes();
+
+		if(panelTransicion != null)
+			panelTransicion.alpha = 1;
+
         GameObject g = GameObject.Find("AppoDeal");
         if(g != null)
             appodealDemo = g.GetComponent<AppodealDemo>();
@@ -161,7 +182,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
             int level = (int.Parse(num));
             //int level = GlobalVariables.getSceneIndex(texto) + 1;
             currentScene = level;
-            levelNum.text = "LEVEL " + level.ToString();
+            levelNum.text = level.ToString();
+			lvl = levelNum.text;
+			if(currentScene < 10)
+				lvl = "0"+levelNum.text;
         }
         timesDied = PlayerPrefs.GetInt("timesDied", 0);
 		totalTime = PlayerPrefs.GetFloat("totalTime",0);
@@ -170,7 +194,16 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		if(tutorial){
 			unPauseOnMove = false;
 		}
-
+		else{
+			if(assistBtn != null){
+				EventDelegate.Add(assistBtn.onClick,ToggleAssist);
+				if(PlayerPrefs.GetInt("showAssist",1) == 1 ? true : false){
+					EventDelegate.Execute(assistBtn.onClick);
+				}
+			}
+		}
+		
+		adTime = PlayerPrefs.GetFloat("adTime",0);
 
 		if(!daily)
         	componerEscena();
@@ -226,13 +259,55 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
     }
 
+	public void ToggleAssist(){
+		showAssist = !showAssist;
+		Debug.Log(showAssist);
+		PlayerPrefs.SetInt("showAssist",showAssist ? 1 : 0);
+	}
+
 	private Cell tutorialEndBlock;
 
 	public int TutorialIndex(){
 		return newTutorialIndex;
 	}
 
+	public void PlayFX(AudioClip clip, float f = 1, float pitch = 1f){
+		BGMManager.Instance.PlayFX(clip,f,pitch);
+	}
+
 	public bool restartCoroutine;
+
+	void CheckAdTime(bool includeBanner = true){
+		#if !UNITY_EDITOR
+		if(adTime > adFrequencySeconds){
+			Debug.Log("ShowAd: "+adTime);
+			
+			if (appodealDemo != null)
+				appodealDemo.showInterstitial();
+            	//appodealDemo.showRewardedVideo(gameObject);
+			
+			adTime = 0;
+			PlayerPrefs.SetFloat("adTime",0);
+		}
+		else{
+			Debug.Log("AdTime: "+adTime);
+			PlayerPrefs.SetFloat("adTime",adTime);
+			if(includeBanner)
+				ShowBanner();
+		}
+		#endif
+	}
+
+	void ShowBanner(){
+		if(appodealDemo != null)
+			appodealDemo.showBanner(Appodeal.BANNER_BOTTOM);
+	}
+
+	public void FinishShowAd(bool includeBanner = true){
+		if(tutorial)
+			return;
+		CheckAdTime();
+	}
 
 	void DailyInit(){
 		Debug.Log("here");
@@ -490,7 +565,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     
     public void hintPressed()
     {
-        connectionProblem.SetActive(false);
+        /*connectionProblem.SetActive(false);
         if (hintPressedNumber <= 0)
         {
             hintMessage.PlayForward();
@@ -499,8 +574,24 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         else
         {
             hint();
-        }
+        }*/
+		StartCoroutine(lightPath(0));
+		showHintButton(false);
     }
+
+	public TweenAlpha hintButton;
+	public AudioClip hintDing;
+
+	public void showHintButton(bool b){
+		if(hintButton != null){
+			if(b){
+				hintButton.PlayForward();
+				PlayFX(hintDing,0.075f);
+			}
+			else
+				hintButton.PlayReverse();
+		}
+	}
 
     private void OnGUI()
     {
@@ -789,6 +880,17 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		}
 	}
 
+	public void ButtonPause(){
+		BGMManager.Instance.MuteSFX(true);
+		Pause();
+	}
+
+	public void ButtonUnPause(){
+		if(PlayerPrefs.GetInt("sfxMute") != 1)
+			BGMManager.Instance.MuteSFX(false);
+		UnPause();
+	}
+
 	public void UnPause(){
 		if (pause) {
 			pause = false;
@@ -846,20 +948,30 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 	public bool calculateResult(int diceValueA, int diceValueB, int cellValue, Cell cell = null){
 		print ("calculating");
-		if (checkOperationResult (diceValueA, diceValueB) != cellValue) {
+		int result = checkOperationResult (diceValueA, diceValueB);
+		int resto = 0;
+		if(dice.currentOperation == Dice.Operation.Div){
+			resto = (Mathf.Abs(diceValueB) % Mathf.Abs(diceValueA));
+		}
+		if (result != cellValue) {
 			if(tutorial){
 				StartCoroutine(TutorialFail());
 			}
 			else if(daily){
+				cell.changeState (Cell.StateCell.Passed);
 				DailyAnswer(false);
+				ShowOperation.Instance.ShowOp(false,diceValueB,diceValueA,result,resto);
 				componerEscena_Daily();
 			}
-			else
-				badMove ();
+			else{
+				ShowOperation.Instance.ShowOp(false,diceValueB,diceValueA,result,resto);
+				badMove (1.5f);
+			}
 		} else {
 			cell.changeState (Cell.StateCell.Passed);
-			audio.pitch = Random.Range (0.95f, 1.05f);
-			audio.PlayOneShot(audioGoodMove);
+			/*audio.pitch = Random.Range (0.95f, 1.05f);
+			audio.PlayOneShot(audioGoodMove);*/
+			PlayFX(audioGoodMove,1f);
 			if(path.Count > 0)
 				path.RemoveAt (0);
 			Instantiate (dice.goodMove, new Vector3(dice.transform.position.x,dice.transform.position.y + diceSize, dice.transform.position.z), Quaternion.LookRotation(Vector3.up));
@@ -871,13 +983,17 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			}
 			else if(daily){
 				DailyAnswer(true);
+				ShowOperation.Instance.ShowOp(true,diceValueB,diceValueA,cellValue,resto);
 				componerEscena_Daily();
+			}
+			else{
+				ShowOperation.Instance.ShowOp(true,diceValueB,diceValueA,cellValue,resto);
 			}
 		}
 		return (checkOperationResult (diceValueA, diceValueB) == cellValue);
 	}
 
-	public void badMove(){
+	public void badMove(float delay = 0){
 		/*#if !UNITY_EDITOR
 			Analytics.CustomEvent ("badMove", new Dictionary<string, object> {
 			{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
@@ -891,27 +1007,31 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			StartCoroutine(TutorialFall());
 			return;
 		}
-        if (Random.Range(0, 100) < 30)
+        /*if (Random.Range(0, 100) < 30)
         {
             if (appodealDemo != null)
                 appodealDemo.showInterstitial();
-        }
+        }*/
         //else
-            continueBadMove();
+            continueBadMove(delay);
 	}
 
-    void continueBadMove()
+    void continueBadMove(float f = 1f)
     {
         print("badMove");
         dice.enabled = false;
-        StartCoroutine(reloadScene());
-        audio.pitch = 1f;
-        audio.PlayOneShot(audioBadMove);
+		
+		//CheckAdTime();
+
+        StartCoroutine(reloadScene(f));
+        /*audio.pitch = 1f;
+        audio.PlayOneShot(audioBadMove);*/
+		PlayFX(audioBadMove);
         dice.ExecAnim("BadMove");
     }
 
-	IEnumerator reloadScene(){
-		yield return new WaitForSeconds (1f);
+	IEnumerator reloadScene(float f = 1f){
+		yield return new WaitForSeconds (f);
 		timesDied++;
 		PlayerPrefs.SetInt ("timesDied", timesDied);
 		PlayerPrefs.SetFloat("totalTime",totalTime + Time.timeSinceLevelLoad);
@@ -1025,8 +1145,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		dice.transform.rotation = Quaternion.identity;
 		dice.GetComponent<Animator> ().SetTrigger ("Finished");
 		//tutorialVideo.ToggleOff ();
-		audio.pitch = 1f;
-		audio.PlayOneShot(audioFinish);
+		/*audio.pitch = 1f;
+		audio.PlayOneShot(audioFinish);*/
+		PlayFX(audioFinish,1f,1f);
         if(PlayerPrefs.GetString("scene") == "Scene0")
         {
             PlayerPrefs.SetString("scene", GlobalVariables.getIndexScene("1"));
@@ -1035,6 +1156,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         if (daily)
         {
             PlayerPrefs.SetInt("lvlSelectDaily", 0);
+			finishedSign.SetActive (true);
+			finishedSign.SendMessage ("PlayForward");
+			if (appodealDemo != null && !skipAds)
+				appodealDemo.showBanner(Appodeal.BANNER_BOTTOM);
         }
 
         if (tutorial)
@@ -1054,16 +1179,20 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         }
         if (stageTime != null)
             stageTime.text = clockShow.text;
-        string level = PlayerPrefs.GetString("scene", "Scene1");
-        string completo = GlobalVariables.Scene[GlobalVariables.getSceneIndex(level)];
-        string[] aux = completo.Split(new char[1] { '$' })[0].Split(new char[1] { '|' });
-		string stage = aux[5].Trim();
+        
         //if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + PlayerPrefs.GetString("scene", "Scene1"), float.MaxValue))
-        if (!daily && Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + stage, float.MaxValue))
+        if (!daily)
         {
-            newRecordSign.SetActive(true);
-			Debug.Log("record"+stage);
-            PlayerPrefs.SetFloat("record" + stage, Time.timeSinceLevelLoad - pauseTime);
+			string level = PlayerPrefs.GetString("scene", "Scene1");
+			string completo = GlobalVariables.Scene[GlobalVariables.getSceneIndex(level)];
+			string[] aux = completo.Split(new char[1] { '$' })[0].Split(new char[1] { '|' });
+			string stage = aux[5].Trim();
+			if(Time.timeSinceLevelLoad - pauseTime < PlayerPrefs.GetFloat("record" + stage, float.MaxValue)){
+				newRecordSign.SetActive(true);
+				Debug.Log("record"+stage);
+				PlayerPrefs.SetFloat("record" + stage, Time.timeSinceLevelLoad - pauseTime);
+			}
+            
             /*if (NPBinding.GameServices.LocalUser.IsAuthenticated)
             {
                 NPBinding.GameServices.ReportScoreWithGlobalID(PlayerPrefs.GetString("scene", "Scene1"), (int)((Time.timeSinceLevelLoad - pauseTime) * 100), (bool _success, string _error) => {
@@ -1144,7 +1273,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			res = ((diceValueA * diceValueB));
 			break;
 		case Dice.Operation.Div:
-			res = (Mathf.RoundToInt((diceValueA * 1f) / (diceValueB * 1f)));
+			res = (Mathf.FloorToInt((diceValueA * 1f) / (diceValueB * 1f)));
 			//if (res == 0)
 			//	res = -1;
 			break;
@@ -1178,6 +1307,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				StartCoroutine (disableCell (cellsAux[i]));
 				if (i == cellsAux.Length - 1) {
 					yield return new WaitForSeconds (1.4f);
+
+					//CheckAdTime();
+
 					finishedSign.SetActive (true);
 					finishedSign.SendMessage ("PlayForward");
                     if (appodealDemo != null && !skipAds)
@@ -1191,6 +1323,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		if(!tutorial)
 			CalculateDailyResult();
 		yield return new WaitForSeconds (1.4f);
+
+		//CheckAdTime();
+
 		finishedSign.SetActive (true);
 		finishedSign.SendMessage ("PlayForward");
 	}
@@ -1204,8 +1339,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		clockShow.text = "00";
 		dice.enabled = false;
 		StartCoroutine (reloadScene ());
-		audio.pitch = 1f;
-		audio.PlayOneShot(audioBadMove);
+		/*audio.pitch = 1f;
+		audio.PlayOneShot(audioBadMove);*/
+		PlayFX(audioBadMove);
 		dice.GetComponent<Animator> ().SetTrigger ("BadMove");
 		#if !UNITY_EDITOR
 			Analytics.CustomEvent ("timesUp"+PlayerPrefs.GetString("scene", "Scene1"));
@@ -1284,7 +1420,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
     }
 
 	public void ExitToMenu(){
-		SceneManager.LoadScene("LevelSelection");
+		loadNextScene("LevelSelection");
 	}
 
 
@@ -1300,7 +1436,15 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         /*#if !UNITY_EDITOR
 		Analytics.CustomEvent ("enteringLevel" + num);
 #endif*/
+
         int level = num + 1 + 1;
+		
+		if(int.Parse(levelNum.text) >= stageLimit){
+			exit();
+			PlayerPrefs.SetString("scene","Scene"+stageLimit);
+			return;
+		}
+
         if (tutorial && level == 2) level = 1;
 		//Debug.Log()
 		//if(!tutorial)
@@ -1353,6 +1497,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		}*/
 		if(!tutorial){
 			if (!pause && !daily) {
+				adTime += Time.deltaTime;
 				int minutes = (int)((Time.timeSinceLevelLoad - pauseTime) / 60);
 				int seconds = (int)((Time.timeSinceLevelLoad - pauseTime) % 60);
 				//int dec = (int)(((Time.timeSinceLevelLoad - pauseTime) % 60 * 10f) - ((int)((Time.timeSinceLevelLoad - pauseTime) % 60) * 10));
@@ -1495,7 +1640,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			dailyCorrect++;
 			dailyConsec++;
 			if(dailyConsec == 3){
-				extraSeconds = Mathf.Clamp(extraSeconds += 5f,0f,25f);
+				//extraSeconds = Mathf.Clamp(extraSeconds += 5f,0f,25f);
 				dailyConsec = 0;
 			}
 		}
@@ -1514,16 +1659,18 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public UISlider dailySlider;
 
 	void CalculateDailyResult(){
-		float auxOptimo = dailyOptimo + Mathf.Floor(extraSeconds/2.4f);
-		dailyOptimo = auxOptimo;
+		Debug.Log("Calculate Daily");
+		//float auxOptimo = dailyOptimo + Mathf.Floor(extraSeconds/2.4f);
+		//dailyOptimo = auxOptimo;
 		dailyCorrectLabel.text = dailyCorrect+"/"+(dailyCorrect+dailyWrong);
 		dailyPercentage = dailyCorrect/(float)(dailyCorrect+dailyWrong);
-		float result = ((dailyPercentage * dailyCorrect)/dailyOptimo);
-		result = Mathf.Clamp01(result);
+		//float result = (dailyCorrect * 100f)/(dailyCorrect+dailyWrong);
+		/*float result = ((dailyPercentage * dailyCorrect)/dailyOptimo);
+		result = Mathf.Clamp01(result);*/
 		//dailyPercentageLabel.text = Mathf.Round(result*10000f)/100f+"%";
 
-		StartCoroutine(raiseNumber(dailyPercentageLabel, result));
-		float totalPercentage = PlayerPrefs.GetFloat("totalDaily",0);
+		StartCoroutine(raiseNumber(dailyPercentageLabel, dailyPercentage));
+		/*float totalPercentage = PlayerPrefs.GetFloat("totalDaily",0);
 		
 		float consec = Mathf.Clamp((float)PlayerPrefs.GetInt("consecutiveDays"),0f,7f);
 		totalPercentage = Mathf.Clamp01(totalPercentage * (1 + consec/150f));
@@ -1555,7 +1702,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         print(PlayerPrefs.GetInt("todayRecord") + " < " + (int)(result * 100f));
         newRecordSign.SetActive(PlayerPrefs.GetInt("todayRecord") < (int)(result * 100f));
         PlayerPrefs.SetInt("dailyScore", (int)(result *  100f));
-        StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + totalPercentage/2f));
+        StartCoroutine(moveSlider(dailySlider, LevelSelection.LevelSkillTotal() + totalPercentage/2f));*/
 	}
 
 	void CalculateMedals(){
@@ -1588,7 +1735,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		TweenAlpha medal = medals[index].GetComponent<TweenAlpha>();
 		medals[index].enabled = true;
 		medal.value = 0;
-		audio.PlayOneShot(audioGoodMove);
+		//audio.PlayOneShot(audioGoodMove);
+		PlayFX(audioGoodMove);
 		StartCoroutine(medalDelay(medal));
 		PlayerPrefs.SetInt("Medal"+index.ToString(),1);
 	}
@@ -1614,7 +1762,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			Analytics.CustomEvent("QuitDaily");
 		}
 		else if(!daily && !tutorial){
-			Analytics.CustomEvent("Quit"+PlayerPrefs.GetString("scene","Scene1"),new Dictionary<string,object>{
+			Analytics.CustomEvent("QuitScene"+lvl,new Dictionary<string,object>{
 				{"sceneTime",Time.timeSinceLevelLoad},
 				{"totalSceneTime",totalTime},
 			});
@@ -1631,12 +1779,13 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			Analytics.CustomEvent("StartedDaily");
 		}
 		else if(!daily && !tutorial){
-			Analytics.CustomEvent("Started"+PlayerPrefs.GetString("scene","Scene1"));
+			Analytics.CustomEvent("StartedScene"+lvl);
 		}
 		#endif
 	}
 
 	void Analytics_Finish(){
+		
 		#if !UNITY_EDITOR
 		if(tutorial){
 			Analytics.CustomEvent("FinishedTutorial");
@@ -1645,7 +1794,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			Analytics.CustomEvent("FinishedDaily");
 		}
 		else if(!daily && !tutorial){
-			Analytics.CustomEvent("Finished"+PlayerPrefs.GetString("scene","Scene1"),new Dictionary<string,object>
+			Analytics.CustomEvent("FinishedScene"+lvl,new Dictionary<string,object>
 			{
 				{"sceneTime",Time.timeSinceLevelLoad},
 				{"totalSceneTime",totalTime},
@@ -1666,6 +1815,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
     public void playAgainDaily(){
+		/*
 		int tries = PlayerPrefs.GetInt("triesLeft",0);
 		if(tries > 0){
 			Debug.Log("again");
@@ -1678,14 +1828,15 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
             loadNextScene("LevelSelection");
             //SceneManager.LoadScene("LevelSelection");
             PlayerPrefs.SetInt("lvlSelectDaily", 2);
-            /*
 #if !UNITY_EDITOR
             if (appodealDemo != null)
                 appodealDemo.showRewardedVideo(gameObject);
 #else
             HandleShowResult(ShowResult.Finished);
 #endif
-            Debug.Log("showing video");*/
-        }
+            Debug.Log("showing video");
+        }*/
+
+		loadNextScene("InGame_daily");
     }
 }

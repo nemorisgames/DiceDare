@@ -40,9 +40,10 @@ public class LevelCreator : MonoBehaviour
 
         if (Scene != "")
         {
-            print(Scene);
+            /*print(Scene);
             print(SceneNumbers);
-            print(ScenePath);
+            print(ScenePath);*/
+            Debug.Log("Scene: "+Scene+"\n"+"SceneNumbers: "+SceneNumbers+"\n"+"ScenePath: "+ScenePath);
             //Se crea el board
             string[] aux = Scene.Split(new char[1] { '$' });
             string[] info = aux[0].Split(new char[1] { '|' });
@@ -218,11 +219,12 @@ public class LevelCreator : MonoBehaviour
         {
             ScenePath += ScenePathAux[i] + "|";
         }
-        ScenePath = ScenePath.Substring(0, ScenePath.Length - 1);
+        ScenePath = ScenePath.Substring(0, Mathf.Clamp(ScenePath.Length - 1,0,int.MaxValue));
         Scene += SceneAux;
-        print(Scene);
+        /*print(Scene);
         print(SceneNumbers);
-        print(ScenePath);
+        print(ScenePath);*/
+        Debug.Log("Scene: "+Scene+"\n"+"SceneNumbers: "+SceneNumbers+"\n"+"ScenePath: "+ScenePath);
     }
 
     public string[] getScenePathVector()

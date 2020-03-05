@@ -24,7 +24,7 @@ public class AppodealDemo : MonoBehaviour, IInterstitialAdListener, IBannerAdLis
 	void Awake ()
 	{
         DontDestroyOnLoad(gameObject);
-		Appodeal.requestAndroidMPermissions(this);
+		//Appodeal.requestAndroidMPermissions(this);
 
     }
 

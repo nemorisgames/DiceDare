@@ -1,0 +1,38 @@
+KEY,English,Spanish
+Survival,SURVIVAL,SUPERVIVENCIA
+Tutorial,TUTORIAL,TUTORIAL
+Exit,EXIT,SALIR
+Time,TIME,TIEMPO
+WellDone,WELL DONE!,BIEN HECHO!
+SurvivalDesc,Do as many correct operations as you can in 1 minute,Haz tantas operaciones correctas como puedas en 1 minuto
+TitleLevel,LEVEL,SELECCION
+TitleSelection,SELECTION,DE NIVELES
+Credits,CREDITS,CREDITOS
+Play,PLAY,JUGAR
+Programming,"programming: ricardo concha, nicolas jaramillo","programacion: ricardo concha, nicolas jaramillo"
+Music,"music: ""The Path"" by Syntactic / CC BY","musica: ""The Path"" by Syntactic / CC BY"
+Art,art design: andres levineri,arte: andres levineri
+Loading,LOADING...,CARGANDO...
+Level,LEVEL,NIVEL
+Menu,MENU,MENU
+Paused,PAUSED,PAUSADO
+Resume,RESUME,CONTINUAR
+Back,BACK,VOLVER
+BackSub,TO SELECTION,A LA SELECCION
+Next,NEXT,SIGUIENTE
+Repeat,REPEAT,REPETIR
+Tutorial1,ROTATE THE CUBE TO THE CELL WITH THE CORRECT ANSWER TO ADVANCE,ROTA EL CUBO HACIA LA CELDA CON EL RESULTADO CORRECTO PARA AVANZAR
+Tutorial21,THE COLOR OF THE BACKGROUND AND THE CUBE INDICATE THE CURRENT OPERATION,EL COLOR DEL FONDO Y EL CUBO INDICAN LA OPERACION ACTUAL
+Tutorial22,"WHEN THE CUBE TOUCHES A COLORED CELL, ITS OPERATION CHANGES","CUANDO EL CUBO TOCA UNA CELDA DE COLOR, CAMBIA DE OPERACION"
+Tutorial3,OPERATIONS,OPERACIONES
+Tutorial41,TARGET: ,META: 
+Tutorial42,YOU CAN GO BACK OVER CLEARED CELLS,PUEDES RETROCEDER POR LAS CELDAS YA DESPEJADAS 
+Tutorial5,TUTORIAL COMPLETED,TUTORIAL COMPLETADO
+Again,AGAIN,DE NUEVO
+Results,RESULTS,RESULTADO
+CorrectTotal,CORRECT/TOTAL,CORRECTAS/TOTAL
+Percentage,PERCENTAGE,PORCENTAJE
+MusicBtn,music,musica
+SFXBtn,effects,efectos
+Language,language,idioma
+NewRecord,new record!,nuevo record!

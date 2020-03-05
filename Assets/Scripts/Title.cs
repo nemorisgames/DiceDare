@@ -17,6 +17,20 @@ public class Title : MonoBehaviour {
 
     void Start ()
     {
+        string language = PlayerPrefs.GetString("language","");
+        if(language == ""){
+            if(Application.systemLanguage == SystemLanguage.Spanish){
+                Localization.language = "Spanish";
+                PlayerPrefs.SetString("language","Spanish");
+            }
+            else{
+                Localization.language = "English";
+                PlayerPrefs.SetString("language","English");
+            }
+        }
+        else{
+            Localization.language = language;
+        }
         /*
         if (!GlobalVariables.finishOrderingProcess)
         {

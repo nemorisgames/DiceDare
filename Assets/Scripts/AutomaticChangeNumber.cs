@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AutomaticChangeNumber : MonoBehaviour
 {
+    private static List<AutomaticChangeNumber> cells = new List<AutomaticChangeNumber>();
     Cell cell;
     public float timeChange = 1.5f;
     float currentTimeChange;
@@ -11,19 +12,35 @@ public class AutomaticChangeNumber : MonoBehaviour
     public int numberOfNumbers = 4;
     int[] numbers;
     int currentIndex = 0;
-    // Start is called before the first frame update
+    private List<int> options = new List<int>();
+    private TweenScale tweenScale;
+    public float scaleTime = 0.5f;
+    public AudioClip audioClip;
+    
+    void Awake(){
+        tweenScale = GetComponentInChildren<TweenScale>();
+        cells.Add(this);
+    }
+
     void Start()
     {
+        for(int i = 1; i < 11; i++){
+            options.Add(i);
+            options.Add(-i);
+        }
         cell = GetComponent<Cell>();
         correctNumber = cell.number;
         numbers = new int[numberOfNumbers + 1];
         numbers[0] = correctNumber;
         for (int i = 1; i < numbers.Length; i++)
         {
-            numbers[i] = correctNumber + Random.Range(-10, 10);
+            int index = Random.Range(0,options.Count);
+            numbers[i] = correctNumber + options[index];
+            options.RemoveAt(index);
         }
 
         currentTimeChange = Time.time + timeChange;
+        tweenScale.duration = scaleTime;
     }
 
     // Update is called once per frame
@@ -35,6 +52,19 @@ public class AutomaticChangeNumber : MonoBehaviour
             if (currentIndex >= numbers.Length) currentIndex = 0;
             cell.SetNumber(numbers[currentIndex]);
             currentTimeChange = Time.time + timeChange;
+            tweenScale.PlayForward();
+            StartCoroutine(reduceScale());
+            if(cells[0] == this)
+                InGame.Instance.PlayFX(audioClip,0.8f);
         }
+    }
+
+    IEnumerator reduceScale(){
+        yield return new WaitForSeconds(tweenScale.duration);
+        tweenScale.PlayReverse();
+    }
+
+    void OnDestroy(){
+        cells.Remove(this);
     }
 }
