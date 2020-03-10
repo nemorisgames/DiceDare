@@ -135,6 +135,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	private bool showAssist = false;
 	public int stageLimit = 30;
 	private string lvl;
+	public UIPanel panelFailTutorial;
 
 	void Awake(){
 		if(Instance != null)
@@ -338,8 +339,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	private IEnumerator TutorialOrder(){
-		if(newTutorialIndex != 3)
-			tutorialBottomWidget.alpha = 0;
+		tutorialBottomWidget.alpha = 0;
 		yield return new WaitForSeconds(0.5f);
 		switch(newTutorialIndex){
 			case 0:
@@ -354,6 +354,11 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			break;
 			case 1:
 				ShowBottomTutorial(2);
+				yield return new WaitForSeconds(0.5f);
+				tutorialBottom.PlayForward();
+			break;
+			case 3:
+				ShowBottomTutorial(4);
 				yield return new WaitForSeconds(0.5f);
 				tutorialBottom.PlayForward();
 			break;
@@ -421,15 +426,15 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			break;
 			case 2:
 				block.InitNormalCell(0,3);
-				block.InitNormalCell(1,3);
+				block.InitOperationCell(1,Dice.Operation.Div,3);
 				ITutorialPanel = ShowTutorialPanel(3,3,"-",1f);
 				ITutorialPath = LightDice(Vector3.right,Vector3.up,1,1.5f);
 				ShowCurrentTutorial();
 			break;
 			case 3:
 				block.InitNormalCell(0,1);
-				block.InitOperationCell(1,Dice.Operation.Sum,-3);
-				ITutorialPanel = ShowTutorialPanel(1,-3,"-",1f);
+				block.InitOperationCell(1,Dice.Operation.Mult,0);
+				ITutorialPanel = ShowTutorialPanel(1,0,"/",1f,3);
 				ITutorialPath = LightDice(-Vector3.up,Vector3.right,1,1.5f);
 				ShowCurrentTutorial();
 				unPauseOnMove = true;
@@ -450,14 +455,22 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		currentBlock = block;
 	}
 
-	private IEnumerator ShowTutorialPanel(int left, int right, string sign, float delay = 1.5f, bool writeFromDice = true){
+	private IEnumerator ShowTutorialPanel(int left, int right, string sign, float delay = 1.5f, int remainder = 0, bool writeFromDice = true){
 		Pause();
 		yield return new WaitForSeconds(delay);
+		if(remainder != 0){
+			tutorialLeft.fontSize = 100;
+			tutorialRight.fontSize = 100;
+		}
+		else{
+			tutorialLeft.fontSize = 105;
+			tutorialRight.fontSize = 105;
+		}
 		tutorialLeftScale.PlayForward();
 		tutorialRightScale.PlayForward();
 		if(true){
-			tutorialLeft.text = dice.faceNumbers()[0]+"\n\n"+sign+" "+dice.faceNumbers()[1]+"\n_____\n\n"+left;
-			tutorialRight.text = dice.faceNumbers()[0]+"\n\n"+sign+" "+dice.faceNumbers()[2]+"\n_____\n\n"+right;
+			tutorialLeft.text = dice.faceNumbers()[0]+"\n\n"+sign+" "+dice.faceNumbers()[1]+"\n_____\n\n"+left + (remainder != 0 ? "\n\nR: "+remainder : "");
+			tutorialRight.text = dice.faceNumbers()[0]+"\n\n"+sign+" "+dice.faceNumbers()[2]+"\n_____\n\n"+right + (remainder != 0 ? "\n\nR: "+remainder : "");
 		}
 	}
 
@@ -492,7 +505,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		//panelUITutorial.GetComponent<TweenAlpha>().PlayReverse();
 		tutorialLeftScale.PlayReverse();
 		tutorialRightScale.PlayReverse();
-		if(newTutorialIndex < 4 && newTutorialIndex != 2)
+		if(newTutorialIndex < 4)
 			tutorialBottom.PlayReverse();
 	}
 
@@ -903,8 +916,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	private IEnumerator TutorialFall(){
 		dice.ExecAnim("BadMove");
 		yield return new WaitForSeconds(1.2f);
-		while(panelTransicion.alpha < 1){
-			panelTransicion.alpha += 0.1f;
+		while(panelFailTutorial.alpha < 1){
+			panelFailTutorial.alpha += 0.1f;
 			yield return new WaitForSeconds(0.01f);
 		}
 		SceneManager.LoadScene("NewTutorial");
@@ -924,8 +937,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	private IEnumerator TutorialFail(){
 		dice.ExecAnim("BadMove");
 		yield return new WaitForSeconds(0.8f);
-		while(panelTransicion.alpha < 1){
-			panelTransicion.alpha += 0.1f;
+		while(panelFailTutorial.alpha < 1){
+			panelFailTutorial.alpha += 0.1f;
 			yield return new WaitForSeconds(0.01f);
 		}
 		dice.ExecAnim("Idle");
@@ -933,8 +946,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		//dice.transform.eulerAngles = Vector3.zero;
 		yield return new WaitForSeconds(1f);
 		dice.ResetNumberPositions();
-		while(panelTransicion.alpha > 0){
-			panelTransicion.alpha -= 0.1f;
+		while(panelFailTutorial.alpha > 0){
+			panelFailTutorial.alpha -= 0.1f;
 			yield return new WaitForSeconds(0.01f);
 		}
 		UnPause();
@@ -951,7 +964,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		int result = checkOperationResult (diceValueA, diceValueB);
 		int resto = 0;
 		if(dice.currentOperation == Dice.Operation.Div){
-			resto = (Mathf.Abs(diceValueB) % Mathf.Abs(diceValueA));
+			resto = Mathf.Abs(diceValueB) % Mathf.Abs(diceValueA);
+			resto *= (int)(Mathf.Sign(diceValueB) * Mathf.Sign(diceValueA));
 		}
 		if (result != cellValue) {
 			if(tutorial){
@@ -1033,8 +1047,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	IEnumerator reloadScene(float f = 1f){
 		yield return new WaitForSeconds (f);
 		timesDied++;
+		totalTime += Time.timeSinceLevelLoad;
 		PlayerPrefs.SetInt ("timesDied", timesDied);
-		PlayerPrefs.SetFloat("totalTime",totalTime + Time.timeSinceLevelLoad);
+		PlayerPrefs.SetFloat("totalTime",totalTime);
         loadNextScene(SceneManager.GetActiveScene().name);
         //SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 	}
@@ -1222,6 +1237,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 		if(daily){
 			UpdateConsecutiveDays();
+			dailyCorrectLabel.text = dailyCorrect+"/"+(dailyCorrect+dailyWrong);
+			dailyPercentage = dailyCorrect/(float)(dailyCorrect+dailyWrong);
 			StartCoroutine(finishDaily());
 		}
 		else{
@@ -1273,7 +1290,11 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			res = ((diceValueA * diceValueB));
 			break;
 		case Dice.Operation.Div:
-			res = (Mathf.FloorToInt((diceValueA * 1f) / (diceValueB * 1f)));
+			float aux = (diceValueA * 1f) / (diceValueB * 1f);
+			if(aux < 0)
+				res = Mathf.CeilToInt(aux);
+			else
+				res = Mathf.FloorToInt(aux);
 			//if (res == 0)
 			//	res = -1;
 			break;
@@ -1507,7 +1528,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				//Debug.Log("counting");
 				
 				//int minutes = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds) / 60);
-				int seconds = (int)((60 - Time.timeSinceLevelLoad + pauseTime + extraSeconds));
+				int seconds = (int)((60 - Time.timeSinceLevelLoad));
 				//Debug.Log(seconds);
 				//int dec = (int)(((1 - Time.timeSinceLevelLoad) % 60 * 10f) - ((int)((1 - Time.timeSinceLevelLoad) % 60) * 10));
 				if(!finished && seconds >= 0) clockShow.text = (seconds < 10 ? "0" : "") + seconds;
@@ -1662,8 +1683,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		Debug.Log("Calculate Daily");
 		//float auxOptimo = dailyOptimo + Mathf.Floor(extraSeconds/2.4f);
 		//dailyOptimo = auxOptimo;
-		dailyCorrectLabel.text = dailyCorrect+"/"+(dailyCorrect+dailyWrong);
-		dailyPercentage = dailyCorrect/(float)(dailyCorrect+dailyWrong);
+
 		//float result = (dailyCorrect * 100f)/(dailyCorrect+dailyWrong);
 		/*float result = ((dailyPercentage * dailyCorrect)/dailyOptimo);
 		result = Mathf.Clamp01(result);*/
@@ -1751,6 +1771,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 
 	void OnApplicationQuit(){
 		Analytics_Exit();
+		PlayerPrefs.SetFloat("totalTime",0);
 	}
 
 	private void Analytics_Exit(){
@@ -1765,6 +1786,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			Analytics.CustomEvent("QuitScene"+lvl,new Dictionary<string,object>{
 				{"sceneTime",Time.timeSinceLevelLoad},
 				{"totalSceneTime",totalTime},
+				{"timesDied",timesDied}
 			});
 		}
 		#endif
@@ -1785,19 +1807,20 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	void Analytics_Finish(){
-		
 		#if !UNITY_EDITOR
 		if(tutorial){
 			Analytics.CustomEvent("FinishedTutorial");
 		}
 		else if(daily){
-			Analytics.CustomEvent("FinishedDaily");
+			Analytics.CustomEvent("FinishedDaily",new Dictionary<string,object>{
+				{"percentage",dailyPercentage}});
 		}
 		else if(!daily && !tutorial){
 			Analytics.CustomEvent("FinishedScene"+lvl,new Dictionary<string,object>
 			{
 				{"sceneTime",Time.timeSinceLevelLoad},
 				{"totalSceneTime",totalTime},
+				{"timesDied",timesDied}
 			});
 		}
 		#endif

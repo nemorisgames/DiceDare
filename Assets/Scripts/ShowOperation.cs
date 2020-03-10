@@ -26,6 +26,8 @@ public class ShowOperation : MonoBehaviour
     }
 
     public void ShowOp(bool b, int num1, int num2, int res, int resto){
+        if(Mathf.Abs(num1) == 999 && Mathf.Abs(num2) == 999)
+            return;
         OperationText t = ((GameObject)Instantiate(opLabelGO,dice.transform.position + Vector3.up * (resto == 0 ? 1f : 1.2f),opLabelGO.transform.rotation,transform)).GetComponent<OperationText>();
         t.transform.eulerAngles = new Vector3(/*Camera.main.transform.eulerAngles.x/2f*/ 0,Camera.main.transform.eulerAngles.y/2f,0);
         t.Init(b,num1,num2,res,dice.CurrentOpString(),resto);

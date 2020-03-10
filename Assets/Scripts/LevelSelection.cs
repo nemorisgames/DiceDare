@@ -442,6 +442,7 @@ public class LevelSelection : MonoBehaviour
 
     void loadNextScene(string s)
     {
+        PlayerPrefs.SetFloat("totalTime",0);
         VariablesGlobales.nextScene = s;
         GameObject.FindWithTag("loading").GetComponent<LoadSceneWait>().enabled = true;
     }

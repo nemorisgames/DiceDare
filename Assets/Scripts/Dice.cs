@@ -503,8 +503,8 @@ public class Dice : MonoBehaviour {
 
 			if (cell.stateCell == Cell.StateCell.Normal) {
 				int cellValue = cell.number;
-				int diceValueA = -100;
-				int diceValueB = -1;
+				int diceValueA = -999;
+				int diceValueB = -999;
 				switch (lastDirection) {
 				case Direction.Up:
 				//CORREGIR
@@ -523,7 +523,7 @@ public class Dice : MonoBehaviour {
 					break;
 				}
 
- 				print (diceValueA + " + " + diceValueB + " = " + cellValue);
+ 				//print (diceValueA + " + " + diceValueB + " = " + cellValue);
 				//inGame.currentBlock.currentNumbers = faceNumbers();
 				bool correct = inGame.calculateResult (diceValueA, diceValueB, cellValue,cell);
 
