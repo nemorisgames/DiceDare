@@ -44,6 +44,7 @@ public class Dice : MonoBehaviour {
 	private Quaternion lastRotation;
 	private Vector3 lastPosition;
 	public bool forceHint = true;
+	public bool moveBack = true;
 
 	void Awake(){
 		inGame = Camera.main.GetComponent<InGame> ();
@@ -241,12 +242,8 @@ public class Dice : MonoBehaviour {
 	}
 
 	public IEnumerator turn(Direction d){
-		if(inGame.tutorial){
-			//if(inGame.tutorialIndex == 0 && d != Direction.Left || inGame.tutorialIndex == 1 && d != Direction.Down || inGame.tutorialIndex == 3 && d != Direction.Left)
-			//	yield break;
-			//else
-			//	inGame.NextTutorial(false);
-			//inGame.HideTutorialPanel();
+		if(inGame.tutorial && !moveBack && (d == Direction.Up || d == Direction.Right)){
+			yield break;
 		}
 		if(!inGame.daily && !inGame.tutorial){
 			if(inGame.hintButton != null && inGame.hintButton.value != 0){

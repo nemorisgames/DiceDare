@@ -311,15 +311,13 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	void DailyInit(){
-		Debug.Log("here");
 		if(!tutorial)
 			ResetDiceNumbers();
 		levelNum.text = "";
 		currentBlock.currentNumbers = dice.faceNumbers();
-		foreach(int m in currentBlock.currentNumbers)
-			Debug.Log("Face > "+m);
+
 		if(tutorial){
-			tutorialEndBlock = currentBlock.InitNormalCell(0,0);
+			tutorialEndBlock = currentBlock.InitNormalCell(0,3);
 			currentBlock.InitNormalCell(1,5);
 			tutorialLeft.text = 3+"\n\n"+dice.OperationString()+" "+1+"\n_____\n\n"+0;
 			tutorialRight.text = 3+"\n\n"+dice.OperationString()+" "+2+"\n_____\n\n"+5;
@@ -418,28 +416,30 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		newTutorialIndex++;
 		switch(newTutorialIndex){
 			case 1:
-				block.InitNormalCell(1,6);
-				block.InitOperationCell(0,Dice.Operation.Rest,6);
-				ITutorialPanel = ShowTutorialPanel(6,6,"+",1f);
-				ITutorialPath = LightDice(Vector3.forward,-Vector3.right,0,1.5f);
+				block.InitNormalCell(0,9);
+				block.InitOperationCell(1,Dice.Operation.Rest,8);
+				ITutorialPanel = ShowTutorialPanel(9,8,"+",1f);
+				ITutorialPath = LightDice(Vector3.forward,Vector3.up,1,1.5f);
 				ShowCurrentTutorial();	
 			break;
 			case 2:
-				block.InitNormalCell(0,3);
-				block.InitOperationCell(1,Dice.Operation.Div,3);
-				ITutorialPanel = ShowTutorialPanel(3,3,"-",1f);
-				ITutorialPath = LightDice(Vector3.right,Vector3.up,1,1.5f);
+				block.InitNormalCell(1,6);
+				block.InitOperationCell(0,Dice.Operation.Div,7);
+				ITutorialPanel = ShowTutorialPanel(7,6,"-",1f);
+				ITutorialPath = LightDice(-Vector3.up,-Vector3.right,0,1.5f);
 				ShowCurrentTutorial();
 			break;
 			case 3:
+				dice.moveBack = false;
 				block.InitNormalCell(0,1);
-				block.InitOperationCell(1,Dice.Operation.Mult,0);
-				ITutorialPanel = ShowTutorialPanel(1,0,"/",1f,3);
-				ITutorialPath = LightDice(-Vector3.up,Vector3.right,1,1.5f);
+				block.InitOperationCell(1,Dice.Operation.Mult,1);
+				ITutorialPanel = ShowTutorialPanel(1,1,"/",1f,2);
+				ITutorialPath = LightDice(Vector3.right,Vector3.forward,1,1.5f);
 				ShowCurrentTutorial();
 				unPauseOnMove = true;
 			break;
 			case 4:
+				dice.moveBack = true;
 				StartCoroutine(TutorialEndCell());
 				//HideTutorialPanel();
 				ITutorialPanel = null;
@@ -459,17 +459,15 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		Pause();
 		yield return new WaitForSeconds(delay);
 		if(remainder != 0){
-			tutorialLeft.fontSize = 100;
 			tutorialRight.fontSize = 100;
 		}
 		else{
-			tutorialLeft.fontSize = 105;
 			tutorialRight.fontSize = 105;
 		}
 		tutorialLeftScale.PlayForward();
 		tutorialRightScale.PlayForward();
 		if(true){
-			tutorialLeft.text = dice.faceNumbers()[0]+"\n\n"+sign+" "+dice.faceNumbers()[1]+"\n_____\n\n"+left + (remainder != 0 ? "\n\nR: "+remainder : "");
+			tutorialLeft.text = dice.faceNumbers()[0]+"\n\n"+sign+" "+dice.faceNumbers()[1]+"\n_____\n\n"+left;
 			tutorialRight.text = dice.faceNumbers()[0]+"\n\n"+sign+" "+dice.faceNumbers()[2]+"\n_____\n\n"+right + (remainder != 0 ? "\n\nR: "+remainder : "");
 		}
 	}
