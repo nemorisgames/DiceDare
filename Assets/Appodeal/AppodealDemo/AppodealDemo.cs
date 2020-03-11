@@ -24,14 +24,16 @@ public class AppodealDemo : MonoBehaviour, IInterstitialAdListener, IBannerAdLis
 	void Awake ()
 	{
         DontDestroyOnLoad(gameObject);
-		//Appodeal.requestAndroidMPermissions(this);
 
     }
 
 	public void Init() {
+		Appodeal.disableWriteExternalStoragePermissionCheck();
+
 		//Example for UserSettings usage
 		UserSettings settings = new UserSettings ();
 		settings.setAge(25).setGender(UserSettings.Gender.OTHER);
+		
 
         //if (LoggingToggle.isOn) Appodeal.setLogging(true);
         //if (TestingToggle.isOn) 

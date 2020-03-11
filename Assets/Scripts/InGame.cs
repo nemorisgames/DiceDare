@@ -155,6 +155,9 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
         GameObject g = GameObject.Find("AppoDeal");
         if(g != null)
             appodealDemo = g.GetComponent<AppodealDemo>();
+		
+		if (appodealDemo != null)
+            appodealDemo.hideBanner();
         //if (PlayerPrefs.GetInt("SeenTutorial",0) == 0 && !daily && !tutorial)
         //tutorialPanel.gameObject.SetActive(true);
         //playTutorial();
@@ -307,7 +310,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public void FinishShowAd(bool includeBanner = true){
 		if(tutorial)
 			return;
-		CheckAdTime();
+		CheckAdTime(includeBanner);
 	}
 
 	void DailyInit(){
