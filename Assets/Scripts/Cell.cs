@@ -47,7 +47,7 @@ public class Cell : MonoBehaviour {
         //Debug.Log("Spikes: "+spikeCells.Count);
         yield return new WaitForSeconds(delay);
         if(spikeCells[0] == this || spikePaused)
-            InGame.Instance.PlayFX(audioClip,1);
+            InGame.Instance.PlayFX(audioClip,0.75f);
         foreach(TweenPosition tp in spikesTP){
             tp.ResetToBeginning();
             tp.PlayForward();

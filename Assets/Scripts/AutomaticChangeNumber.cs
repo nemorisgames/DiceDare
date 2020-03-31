@@ -55,7 +55,7 @@ public class AutomaticChangeNumber : MonoBehaviour
             tweenScale.PlayForward();
             StartCoroutine(reduceScale());
             if(cells[0] == this)
-                InGame.Instance.PlayFX(audioClip,0.8f);
+                InGame.Instance.PlayFX(audioClip,0.7f);
         }
     }
 
