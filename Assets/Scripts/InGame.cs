@@ -136,6 +136,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public int stageLimit = 30;
 	private string lvl;
 	public UIPanel panelFailTutorial;
+	private bool badMoveB = false;
 
 	void Awake(){
 		if(Instance != null)
@@ -208,6 +209,8 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		}
 		
 		adTime = PlayerPrefs.GetFloat("adTime",0);
+
+		badMoveB = false;
 
 		if(!daily)
         	componerEscena();
@@ -286,8 +289,15 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		if(adTime > adFrequencySeconds){
 			Debug.Log("ShowAd: "+adTime);
 			
-			if (appodealDemo != null)
-				appodealDemo.showInterstitial();
+			if (appodealDemo != null){
+				if(badMoveB){
+					StartCoroutine(DelayInterstitial());
+				}
+				else{
+					appodealDemo.showInterstitial();
+				}
+			}
+				
             	//appodealDemo.showRewardedVideo(gameObject);
 			
 			adTime = 0;
@@ -300,6 +310,11 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 				ShowBanner();
 		}
 		#endif
+	}
+
+	IEnumerator DelayInterstitial(){
+		yield return new WaitForSeconds(1f);
+		appodealDemo.showInterstitial();
 	}
 
 	void ShowBanner(){
@@ -1009,6 +1024,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	public void badMove(float delay = 0){
+		badMoveB = true;
 		/*#if !UNITY_EDITOR
 			Analytics.CustomEvent ("badMove", new Dictionary<string, object> {
 			{ "scene", PlayerPrefs.GetString("scene", "Scene1") },
@@ -1557,6 +1573,10 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 			if (Input.GetKeyDown (KeyCode.P)) {
 				PlayerPrefs.DeleteAll ();
 			}
+
+			if(daily && Input.GetKeyDown(KeyCode.M)){
+				finishGame();
+			}
 		}
 		if (rotating || pause || dice.onMovement) {
 			if (rotating)
@@ -1679,6 +1699,7 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	public UILabel dailyCorrectLabel;
 	public UILabel dailyPercentageLabel;
 	public UISlider dailySlider;
+	public UILabel dailyCorrectPtsLabel, dailyIncorrectPtsLabel, dailyTotalLabel, bonusLabel;
 
 	void CalculateDailyResult(){
 		Debug.Log("Calculate Daily");
@@ -1691,6 +1712,22 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 		//dailyPercentageLabel.text = Mathf.Round(result*10000f)/100f+"%";
 
 		StartCoroutine(raiseNumber(dailyPercentageLabel, dailyPercentage));
+		StartCoroutine(raiseInt(dailyCorrectPtsLabel,dailyCorrect * 10,10,"+"));
+		StartCoroutine(raiseInt(dailyIncorrectPtsLabel,dailyWrong * 5,5,"-"));
+
+		int score = dailyCorrect * 10 - (dailyWrong * 5) + (dailyWrong == 0 ? 15 : 0);
+		score = Mathf.Clamp(score,0,int.MaxValue);
+
+		if(dailyWrong == 0)
+			bonusLabel.text = "+15";
+		else
+			bonusLabel.text = " 0";
+		StartCoroutine(raiseInt(dailyTotalLabel,score,5));
+
+		if(score > PlayerPrefs.GetInt("DailyRecord",0)){
+			PlayerPrefs.SetInt("DailyRecord",score);
+			newRecordSign.SetActive(true);
+		}
 		/*float totalPercentage = PlayerPrefs.GetFloat("totalDaily",0);
 		
 		float consec = Mathf.Clamp((float)PlayerPrefs.GetInt("consecutiveDays"),0f,7f);
@@ -1828,13 +1865,20 @@ public class InGame : MonoBehaviour//, IRewardedVideoAdListener, IBannerAdListen
 	}
 
 	public static IEnumerator raiseNumber(UILabel label, float target){
-		for(float f = 0; f < target; f+=0.01f){
+		for(float f = 0; f < target; f+=(0.01f)){
 			label.text = Mathf.Round(f*10000f)/100f+"%";
 			yield return new WaitForSeconds(Time.deltaTime);
 			if(f > target){
 				label.text = Mathf.Round(f*10000f)/100f+"%";
 				yield break;
 			}
+		}
+	}
+
+	private IEnumerator raiseInt(UILabel label, int target, int increment, string start = ""){
+		for(int i = 0; i <= target; i+=increment){
+			label.text = start + i;
+			yield return new WaitForSeconds(0.025f);
 		}
 	}
 
